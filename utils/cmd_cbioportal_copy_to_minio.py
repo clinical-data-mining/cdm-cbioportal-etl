@@ -1,0 +1,29 @@
+import sys
+import pandas as pd
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', '..', 'cdm-utilities', 'minio_api/')))
+from minio_api import MinioAPI
+from constants import dict_files_to_copy, fname_minio_env
+
+
+# Function to copy files from Datahub to Minio
+def transfer_to_minio(obj_minio, fname_source, dest_path_object):
+    df = pd.read_csv(fname_source, sep='\t', header=0, low_memory=False)
+    obj_minio.save_obj(df=df, path_object=dest_path_object, sep='\t')
+    print('Copied %s to %s' % (fname_source, dest_path_object))
+    
+    return None
+
+
+# Setup MinIO
+obj_minio = MinioAPI(fname_minio_env=fname_minio_env)
+
+# Copy files
+for i,fname_source in enumerate(dict_files_to_copy):
+    dest_path_object = dict_files_to_copy[fname_source]
+    ## Save files to MinIO
+    transfer_to_minio(
+        obj_minio=obj_minio, 
+        fname_source=fname_source, 
+        dest_path_object=dest_path_object
+    )
