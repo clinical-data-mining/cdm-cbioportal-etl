@@ -59,7 +59,11 @@ DICT_FILES_TO_COPY = {
     config_cdm.fname_save_dx_met_timeline: config_cdm.fname_save_dx_met_timeline_minio,
     config_cdm.fname_save_dx_ln_timeline: config_cdm.fname_save_dx_ln_timeline_minio,
     config_cdm.fname_save_spec_timeline: config_cdm.fname_save_spec_timeline_minio,
-    config_cdm.fname_save_spec_surg_timeline: config_cdm.fname_save_spec_surg_timeline_minio
+    config_cdm.fname_save_progression: config_cdm.fname_save_progression_minio,
+    config_cdm.fname_save_labs_cea: config_cdm.fname_save_labs_cea_minio
+    
+    
+    
 }
 
 fname_minio_env = config_cdm.minio_env
