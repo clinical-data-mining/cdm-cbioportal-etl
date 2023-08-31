@@ -1,17 +1,27 @@
 """"
-specimen_cbioportal_timeline.py
+cbioportal_timeline_specimen.py
 
-
+Generates cBioPortal timeline files for sequencing dates and date of surgery for corresponding samples
 """
 import os
 import sys
-sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'cdm-utilities')))
-sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'cdm-utilities', 'minio_api')))
+sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', '..', 'cdm-utilities')))
+sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', '..', 'cdm-utilities', 'minio_api')))
+sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'utils')))
 import pandas as pd
 import numpy as np
 from minio_api import MinioAPI
 from utils import drop_cols, mrn_zero_pad, convert_to_int, read_minio_api_config, save_appended_df
 from get_anchor_dates import get_anchor_dates
+from constants import (
+    FNAME_CBIO_SID,
+    FNAME_IMPACT_SUMMARY_SAMPLE,
+    FNAME_SAVE_TIMELINE_SEQ,
+    FNAME_SAVE_TIMELINE_SPEC,
+    COL_ORDER_SEQ,
+    COL_ORDER_SPEC,
+    ENV_MINIO
+) 
 
 
 class cBioPortalSpecimenInfo(object):
@@ -92,11 +102,12 @@ class cBioPortalSpecimenInfo(object):
         return None
     
     def _load_sid(self):
-        ## Surgery
+        ## IMPACT Sample IDs
+        usecols = ['sampleId', 'CANCER_TYPE', 'SAMPLE_TYPE', 'CANCER_TYPE_DETAILED']
         fname = self._fname_sid
         print('Loading %s' % fname)
         obj = self._obj_minio.load_obj(path_object=fname)
-        df_samples_current = pd.read_csv(obj, header=0, low_memory=False, sep='\t', usecols=['sampleId', 'CANCER_TYPE', 'SAMPLE_TYPE', 'CANCER_TYPE_DETAILED'])
+        df_samples_current = pd.read_csv(obj, header=0, low_memory=False, sep='\t', usecols=usecols)
         df_samples_current = df_samples_current.rename(columns={'sampleId': 'SAMPLE_ID'})
         
         self._df_sid = df_samples_current
@@ -105,8 +116,6 @@ class cBioPortalSpecimenInfo(object):
         df_samples_seq = self._df_summary
         df_demo = self._df_demo
         df_samples_current = self._df_sid
-        
-        col_order = ['PATIENT_ID', 'START_DATE', 'STOP_DATE', 'EVENT_TYPE', 'SAMPLE_ID', 'CANCER_TYPE', 'CANCER_TYPE_DETAILED', 'SAMPLE_TYPE']
 
         df_samples_seq_f = df_samples_current.merge(right=df_samples_seq, how='left', on='SAMPLE_ID')
         df_demo = df_demo.drop(columns=['MRN'])
@@ -119,7 +128,7 @@ class cBioPortalSpecimenInfo(object):
 
         # Rename columns
         df_samples_seq_f = df_samples_seq_f.rename(columns={'DMP_ID': 'PATIENT_ID'}) 
-        df_samples_seq_f = df_samples_seq_f[col_order]
+        df_samples_seq_f = df_samples_seq_f[COL_ORDER_SEQ]
 
         # Drop samples without sequencing date
         df_samples_seq_f = df_samples_seq_f[df_samples_seq_f['START_DATE'].notnull()]
@@ -134,8 +143,6 @@ class cBioPortalSpecimenInfo(object):
         df_demo = self._df_demo
         df_samples_current = self._df_sid
 
-        col_order = ['PATIENT_ID', 'START_DATE', 'STOP_DATE', 'EVENT_TYPE', 'SAMPLE_ID', 'CANCER_TYPE', 'CANCER_TYPE_DETAILED', 'SAMPLE_TYPE', 'SURGICAL_METHOD']
-
         df_samples_surg_f = df_samples_current.merge(right=df_samples_seq, how='left', on='SAMPLE_ID')
         df_samples_surg_f = df_samples_surg_f.merge(right=df_demo, how='left', on='DMP_ID')
         START_DATE = (df_samples_surg_f['DATE_OF_PROCEDURE_SURGICAL_EST'] - df_samples_surg_f['DTE_PATH_PROCEDURE']).dt.days
@@ -147,7 +154,7 @@ class cBioPortalSpecimenInfo(object):
 
         # Rename columns
         df_samples_surg_f = df_samples_surg_f.rename(columns={'DMP_ID': 'PATIENT_ID'}) 
-        df_samples_surg_f = df_samples_surg_f[col_order]
+        df_samples_surg_f = df_samples_surg_f[COL_ORDER_SPEC]
 
         # Drop samples without sequencing date        
         df_samples_surg_f = df_samples_surg_f[df_samples_surg_f['START_DATE'].notnull()]
@@ -156,30 +163,16 @@ class cBioPortalSpecimenInfo(object):
         # df_samples_surg_f.head()
         
         return df_samples_surg_f
-    
-    
- 
 
+    
 def main():
-    
-    import sys
-    sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'cdm-utilities')))
-    from minio_api import MinioAPI
-    from data_classes_cdm import CDMProcessingVariables as config_cdm
-    
-    
-    minio_env = config_cdm.minio_env
-    fname_sid = config_cdm.fname_cbio_sid
-    fname_summary = config_cdm.fname_impact_summary_sample
-    fname_save_timeline_seq = config_cdm.fname_save_spec_timeline
-    fname_save_timeline_spec = config_cdm.fname_save_spec_surg_timeline
 
     obj_dx_timeline = cBioPortalSpecimenInfo(
-        fname_minio_config=minio_env,
-        fname_impact_sid=fname_sid, 
-        fname_impact_summary=fname_summary, 
-        fname_save_seq=fname_save_timeline_seq, 
-        fname_save_spec=fname_save_timeline_spec
+        fname_minio_config=ENV_MINIO,
+        fname_impact_sid=FNAME_CBIO_SID, 
+        fname_impact_summary=FNAME_IMPACT_SUMMARY_SAMPLE, 
+        fname_save_seq=FNAME_SAVE_TIMELINE_SEQ, 
+        fname_save_spec=FNAME_SAVE_TIMELINE_SPEC
     )
 
 

@@ -6,30 +6,31 @@ import pandas as pd
 sys.path.insert(
     0,
     os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "..", "cdm-utilities")
+        os.path.join(os.path.dirname(__file__), "..", "..", "cdm-utilities")
     ),
 )
 sys.path.insert(
     0,
     os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "..", "cdm-utilities", "minio_api")
+        os.path.join(os.path.dirname(__file__), "..", "..", "cdm-utilities", "minio_api")
     ),
 )
+sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'utils')))
 from data_classes_cdm import CDMProcessingVariables as config_rrpt
 from minio_api import MinioAPI
 from utils import mrn_zero_pad, print_df_without_index, set_debug_console, convert_to_int, save_appended_df
 from get_anchor_dates import get_anchor_dates
-
-
-FNAME_MINIO_ENV = config_rrpt.minio_env
-FNAME_SAVE = config_rrpt.fname_save_labs_cea
-FILE_CEA = 'labs/CA_Antigen_PSA_TSH__with_TESTNAMES_as_Select_LCI_CTLG_ITEM_GUID_LCI_SUBTEST_NAME_fr_202303151545.csv'
-COLS_ORDER = ['PATIENT_ID', 'START_DATE', 'STOP_DATE', 'EVENT_TYPE', 'TEST', 'RESULT']
+from constants import (
+    COLS_ORDER_CEA,
+    FILE_CEA,
+    FNAME_SAVE_CEA,
+    ENV_MINIO
+) 
 
 
 def cbioportal_timeline_cea_labs():
     df_path_g = get_anchor_dates()
-    obj_minio = MinioAPI(fname_minio_env=FNAME_MINIO_ENV)
+    obj_minio = MinioAPI(fname_minio_env=ENV_MINIO)
     
     # Load and clean lab data to only contains CEA values
     print('Loading %s' % FILE_CEA)
@@ -58,12 +59,12 @@ def cbioportal_timeline_cea_labs():
     df_cea_f = df_cea_f.assign(EVENT_TYPE='LAB_TEST')
     df_cea_f = df_cea_f.assign(TEST='CEA')
 
-    df_cea_f = df_cea_f[COLS_ORDER]
+    df_cea_f = df_cea_f[COLS_ORDER_CEA]
     
     # Save data to datahub repo
     save_appended_df(
         df=df_cea_f, 
-        filename=FNAME_SAVE, 
+        filename=FNAME_SAVE_CEA, 
         sep='\t'
     )
     

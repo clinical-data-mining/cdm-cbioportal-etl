@@ -9,23 +9,29 @@ Object requires
 """
 import sys
 import os
+sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'utils')))
 sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..')))
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'minio_api/')))
 import pandas as pd
 from minio_api import MinioAPI
 from cbioportal_summary_merger import cBioPortalSummaryMergeTool
+from constants import (
+    ENV_MINIO,
+    COL_SUMMARY_FNAME_SAVE,
+    COL_SUMMARY_HEADER_FNAME_SAVE
+) 
 
 
 class cbioportalSummaryFileCombiner(object):
     def __init__(self, fname_minio_env, fname_manifest, fname_current_summary, patient_or_sample):
         # Input filenames
-        self._fname_minio_env = fname_minio_env
+        self._fname_minio_env = ENV_MINIO
         self._fname_current_summary = fname_current_summary
         self._fname_manifest = fname_manifest
         self._patient_or_sample = patient_or_sample
         
-        self._var_summary_fname = 'SUMMARY_FILENAME'
-        self._var_header_fname = 'SUMMARY_HEADER_FILENAME'
+        self._var_summary_fname = COL_SUMMARY_FNAME_SAVE
+        self._var_header_fname = COL_SUMMARY_HEADER_FNAME_SAVE
         
         # DataFrame variables
         self._obj_patient_merge = None      

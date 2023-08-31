@@ -5,11 +5,21 @@ disease_status_cbioportal_timeline.py
 """
 import os
 import sys
+sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'utils')))
 sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', '..', 'cdm-utilities/')))
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', '..', 'cdm-utilities', 'minio_api/')))
 import pandas as pd
 from minio_api import MinioAPI
 from utils import drop_cols, mrn_zero_pad, convert_to_int, read_minio_api_config, save_appended_df
+from constants import (
+    COL_ORDER_DISEASE_STATUS,
+    ENV_MINIO,
+    FNAME_DEMO,
+    FNAME_IDS,
+    FNAME_RESULTS_DISEASE_STATUS,
+    FNAME_RESULTS_STATS,
+    FNAME_SAVE_TIMELINE_DATAHUB
+) 
 
 
 class cBioPortalDiseaseStatusTimeline(object):
@@ -41,16 +51,7 @@ class cBioPortalDiseaseStatusTimeline(object):
         
 
         # Hardcode column names for cBioPortal formatting
-        self._col_order = ['PATIENT_ID', 
-                           'START_DATE', 
-                           'STOP_DATE', 
-                           'EVENT_TYPE', 
-                           'SUBTYPE', 
-                           'SOURCE', 
-                           'SOURCE_SPECIFIC', 
-                           'DISEASE_STATUS_PREDICTED', 
-                           'DISEASE_STATUS_KNOWN', 
-                           'STYLE_COLOR']
+        self._col_order = COL_ORDER_DISEASE_STATUS
 
         self._init_process()
         self._save_files()
@@ -84,10 +85,12 @@ class cBioPortalDiseaseStatusTimeline(object):
     def _load_demographics(self):
         print('Loading %s' % self._fname_demo)
         obj = self._obj_minio.load_obj(path_object=self._fname_demo)
-        df_demo1 = pd.read_csv(obj, 
-                               sep='\t', 
-                               low_memory=False, 
-                               dtype={'MRN': object})
+        df_demo1 = pd.read_csv(
+            obj, 
+            sep='\t', 
+            low_memory=False, 
+            dtype={'MRN': object}
+        )
 
         cols_keep = ['MRN', 'PT_BIRTH_DTE']
         df_demo = df_demo1[cols_keep]
@@ -180,30 +183,18 @@ class cBioPortalDiseaseStatusTimeline(object):
         
         return None
 
- 
-
-
+    
 def main():
-    import os
-    import sys
-    sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', '..', 'cdm-utilities/')))
-    from data_classes_cdm import CDMProcessingVariables as config_cdm
-    
-    
-    fname_results = '/mind_data/watersm/Projects/cdm_breast_dmt/data/initial_first_met_test_predictions_Clinical_Longform_Breast_DMT_met_recurrence_ft_9-12-2022_epoch_9.csv'
-    fname_results_stats = '/mind_data/watersm/Projects/cdm_breast_dmt/data/percent_met_mrns_stats.csv'
-    fname_demo = config_cdm.fname_demo
-    fname_ids = config_cdm.fname_id_map
-    fname_save_timeline_datahub = config_cdm.fname_save_disease_status_timeline
 
-    obj_ds_timeline = cBioPortalDiseaseStatusTimeline(fname_minio_config=config_cdm.minio_env,
-                                                      fname_demo=fname_demo, 
-                                                      fname_id_map=fname_ids,
-                                                      fname_results=fname_results,
-                                                      fname_results_stats=fname_results_stats,
-                                                      fname_save_timeline_datahub=fname_save_timeline_datahub)
-   
-
+    
+    obj_ds_timeline = cBioPortalDiseaseStatusTimeline(
+        fname_minio_config=ENV_MINIO,
+        fname_demo=FNAME_DEMO, 
+        fname_id_map=FNAME_IDS,
+        fname_results=FNAME_RESULTS_DISEASE_STATUS,
+        fname_results_stats=FNAME_RESULTS_STATS,
+        fname_save_timeline_datahub=FNAME_SAVE_TIMELINE_DATAHUB
+    )
 
 if __name__ == '__main__':
     main()

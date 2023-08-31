@@ -29,6 +29,7 @@ COLS_PATHOLOGY = ['MRN', 'DTE_PATH_PROCEDURE', 'DMP_ID', 'SAMPLE_ID']
 
 
 def get_anchor_dates():
+    print('Creating anchor date table from first sequencing date..')
     obj_minio = MinioAPI(fname_minio_env=FNAME_MINIO_ENV)
     
     print('Loading %s' % FNAME_PATHOLOGY)
@@ -51,5 +52,7 @@ def get_anchor_dates():
     df_path_g = df_path_g[filt_p0]
     filt_mismapped = df_path_g['MRN'].duplicated(keep=False) | df_path_g['DMP_ID'].duplicated(keep=False)
     df_path_g = df_path_g[~filt_mismapped]
+    
+    print('Done!')
     
     return df_path_g

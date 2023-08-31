@@ -13,40 +13,29 @@ import pandas as pd
 sys.path.insert(
     0,
     os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "..", "cdm-utilities")
+        os.path.join(os.path.dirname(__file__), '..', "..", "cdm-utilities")
     ),
 )
 sys.path.insert(
     0,
     os.path.abspath(
         os.path.join(
-            os.path.dirname(__file__), "..", "cdm-utilities", "minio_api"
+            os.path.dirname(__file__), '..', "..", "cdm-utilities", "minio_api"
         )
     ),
 )
+sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'utils')))
 from data_classes_cdm import CDMProcessingVariables as config_rrpt
 from minio_api import MinioAPI
 from get_anchor_dates import get_anchor_dates
 from utils import mrn_zero_pad, print_df_without_index, set_debug_console, convert_to_int, save_appended_df
-
-
-FNAME_MINIO_ENV = config_rrpt.minio_env
-FNAME_PROGRESSION = config_rrpt.fname_radiology_progression_pred
-FNAME_RADIOLOGY = config_rrpt.fname_radiology_full_parsed
-FNAME_SAVE = config_rrpt.fname_save_progression
-
-COL_ORDER = [
-    'PATIENT_ID', 
-    'START_DATE',
-    'STOP_DATE',
-    'EVENT_TYPE',
-    'SUBTYPE',
-    'SOURCE',
-    'SOURCE_SPECIFIC',
-    'PROGRESSION',
-    'INFERRED_PROGRESSION_PROB',
-    'STYLE_COLOR'
-]
+from constants import (
+    COL_ORDER_PROGRESSION,
+    FNAME_SAVE_PROGRESSION_TIMELINE,
+    FNAME_RADIOLOGY,
+    FNAME_PROGRESSION,
+    ENV_MINIO
+) 
 
 
 class cBioPortalTimelineProgression:
@@ -148,26 +137,26 @@ class cBioPortalTimelineProgression:
         df_f.loc[df_f['PROGRESSION'] == 'No', 'STYLE_COLOR'] = '#2AA02B'
         
         # Reorder
-        df_f = df_f[COL_ORDER]
+        df_f = df_f[COL_ORDER_PROGRESSION]
         
         return df_f
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Evaluate bert on recist model.")
+    parser = argparse.ArgumentParser(description="cBioPortal timeline file for cancer progression predictions")
     parser.add_argument(
         "--fname_minio_env",
         action="store",
         dest="fname_minio_env",
-        default=FNAME_MINIO_ENV,
+        default=ENV_MINIO,
         help="CSV file with Minio environment variables."
     )
     args = parser.parse_args()
 
     cBioPortalTimelineProgression(
-        fname_minio_env=FNAME_MINIO_ENV, 
+        fname_minio_env=args.fname_minio_env, 
         fname_rad=FNAME_RADIOLOGY, 
         fname_progression=FNAME_PROGRESSION, 
-        fname_save=FNAME_SAVE
+        fname_save=FNAME_SAVE_PROGRESSION_TIMELINE
     )
 

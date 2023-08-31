@@ -6,42 +6,33 @@ import pandas as pd
 sys.path.insert(
     0,
     os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "..", "cdm-utilities")
+        os.path.join(os.path.dirname(__file__), "..", "..", "cdm-utilities")
     ),
 )
 sys.path.insert(
     0,
     os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "..", "cdm-utilities", "minio_api")
+        os.path.join(os.path.dirname(__file__), "..", "..", "cdm-utilities", "minio_api")
     ),
 )
-from data_classes_cdm import CDMProcessingVariables as config_rrpt
+sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'utils')))
 from minio_api import MinioAPI
 from utils import mrn_zero_pad, print_df_without_index, set_debug_console, convert_to_int, save_appended_df
 from get_anchor_dates import get_anchor_dates
-
-
-FNAME_MINIO_ENV = config_rrpt.minio_env
-# Dictionary of files to convert to a cbioportal timeline data file format, from a PHI version of it.
-# Columns must AT LEAST contain the columns as defined in COLS_ORDER
-DICT_FILES = {
-    config_rrpt.fname_dx_timeline_prim: config_rrpt.fname_save_dx_prim_timeline,
-    config_rrpt.fname_dx_timeline_met: config_rrpt.fname_save_dx_met_timeline,
-    config_rrpt.fname_dx_timeline_ln: config_rrpt.fname_save_dx_ln_timeline,
-    config_rrpt.fname_timeline_surg: config_rrpt.fname_save_surg_timeline,
-    config_rrpt.fname_timeline_rt: config_rrpt.fname_save_rt_timeline,
-    config_rrpt.fname_timeline_meds: config_rrpt.fname_save_meds_timeline
-}
-COLS_ORDER = ['PATIENT_ID', 'START_DATE', 'STOP_DATE', 'EVENT_TYPE', 'SUBTYPE']
+from constants import (
+    COLS_ORDER_GENERAL,
+    DICT_FILES_TIMELINE,
+    ENV_MINIO
+) 
 
 
 def cbioportal_deid_timeline_files():
     df_path_g = get_anchor_dates()
-    obj_minio = MinioAPI(fname_minio_env=FNAME_MINIO_ENV)
+    obj_minio = MinioAPI(fname_minio_env=ENV_MINIO)
     
-    for fname in DICT_FILES:
+    for fname in DICT_FILES_TIMELINE:
         print(fname)
-        file_deid = DICT_FILES[fname]
+        file_deid = DICT_FILES_TIMELINE[fname]
         print(file_deid)
         obj = obj_minio.load_obj(path_object=fname)
         df_ = pd.read_csv(obj, header=0, low_memory=False, sep='\t')
@@ -66,8 +57,8 @@ def cbioportal_deid_timeline_files():
         df_['STOP_DATE'] = stop_date
         df_ = df_.drop(columns=['DTE_PATH_PROCEDURE'])
 
-        cols_other = [x for x in list(df_.columns) if x not in COLS_ORDER]
-        cols_order_f = COLS_ORDER + cols_other
+        cols_other = [x for x in list(df_.columns) if x not in COLS_ORDER_GENERAL]
+        cols_order_f = COLS_ORDER_GENERAL + cols_other
 
         df_ = df_[cols_order_f]
 
@@ -77,7 +68,7 @@ def cbioportal_deid_timeline_files():
             sep='\t'
         )
         
-        return None
+    return None
     
 
 def main():
