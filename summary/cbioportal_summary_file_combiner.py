@@ -78,7 +78,7 @@ class cbioportalSummaryFileCombiner(object):
     
     def _combine_reports(self, df_manifest):
         # Combines all headers and corresponding data files into a portal summary table
-        
+        print('COMBINE REPORTS ------------------------------------')
         for ind, (i, row) in enumerate(df_manifest.iterrows()):
             fname_summary = df_manifest.loc[i, self._var_summary_fname]
             fname_header = df_manifest.loc[i, self._var_header_fname]
@@ -89,11 +89,19 @@ class cbioportalSummaryFileCombiner(object):
                 fname_data=fname_summary
             )
             df_p_header_new, df_p_data_new = self._obj_patient_merge.return_addition()
+            # print('ADDITIONAL HEADER ------------------------------------')
+            # print(df_p_header_new.head())
+            # print('ADDITIONAL DATA ------------------------------------')
+            # print(df_p_data_new.head())
 
             self._obj_patient_merge.merge_annotations(
                 patient_or_sample=self._patient_or_sample
             )
             df_summary_header_f, df_summary_f = self._obj_patient_merge.return_output()
+            # print('COMBINED HEADER ------------------------------------')
+            # print(df_summary_header_f.head())
+            # print('COMBINED DATA ------------------------------------')
+            # print(df_summary_f.head())
 
             if ind < df_manifest.shape[0] - 1:
                 self._obj_patient_merge.reset_origin()

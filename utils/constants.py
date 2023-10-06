@@ -54,16 +54,15 @@ DICT_FILES_TO_COPY = {
     config_cdm.fname_save_surg_timeline: config_cdm.fname_save_surg_timeline_minio,
     config_cdm.fname_save_rt_timeline: config_cdm.fname_save_rt_timeline_minio,
     config_cdm.fname_save_meds_timeline: config_cdm.fname_save_meds_timeline_minio,
-    config_cdm.fname_save_disease_status_timeline: config_cdm.fname_save_disease_status_timeline_minio,
+    # config_cdm.fname_save_disease_status_timeline: config_cdm.fname_save_disease_status_timeline_minio,
     config_cdm.fname_save_dx_prim_timeline: config_cdm.fname_save_dx_prim_timeline_minio,
     config_cdm.fname_save_dx_met_timeline: config_cdm.fname_save_dx_met_timeline_minio,
     config_cdm.fname_save_dx_ln_timeline: config_cdm.fname_save_dx_ln_timeline_minio,
     config_cdm.fname_save_spec_timeline: config_cdm.fname_save_spec_timeline_minio,
     config_cdm.fname_save_progression: config_cdm.fname_save_progression_minio,
-    config_cdm.fname_save_labs_cea: config_cdm.fname_save_labs_cea_minio
-    
-    
-    
+    config_cdm.fname_save_labs_cea: config_cdm.fname_save_labs_cea_minio,
+    config_cdm.fname_save_timeline_gleason: config_cdm.fname_save_timeline_gleason_minio,
+    config_cdm.fname_save_timeline_pdl1: config_cdm.fname_save_timeline_pdl1_minio
 }
 
 fname_minio_env = config_cdm.minio_env
@@ -73,15 +72,18 @@ fname_minio_env = config_cdm.minio_env
 Constants for cBioPortal timeline files
 """
 # Dictionary of files to convert to a cbioportal timeline data file format, from a PHI version of it.
-# Columns must AT LEAST contain the columns as defined in COLS_ORDER
+# Columns must AT LEAST contain the columns as defined in COLS_ORDER_GENERAL
 DICT_FILES_TIMELINE = {
     config_cdm.fname_dx_timeline_prim: config_cdm.fname_save_dx_prim_timeline,
     config_cdm.fname_dx_timeline_met: config_cdm.fname_save_dx_met_timeline,
     config_cdm.fname_dx_timeline_ln: config_cdm.fname_save_dx_ln_timeline,
     config_cdm.fname_timeline_surg: config_cdm.fname_save_surg_timeline,
     config_cdm.fname_timeline_rt: config_cdm.fname_save_rt_timeline,
-    config_cdm.fname_timeline_meds: config_cdm.fname_save_meds_timeline
+    config_cdm.fname_timeline_meds: config_cdm.fname_save_meds_timeline,
+    config_cdm.fname_path_gleason_cbio_timeline: config_cdm.fname_save_timeline_gleason,
+    config_cdm.fname_path_pdl1_cbio_timeline: config_cdm.fname_save_timeline_pdl1
 }
+
 COLS_ORDER_GENERAL = [
     'PATIENT_ID', 
     'START_DATE', 

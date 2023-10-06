@@ -160,7 +160,11 @@ class cBioPortalSpecimenInfo(object):
         df_samples_surg_f = df_samples_surg_f[df_samples_surg_f['START_DATE'].notnull()]
         df_samples_surg_f = convert_to_int(df=df_samples_surg_f, list_cols=['START_DATE'])
 
-        # df_samples_surg_f.head()
+        # Convert intervals to int
+        df_samples_surg_f = convert_to_int(
+            df=df_samples_surg_f,
+            list_cols=['START_DATE', 'STOP_DATE']
+        )
         
         return df_samples_surg_f
 

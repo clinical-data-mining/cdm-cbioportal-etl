@@ -63,15 +63,19 @@ class cBioPortalSummaryMergeTool(object):
         if (self._df_summary_addition is not None) and (self._df_header_addition is not None):
             # print('----------------------------------------------------------------')
             # Sample summary
-            df_data_merged = self._summary_data_merger(df_main=self._df_summary_orig, 
-                                              df_new=self._df_summary_addition, 
-                                              df_header_main=self._df_header_orig, 
-                                              df_header_new=self._df_header_addition, 
-                                              col_key=col_key)
+            df_data_merged = self._summary_data_merger(
+                df_main=self._df_summary_orig, 
+                df_new=self._df_summary_addition, 
+                df_header_main=self._df_header_orig, 
+                df_header_new=self._df_header_addition, 
+                col_key=col_key
+            )
             
-            df_header_merged = self._summary_header_merger(header_main=self._df_header_orig, 
-                                                    header_new=self._df_header_addition, 
-                                                    list_keys_new=[col_key])
+            df_header_merged = self._summary_header_merger(
+                header_main=self._df_header_orig, 
+                header_new=self._df_header_addition, 
+                list_keys_new=[col_key]
+            )
             
             # Clean header so that all label values are upper case
             df_header_merged.loc[3, :] = df_header_merged.loc[3, :].str.upper()
@@ -90,8 +94,8 @@ class cBioPortalSummaryMergeTool(object):
     def _summary_loader(self, fname):
         print('Loading %s' % fname)
         # obj = self._obj_minio.load_obj(path_object=fname)
-        df_data = pd.read_csv(fname, header=4, sep='\t')
-        df_header = pd.read_csv(fname, header=0, sep='\t', nrows=4)
+        df_data = pd.read_csv(fname, header=4, sep='\t', dtype=str)
+        df_header = pd.read_csv(fname, header=0, sep='\t', nrows=4, dtype=str)
 
         return df_header, df_data
 
@@ -134,8 +138,9 @@ class cBioPortalSummaryMergeTool(object):
         return df_header
 
     def _summary_data_merger(self, df_main, df_new, df_header_main, df_header_new, col_key):
-        print('----------------')
+        print('MERGE NEW WITH MAIN----------------')
         print(df_header_new.head())
+        
         key_new = df_header_new[col_key][3]
         print(key_new)
         key_current = df_header_main[col_key][3]
@@ -146,9 +151,20 @@ class cBioPortalSummaryMergeTool(object):
             cols_drop.remove(key_new)
         if key_current in cols_drop:
             cols_drop.remove(key_current)
+            
+        df_new = df_new.astype(object)
+        df_main = df_main.astype(object)
+        print('NEW-------------------------------')    
+        print(df_new.head())
+        print('MAIN-------------------------------')    
+        print(df_main.head())
+        print(df_main.shape)
 
         df_main = df_main.drop(columns=cols_drop)
         df_main_f = df_main.merge(right=df_new, how='left', left_on=key_current, right_on=key_new) 
+        print('MERGED-------------------------------')    
+        print(df_main_f.head())
+        
 
         # Drop key column if different
         if key_new != key_current:

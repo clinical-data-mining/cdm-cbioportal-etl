@@ -17,7 +17,14 @@ sys.path.insert(
 )
 sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'utils')))
 from minio_api import MinioAPI
-from utils import mrn_zero_pad, print_df_without_index, set_debug_console, convert_to_int, save_appended_df
+from utils import (
+    mrn_zero_pad, 
+    print_df_without_index, 
+    set_debug_console, 
+    convert_to_int, 
+    save_appended_df
+)
+
 from get_anchor_dates import get_anchor_dates
 from constants import (
     COLS_ORDER_GENERAL,
@@ -56,6 +63,11 @@ def cbioportal_deid_timeline_files():
         df_['START_DATE'] = start_date
         df_['STOP_DATE'] = stop_date
         df_ = df_.drop(columns=['DTE_PATH_PROCEDURE'])
+        df_ = df_[df_['START_DATE'].notnull()]
+        df_ = convert_to_int(
+            df=df_,
+            list_cols=['START_DATE', 'STOP_DATE']
+        )
 
         cols_other = [x for x in list(df_.columns) if x not in COLS_ORDER_GENERAL]
         cols_order_f = COLS_ORDER_GENERAL + cols_other

@@ -29,7 +29,7 @@ sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '.
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', '..', 'cdm-utilities')))
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', '..', 'cdm-utilities', 'minio_api/')))
 from minio_api import MinioAPI
-from utils import convert_to_int, mrn_zero_pad
+from utils import convert_to_int, mrn_zero_pad, set_debug_console
 from data_classes_cdm import CDMProcessingVariables as config_cdm
 from data_loader import init_metadata
 from get_anchor_dates import get_anchor_dates
@@ -50,6 +50,8 @@ from constants import (
     COL_SUMMARY_HEADER_FNAME_SAVE,
     COL_RPT_NAME
 ) 
+
+set_debug_console()
 
 
 class RedcapToCbioportalFormat(object):
@@ -84,35 +86,22 @@ class RedcapToCbioportalFormat(object):
     
     def return_codebook(self):
         return self._df_metadata, self._df_tables, self._df_project
-        
-    # def return_full_header(self):
-    #     return self._df_header
     
     def return_manifest(self):  # ----------------------------------------------------
         return self._df_manifest
-    
-    # def return_redcap_report_summary(self):
-    #     return self._df_rc_summary
-    
-#     def return_report_map(self):
-#         fname_map = self._fname_report_map
-#         print('Loading %s' % fname_map)
-#         obj = self._obj_minio.load_obj(path_object=fname_map)
-#         df_redcap_map = pd.read_csv(obj, header=0, low_memory=False, sep='\t')
-        
-#         return df_redcap_map
         
     def _format_data_dictionary(self, df): # -----------------------------------------------------------
         # Reformat the data_types to cbioportal format
 
         ## Constants
-        list_order_header = ['label', 'comment', 'data_type', 'visible', 'heading', 'is_date']
+        list_order_header = ['label', 'comment', 'data_type', 'visible', 'heading', 'is_date', 'fill_value']
         dict_redcap_header = {
             'field_label': 'label', 
             'field_note': 'comment', 
             'data_type': 'data_type',
             'field_name': 'heading',
-            'is_date': 'is_date'
+            'is_date': 'is_date',
+            'fill_value': 'fill_value'
         }
         list_redcap_map = list(dict_redcap_header.keys())
 
@@ -137,18 +126,18 @@ class RedcapToCbioportalFormat(object):
             # Remove old row
             df_tmp = df_tmp[df_tmp['field_name'] != field_name]
 
-        df = df_tmp.copy()
+        df_header1 = df_tmp.copy()
+        # print('HEADER------------------------------------------')
+        # print(df_header1.head())
 
         # Transform into a cbioportal format
-        df = df.assign(data_type='STRING')
+        df_header1 = df_header1.rename(columns={'field_type': 'data_type'})
         # print(df.columns)
-        logic_num = df['text_validation_type_or_sh'].isin(['number', 'date_mdy'])
-        logic_is_date = df['text_validation_type_or_sh'].isin(['date_mdy'])
-        df.loc[logic_num, 'data_type'] = 'NUMBER'
-        df = df.assign(is_date=logic_is_date)
+        logic_is_date = df_header1['text_validation_type_or_sh'].isin(['date_mdy'])
+        df_header1 = df_header1.assign(is_date=logic_is_date)
 
         # Create header dataframe
-        df_header = df[list_redcap_map].rename(columns=dict_redcap_header)
+        df_header = df_header1[list_redcap_map].rename(columns=dict_redcap_header)
         df_header = df_header.assign(visible=1)
         df_header = df_header[list_order_header]
 
@@ -156,24 +145,6 @@ class RedcapToCbioportalFormat(object):
         df_header['comment'] = df_header['comment'].fillna(df_header['label'])
 
         return df_header
-
-#     def _summary_deid_dates(self, data_dictionary, report, col_dob):
-#         header = data_dictionary[list(data_dictionary['heading'].isin(report.columns))]
-#         cols_dates = list(header.loc[header['is_date'] == True, 'heading'])
-
-#         if len(cols_dates) > 0:
-#             cols_dates_fix = cols_dates.copy()
-#             cols_dates_fix.remove(col_dob)
-#             report[cols_dates] = report[cols_dates].apply(lambda x: pd.to_datetime(x))
-#             report[cols_dates_fix] = report[cols_dates_fix].apply(lambda x: (x-report[col_dob]).dt.days)
-#             report = convert_to_int(df=report, list_cols=cols_dates_fix)
-#             header = header.drop(columns=['is_date'])
-
-#             # Drop DOB from header and summary file
-#             report = report.drop(columns=[col_dob])
-#             header = header[header['heading'] != col_dob].reset_index(drop=True)
-
-#         return header, report
     
     def create_summaries_and_headers(    # -----------------------------------------------------
         self, 
@@ -221,6 +192,11 @@ class RedcapToCbioportalFormat(object):
             
         active_tables = df_tables.loc[f1&f2]
         list_fname_minio = active_tables['cdm_source_table']
+        
+        df_template = pd.read_csv(fname_template, header=4)
+        print('TEMPLATE------------------------------------------------')
+        print(df_template)
+        print(df_template.shape)
 
         # Cycle through the list of CDM dataset to be loaded
         for i,fname in enumerate(list_fname_minio):
@@ -254,15 +230,15 @@ class RedcapToCbioportalFormat(object):
 
             if (key_patient == 'MRN'):
                 df_select = mrn_zero_pad(df=df_select, col_mrn='MRN')
-                df_select = df_select.merge(right=df_anchor, how='inner', on='MRN')
+                df_select = df_anchor.merge(right=df_select, how='inner', on='MRN')
                 df_select = df_select.drop(columns=['MRN'])
             else:
                 df_anchor1 = df_anchor.drop(columns=['MRN'])
-                df_select = df_select.merge(
-                    right=df_anchor1, 
+                df_select = df_anchor1.merge(
+                    right=df_select, 
                     how='inner', 
-                    left_on=key_patient, 
-                    right_on='DMP_ID'
+                    right_on=key_patient, 
+                    left_on='DMP_ID'
                 ) 
             # Convert dates to intervals
             df_select[cols_dates] = df_select[cols_dates].apply(lambda x: pd.to_datetime(x, errors='coerce'))
@@ -284,12 +260,51 @@ class RedcapToCbioportalFormat(object):
             # Reorder header entries to match summary file
             sorterIndex = dict(zip(cols_header, range(len(cols_header))))
             df_header['Rank'] = df_header['heading'].map(sorterIndex)
-            df_header.sort_values(by='Rank', ascending = True, inplace = True)
-            df_header.drop(columns=['Rank', 'is_date'], axis=1, inplace = True)
+            df_header.sort_values(by='Rank', ascending = True, inplace = True)            
             df_header['heading'] = df_header['heading'].str.upper().str.replace(' ', '_')
 
             # Reorder data columns to the header
-            df_select = df_select[list(df_header['heading'])]
+            cols_summary_order = list(df_header['heading'])
+            df_select = df_select[cols_summary_order]
+            
+            print('df_select--------------------')
+            print(df_select[df_select['PATIENT_ID'].isin(['P-0000397', 'P-0000789', 'P-0000112', 'P-0000358', 'P-0002845'])])
+            print(df_select.shape)
+            
+            # Merge with template cases and reformat according to heading
+            df_select_f = df_template.merge(
+                right=df_select, 
+                how='left', 
+                on=col_id_change
+            )
+            
+            for current_col in cols_summary_order:
+                fill_value = df_header.loc[df_header['heading'] == current_col, 'fill_value'].iloc[0]
+                print('fill_value--------------------')
+                print(fill_value)
+                if fill_value == 'NA':
+                    fill_value = np.NaN
+                data_type = df_header.loc[df_header['heading'] == current_col, 'data_type'].iloc[0]
+                print('data_type--------------------')
+                print(data_type)
+                
+                if data_type == 'INT':
+                    df_select_f = convert_to_int(df=df_select_f, list_cols=[current_col])
+                    fill_value = int(fill_value)
+                
+                # TODO (Chris): Do something with the floats, if needed. Otherwise FLOAT shouldn't be a datatype.
+                
+                df_select_f[current_col] = df_select_f[current_col].fillna(fill_value)
+                
+            print('df_select_f--------------------')
+            print(df_select_f[df_select_f['PATIENT_ID'].isin(['P-0000397', 'P-0000789', 'P-0000112', 'P-0000358', 'P-0002845'])])
+            print(df_select_f.shape)
+                
+            
+            # Remove columns not needed in header file
+            df_header.drop(columns=['Rank', 'is_date', 'fill_value'], axis=1, inplace = True)
+            # Replace all values that are INT or FLOAT to NUMBER
+            df_header = df_header.replace({'data_type': {'INT':'NUMBER', 'FLOAT':'NUMBER'}})
 
             # Create manifest file
             ## Modify/create manifest files --------------------------------------------------
@@ -305,16 +320,19 @@ class RedcapToCbioportalFormat(object):
             ## Save data and header files --------------------------------------------------
             ### Save cbioportal formatted patient level dx data and header files 
             print('Saving %s' % fname_save_data)
-            print(df_select.head())
-            self._obj_minio.save_obj(df=df_select, 
-                               path_object=fname_save_data, 
-                               sep=',')
+            print(df_select_f[df_select_f['PATIENT_ID'].isin(['P-0000397', 'P-0000789', 'P-0000112', 'P-0000358', 'P-0002845'])])
+            self._obj_minio.save_obj(
+                df=df_select_f, 
+                path_object=fname_save_data, 
+                sep=','
+            )
             print('Saving %s' % fname_save_header)
             print(df_header.head())
-            self._obj_minio.save_obj(df=df_header, 
-                               path_object=fname_save_header, 
-                               sep=',')
-
+            self._obj_minio.save_obj(
+                df=df_header, 
+                path_object=fname_save_header, 
+                sep=','
+            )
 
         ## Note: Continue appending manifest files here
         df_manifest_s = self.return_manifest()
@@ -325,109 +343,6 @@ class RedcapToCbioportalFormat(object):
         
         return None
 
-    
-#     def create_timeline_files(self):
-#         df_header = self._df_header
-#         df_redcap = self._df_rc_summary
-#         df_redcap_map = self._df_header
-#         pathname_cbio_summaries = self._path_cbio_save
-#         pathname_cbio_config = self._path_config
-#         col_darwin_id = self._col_darwin_id
-#         col_dte_birth = self._col_dte_birth
-        
-#         # Load metadata files
-#         for report_name in df_redcap['TIMELINE_LEVEL']:
-#             if report_name != 'nan':
-#                 # print(report_name)
-#                 fname_timeline_save = 'data_timeline_' + report_name + '.txt'
-#                 pathfilename_save = os.path.join(pathname_cbio_summaries, fname_timeline_save)
-
-#                 pathfilename = os.path.join(pathname_cbio_config, report_name + '.csv')
-#                 df_specs = pd.read_csv(pathfilename)
-
-#                 current_timeline_type = df_redcap.loc[df_redcap['TIMELINE_LEVEL'] == report_name, 'TIMELINE_TYPE'].iloc[0]
-
-#                 # Load Redcap report
-#                 fname_report = df_redcap.loc[df_redcap[COL_RPT_NAME] == report_name, 'REPORT_FILENAME'].iloc[0]
-#                 df_report = pd.read_csv(fname_report, sep='\t')
-
-#                 # Steps
-
-#                 ## Establish which timeline type is being used and columns required
-#                 if current_timeline_type == 'treatment':
-#                     cols_required = ['PATIENT_ID', 'START_DATE', 'STOP_DATE', 'EVENT_TYPE', 'TREATMENT_TYPE', 'AGENT']
-#                     EVENT_TYPE = 'TREATMENT'
-
-#                 elif current_timeline_type == 'toxicity':
-#                     cols_required = ['PATIENT_ID', 'START_DATE', 'STOP_DATE', 'EVENT_TYPE', 'TOXICITY_TYPE', 'SUBTYPE']
-#                     EVENT_TYPE = 'TOXICITY'
-
-#                 ## For repeating instruments, clean data so all IDs and birthdates are in all rows
-#                 if df_report['redcap_repeat_instance'].notnull().any():
-#                     df_report[col_darwin_id] = df_report[col_darwin_id].ffill()
-#                     df_report[col_dte_birth] = df_report[col_dte_birth].ffill()
-
-#                 ## De-identify dates
-#                 header, df_report_deid = self._summary_deid_dates(data_dictionary=df_redcap_map, report=df_report, col_dob=col_dte_birth)
-
-#                 ## Filter columns by values in COLUMN_NAME_REDCAP
-#                 cols_keep = list(df_specs['COLUMN_NAME_REDCAP'])
-#                 df_report_current = df_report_deid[cols_keep]
-
-#                 # Key for column renaming
-#                 dict_col_rename = dict(zip(df_specs['COLUMN_NAME_REDCAP'], df_specs['COLUMN_NAME_CBIOPORTAL']))
-
-
-#                 ## Check for data to melt. If yes, get varables, else, do straight conversion
-#                 logic_melt_check = df_specs['MELT_ID_VARS'] == 'x'
-#                 var_name = 'REDCAP_TIMELINE_NAME'
-#                 if (logic_melt_check).any():
-#                     id_vars = list(df_specs.loc[logic_melt_check, 'COLUMN_NAME_REDCAP'])
-#                     # Get value variables
-#                     logic_melt_vals = df_specs['MELT_VAL_VARS'] == 'x'
-#                     val_vars = list(df_specs.loc[logic_melt_vals, 'COLUMN_NAME_REDCAP'])
-#                     value_name = list(df_specs.loc[logic_melt_vals, 'COLUMN_NAME_CBIOPORTAL'])[0]
-
-#                     ## Melt data on variables
-#                     df_report_current_melt = pd.melt(frame=df_report_current, id_vars=id_vars, value_vars=val_vars, var_name=var_name, value_name=value_name, col_level=None, ignore_index=True)
-
-
-#                 else:
-#                     df_report_current_melt = df_report_current        
-
-#                 ## Rename column names
-#                 df_report_current_melt = df_report_current_melt.rename(columns=dict_col_rename)        
-#                 df_report_current_melt = df_report_current_melt[df_report_current_melt['START_DATE'].notnull()]
-#         #         print(df_report.head())
-
-#                 ## Add missing columns, add EVENT TYPE
-#                 cols_requried_tmp = cols_required.copy()
-#                 cols_requried_tmp.remove('EVENT_TYPE')
-#                 cols_req_missing = [x for x in cols_requried_tmp if x not in df_report_current_melt.columns]
-#                 for col_missing in cols_req_missing:
-#                     kwargs = {col_missing : lambda x: np.NaN}
-#                     df_report_current_melt = df_report_current_melt.assign(**kwargs)
-#                 df_report_current_melt = df_report_current_melt.assign(EVENT_TYPE=EVENT_TYPE)
-
-#                 ## Reformat/reorder columns to fit cbioportal format
-#                 cols_other = [x for x in df_report_current_melt.columns if x not in cols_required]
-#                 cols_order = cols_required + cols_other
-#                 df_report_current_melt = df_report_current_melt[cols_order]
-
-#                 ## Fill in end dates with start dates if blank
-#                 df_report_current_melt['STOP_DATE'] = df_report_current_melt['STOP_DATE'].fillna(df_report_current_melt['START_DATE'])
-
-#                 ## Fix specific timeline formats if required data is blank
-#                 if current_timeline_type == 'treatment':
-#                     df_report_current_melt['TREATMENT_TYPE'] = df_report_current_melt['TREATMENT_TYPE'].fillna('NS')
-#                     df_report_current_melt['AGENT'] = df_report_current_melt['AGENT'].fillna('NS')
-
-#                 elif current_timeline_type == 'toxicity':
-#                     do = None
-
-#                 # Save timeline file
-#                 df_report_current_melt.to_csv(pathfilename_save, index=False, sep='\t')
-    
     def summary_manifest_init(self):   # ---------------------------------------------------------
         cols_manifest = [
             COL_RPT_NAME, 
