@@ -62,7 +62,8 @@ DICT_FILES_TO_COPY = {
     config_cdm.fname_save_progression: config_cdm.fname_save_progression_minio,
     config_cdm.fname_save_labs_cea: config_cdm.fname_save_labs_cea_minio,
     config_cdm.fname_save_timeline_gleason: config_cdm.fname_save_timeline_gleason_minio,
-    config_cdm.fname_save_timeline_pdl1: config_cdm.fname_save_timeline_pdl1_minio
+    config_cdm.fname_save_timeline_pdl1: config_cdm.fname_save_timeline_pdl1_minio,
+    config_cdm.fname_save_timeline_prior_meds: config_cdm.fname_save_timeline_prior_meds_minio
 }
 
 fname_minio_env = config_cdm.minio_env
@@ -81,7 +82,8 @@ DICT_FILES_TIMELINE = {
     config_cdm.fname_timeline_rt: config_cdm.fname_save_rt_timeline,
     config_cdm.fname_timeline_meds: config_cdm.fname_save_meds_timeline,
     config_cdm.fname_path_gleason_cbio_timeline: config_cdm.fname_save_timeline_gleason,
-    config_cdm.fname_path_pdl1_cbio_timeline: config_cdm.fname_save_timeline_pdl1
+    config_cdm.fname_path_pdl1_cbio_timeline: config_cdm.fname_save_timeline_pdl1,
+    config_cdm.fname_prior_meds_predictions_timeline: config_cdm.fname_save_timeline_prior_meds
 }
 
 COLS_ORDER_GENERAL = [
@@ -91,8 +93,6 @@ COLS_ORDER_GENERAL = [
     'EVENT_TYPE', 
     'SUBTYPE'
 ]
-
-
 # Constants for custom built timeline file generators
 
 ## IMPACT sequencing and surgical specimens
