@@ -206,6 +206,7 @@ class RedcapToCbioportalFormat(object):
 
         # Cycle through the list of CDM dataset to be loaded
         for i,fname in enumerate(list_fname_minio):
+            print('Loading %s' % fname)
             obj = self._obj_minio.load_obj(path_object=fname)
             df_ = pd.read_csv(obj, header=0, low_memory=False, sep='\t')
             form = df_tables.loc[list_fname_minio.index[i], 'form_name']

@@ -25,7 +25,14 @@ from constants import (
 
 
 class cBioPortalSpecimenInfo(object):
-    def __init__(self, fname_minio_config, fname_impact_sid, fname_impact_summary, fname_save_seq, fname_save_spec):
+    def __init__(
+        self, 
+        fname_minio_config, 
+        fname_impact_sid, 
+        fname_impact_summary, 
+        fname_save_seq, 
+        fname_save_spec
+    ):
         self._fname_summary = fname_impact_summary
         self._fname_sid = fname_impact_sid
         self._fname_save_timeline_spec = fname_save_spec
@@ -87,11 +94,22 @@ class cBioPortalSpecimenInfo(object):
     
     def _load_summary(self):
         ### Load Dx timeline data\
-        col_use = ['MRN', 'DMP_ID', 'DATE_SEQUENCING_REPORT', 'SAMPLE_ID', 'DATE_OF_PROCEDURE_SURGICAL_EST']
+        col_use = [
+            'MRN', 
+            'DATE_SEQUENCING_REPORT', 
+            'SAMPLE_ID', 
+            'DATE_OF_PROCEDURE_SURGICAL_EST'
+        ]
         fname = self._fname_summary
         print('Loading %s' % fname)
         obj = self._obj_minio.load_obj(path_object=fname)
-        df_samples_seq = pd.read_csv(obj, header=0, low_memory=False, sep='\t', usecols=col_use)
+        df_samples_seq = pd.read_csv(
+            obj, 
+            header=0, 
+            low_memory=False, 
+            sep='\t', 
+            usecols=col_use
+        )
         df_samples_seq['DATE_SEQUENCING_REPORT'] = pd.to_datetime(df_samples_seq['DATE_SEQUENCING_REPORT'])
         df_samples_seq['DATE_OF_PROCEDURE_SURGICAL_EST'] = pd.to_datetime(df_samples_seq['DATE_OF_PROCEDURE_SURGICAL_EST'])
         df_samples_seq = convert_to_int(df=df_samples_seq, list_cols=['MRN'])
@@ -103,12 +121,16 @@ class cBioPortalSpecimenInfo(object):
     
     def _load_sid(self):
         ## IMPACT Sample IDs
-        usecols = ['sampleId', 'CANCER_TYPE', 'SAMPLE_TYPE', 'CANCER_TYPE_DETAILED']
+        usecols = ['sampleId', 'patientId', 'CANCER_TYPE', 'SAMPLE_TYPE', 'CANCER_TYPE_DETAILED']
+        cols_replace = {
+            'patientId': 'DMP_ID',
+            'sampleId': 'SAMPLE_ID'
+        }
         fname = self._fname_sid
         print('Loading %s' % fname)
         obj = self._obj_minio.load_obj(path_object=fname)
         df_samples_current = pd.read_csv(obj, header=0, low_memory=False, sep='\t', usecols=usecols)
-        df_samples_current = df_samples_current.rename(columns={'sampleId': 'SAMPLE_ID'})
+        df_samples_current = df_samples_current.rename(columns=cols_replace)
         
         self._df_sid = df_samples_current
         
@@ -133,8 +155,9 @@ class cBioPortalSpecimenInfo(object):
         # Drop samples without sequencing date
         df_samples_seq_f = df_samples_seq_f[df_samples_seq_f['START_DATE'].notnull()]
         df_samples_seq_f = convert_to_int(df=df_samples_seq_f, list_cols=['START_DATE'])
-
-        # df_samples_seq_f.head()
+        
+        # Drop any duplicates
+        df_samples_seq_f = df_samples_seq_f.groupby(['SAMPLE_ID']).first().reset_index()
         
         return df_samples_seq_f
     
@@ -150,7 +173,7 @@ class cBioPortalSpecimenInfo(object):
         df_samples_surg_f = convert_to_int(df=df_samples_surg_f, list_cols=['START_DATE'])
         df_samples_surg_f = df_samples_surg_f.assign(STOP_DATE=np.NaN)
         df_samples_surg_f = df_samples_surg_f.assign(EVENT_TYPE='Sample acquisition')
-        df_samples_surg_f = df_samples_surg_f.assign(SURGICAL_METHOD='Under construction')
+        # df_samples_surg_f = df_samples_surg_f.assign(SURGICAL_METHOD='Under construction')
 
         # Rename columns
         df_samples_surg_f = df_samples_surg_f.rename(columns={'DMP_ID': 'PATIENT_ID'}) 
@@ -165,6 +188,9 @@ class cBioPortalSpecimenInfo(object):
             df=df_samples_surg_f,
             list_cols=['START_DATE', 'STOP_DATE']
         )
+        
+        # Drop any duplicates
+        df_samples_surg_f = df_samples_surg_f.groupby(['SAMPLE_ID']).first().reset_index()
         
         return df_samples_surg_f
 

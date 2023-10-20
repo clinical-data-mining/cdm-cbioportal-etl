@@ -56,14 +56,16 @@ DICT_FILES_TO_COPY = {
     config_cdm.fname_save_meds_timeline: config_cdm.fname_save_meds_timeline_minio,
     # config_cdm.fname_save_disease_status_timeline: config_cdm.fname_save_disease_status_timeline_minio,
     config_cdm.fname_save_dx_prim_timeline: config_cdm.fname_save_dx_prim_timeline_minio,
-    config_cdm.fname_save_dx_met_timeline: config_cdm.fname_save_dx_met_timeline_minio,
-    config_cdm.fname_save_dx_ln_timeline: config_cdm.fname_save_dx_ln_timeline_minio,
+    # config_cdm.fname_save_dx_met_timeline: config_cdm.fname_save_dx_met_timeline_minio,
+    # config_cdm.fname_save_dx_ln_timeline: config_cdm.fname_save_dx_ln_timeline_minio,
     config_cdm.fname_save_spec_timeline: config_cdm.fname_save_spec_timeline_minio,
-    config_cdm.fname_save_progression: config_cdm.fname_save_progression_minio,
-    config_cdm.fname_save_labs_cea: config_cdm.fname_save_labs_cea_minio,
+    # config_cdm.fname_save_progression: config_cdm.fname_save_progression_minio,
+    # config_cdm.fname_save_labs_cea: config_cdm.fname_save_labs_cea_minio,
     config_cdm.fname_save_timeline_gleason: config_cdm.fname_save_timeline_gleason_minio,
     config_cdm.fname_save_timeline_pdl1: config_cdm.fname_save_timeline_pdl1_minio,
-    config_cdm.fname_save_timeline_prior_meds: config_cdm.fname_save_timeline_prior_meds_minio
+    config_cdm.fname_save_timeline_prior_meds: config_cdm.fname_save_timeline_prior_meds_minio,
+    config_cdm.fname_save_timeline_tumor_sites: config_cdm.fname_save_timeline_tumor_sites_minio,
+    config_cdm.fname_save_spec_surg_timeline: config_cdm.fname_save_spec_surg_timeline_minio
 }
 
 fname_minio_env = config_cdm.minio_env
@@ -76,14 +78,15 @@ Constants for cBioPortal timeline files
 # Columns must AT LEAST contain the columns as defined in COLS_ORDER_GENERAL
 DICT_FILES_TIMELINE = {
     config_cdm.fname_dx_timeline_prim: config_cdm.fname_save_dx_prim_timeline,
-    config_cdm.fname_dx_timeline_met: config_cdm.fname_save_dx_met_timeline,
-    config_cdm.fname_dx_timeline_ln: config_cdm.fname_save_dx_ln_timeline,
+    # config_cdm.fname_dx_timeline_met: config_cdm.fname_save_dx_met_timeline,
+    # config_cdm.fname_dx_timeline_ln: config_cdm.fname_save_dx_ln_timeline,
     config_cdm.fname_timeline_surg: config_cdm.fname_save_surg_timeline,
     config_cdm.fname_timeline_rt: config_cdm.fname_save_rt_timeline,
     config_cdm.fname_timeline_meds: config_cdm.fname_save_meds_timeline,
     config_cdm.fname_path_gleason_cbio_timeline: config_cdm.fname_save_timeline_gleason,
     config_cdm.fname_path_pdl1_cbio_timeline: config_cdm.fname_save_timeline_pdl1,
-    config_cdm.fname_prior_meds_predictions_timeline: config_cdm.fname_save_timeline_prior_meds
+    config_cdm.fname_prior_meds_predictions_timeline: config_cdm.fname_save_timeline_prior_meds,
+    config_cdm.fname_tumor_sites_timeline_cbio: config_cdm.fname_save_timeline_tumor_sites
 }
 
 COLS_ORDER_GENERAL = [
@@ -97,7 +100,7 @@ COLS_ORDER_GENERAL = [
 
 ## IMPACT sequencing and surgical specimens
 FNAME_CBIO_SID = config_cdm.fname_cbio_sid
-FNAME_IMPACT_SUMMARY_SAMPLE = config_cdm.fname_impact_summary_sample
+FNAME_IMPACT_SUMMARY_SAMPLE = config_cdm.fname_path_summary
 FNAME_SAVE_TIMELINE_SEQ = config_cdm.fname_save_spec_timeline
 FNAME_SAVE_TIMELINE_SPEC = config_cdm.fname_save_spec_surg_timeline
 COL_ORDER_SEQ = [
@@ -118,56 +121,57 @@ COL_ORDER_SPEC = [
     'SAMPLE_ID', 
     'CANCER_TYPE', 
     'CANCER_TYPE_DETAILED', 
-    'SAMPLE_TYPE', 
-    'SURGICAL_METHOD'
+    'SAMPLE_TYPE'
 ]
 
-## CEA Labs
-FNAME_SAVE_CEA = config_cdm.fname_save_labs_cea
-FILE_CEA = 'labs/CA_Antigen_PSA_TSH__with_TESTNAMES_as_Select_LCI_CTLG_ITEM_GUID_LCI_SUBTEST_NAME_fr_202303151545.csv'
-COLS_ORDER_CEA = [
-    'PATIENT_ID', 
-    'START_DATE', 
-    'STOP_DATE', 
-    'EVENT_TYPE', 
-    'TEST', 
-    'RESULT'
-]
+# # 2023/10/18 Turned off CEA. Will turn back on at a later date. 
+# ## CEA Labs
+# FNAME_SAVE_CEA = config_cdm.fname_save_labs_cea
+# FILE_CEA = 'labs/CA_Antigen_PSA_TSH__with_TESTNAMES_as_Select_LCI_CTLG_ITEM_GUID_LCI_SUBTEST_NAME_fr_202303151545.csv'
+# COLS_ORDER_CEA = [
+#     'PATIENT_ID', 
+#     'START_DATE', 
+#     'STOP_DATE', 
+#     'EVENT_TYPE', 
+#     'TEST', 
+#     'RESULT'
+# ]
 
-## Cancer progression predictions
-FNAME_PROGRESSION = config_cdm.fname_radiology_progression_pred
-FNAME_RADIOLOGY = config_cdm.fname_radiology_full_parsed
-FNAME_SAVE_PROGRESSION_TIMELINE = config_cdm.fname_save_progression
+# # 2023/10/18 Turned off progression. Will turn back on at a later date. 
+# ## Cancer progression predictions
+# FNAME_PROGRESSION = config_cdm.fname_radiology_progression_pred
+# FNAME_RADIOLOGY = config_cdm.fname_radiology_full_parsed
+# FNAME_SAVE_PROGRESSION_TIMELINE = config_cdm.fname_save_progression
 
-COL_ORDER_PROGRESSION = [
-    'PATIENT_ID', 
-    'START_DATE',
-    'STOP_DATE',
-    'EVENT_TYPE',
-    'SUBTYPE',
-    'SOURCE',
-    'SOURCE_SPECIFIC',
-    'PROGRESSION',
-    'INFERRED_PROGRESSION_PROB',
-    'STYLE_COLOR'
-]
+# COL_ORDER_PROGRESSION = [
+#     'PATIENT_ID', 
+#     'START_DATE',
+#     'STOP_DATE',
+#     'EVENT_TYPE',
+#     'SUBTYPE',
+#     'SOURCE',
+#     'SOURCE_SPECIFIC',
+#     'PROGRESSION',
+#     'INFERRED_PROGRESSION_PROB',
+#     'STYLE_COLOR'
+# ]
 
-## Disease status
-COL_ORDER_DISEASE_STATUS = [
-    'PATIENT_ID', 
-    'START_DATE', 
-    'STOP_DATE', 
-    'EVENT_TYPE', 
-    'SUBTYPE', 
-    'SOURCE', 
-    'SOURCE_SPECIFIC', 
-    'DISEASE_STATUS_PREDICTED', 
-    'DISEASE_STATUS_KNOWN', 
-    'STYLE_COLOR'
-]
+# ## Disease status
+# COL_ORDER_DISEASE_STATUS = [
+#     'PATIENT_ID', 
+#     'START_DATE', 
+#     'STOP_DATE', 
+#     'EVENT_TYPE', 
+#     'SUBTYPE', 
+#     'SOURCE', 
+#     'SOURCE_SPECIFIC', 
+#     'DISEASE_STATUS_PREDICTED', 
+#     'DISEASE_STATUS_KNOWN', 
+#     'STYLE_COLOR'
+# ]
 
-FNAME_DEMO = config_cdm.fname_demo, 
-FNAME_IDS = config_cdm.fname_id_map,
-FNAME_RESULTS_DISEASE_STATUS = '/mind_data/watersm/Projects/cdm_breast_dmt/data/initial_first_met_test_predictions_Clinical_Longform_Breast_DMT_met_recurrence_ft_9-12-2022_epoch_9.csv',
-FNAME_RESULTS_STATS = '/mind_data/watersm/Projects/cdm_breast_dmt/data/percent_met_mrns_stats.csv'
-FNAME_SAVE_TIMELINE_DATAHUB = config_cdm.fname_save_disease_status_timeline
+# FNAME_DEMO = config_cdm.fname_demo, 
+# FNAME_IDS = config_cdm.fname_id_map,
+# FNAME_RESULTS_DISEASE_STATUS = '/mind_data/watersm/Projects/cdm_breast_dmt/data/initial_first_met_test_predictions_Clinical_Longform_Breast_DMT_met_recurrence_ft_9-12-2022_epoch_9.csv',
+# FNAME_RESULTS_STATS = '/mind_data/watersm/Projects/cdm_breast_dmt/data/percent_met_mrns_stats.csv'
+# FNAME_SAVE_TIMELINE_DATAHUB = config_cdm.fname_save_disease_status_timeline
