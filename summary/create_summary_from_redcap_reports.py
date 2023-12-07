@@ -97,8 +97,8 @@ class RedcapToCbioportalFormat(object):
         list_order_header = ['label', 'comment', 'data_type', 'visible', 'heading', 'is_date', 'fill_value']
         dict_redcap_header = {
             'field_label': 'label', 
-            'field_note': 'comment', 
             'data_type': 'data_type',
+            'comment': 'comment',
             'field_name': 'heading',
             'is_date': 'is_date',
             'fill_value': 'fill_value'
@@ -108,6 +108,7 @@ class RedcapToCbioportalFormat(object):
         # For checkboxes, create new rows with actual names
         df_tmp = df.copy()
         df_checkbox = df_tmp[df_tmp['field_type'] == 'checkbox']
+        print(df_checkbox.head())
         for i in df_checkbox.index:
             row_checkbox = df_checkbox.loc[i].copy()
             checkbox_cat = row_checkbox['select_choices_or_calculations']
@@ -138,7 +139,7 @@ class RedcapToCbioportalFormat(object):
 
         # Create header dataframe
         df_header = df_header1[list_redcap_map].rename(columns=dict_redcap_header)
-        df_header = df_header.assign(visible=1)
+        df_header = df_header.assign(visible='1')
         df_header = df_header[list_order_header]
 
         # Fill comment section with header if section is NA
@@ -170,6 +171,9 @@ class RedcapToCbioportalFormat(object):
         # Load the CDM codebook
         df_metadata, df_tables, df_project = self.return_codebook()
         
+        ## Merge metadata info into "comment" column. Will include description, reason for missing, source
+        df_metadata['comment'] = ' ---DESCRIPTION: ' + df_metadata['field_note'] + ' ---MISSING DATA: ' + df_metadata['reasons_for_missing_data'] + ' ---SOURCE:' + df_metadata['souce_from_idb_or_cdm']
+        
         # Get form names that contain data elements to host on cbioportal
         logic_for_cbio = df_metadata['for_cbioportal'] == 'x'
         forms = df_metadata.loc[logic_for_cbio, 'form_name'].unique()
@@ -194,11 +198,13 @@ class RedcapToCbioportalFormat(object):
         list_fname_minio = active_tables['cdm_source_table']
         
         print('Loading %s' % fname_template)
+        obj = self._obj_minio.load_obj(path_object=fname_template)
         df_template = pd.read_csv(
-            fname_template, 
+            obj, 
             header=4, 
             low_memory=False,
-            sep='\t'
+            sep='\t',
+            dtype=str
         )
         print('TEMPLATE------------------------------------------------')
         print(df_template)
@@ -208,7 +214,13 @@ class RedcapToCbioportalFormat(object):
         for i,fname in enumerate(list_fname_minio):
             print('Loading %s' % fname)
             obj = self._obj_minio.load_obj(path_object=fname)
-            df_ = pd.read_csv(obj, header=0, low_memory=False, sep='\t')
+            df_ = pd.read_csv(
+                obj, 
+                header=0, 
+                low_memory=False, 
+                sep='\t',
+                dtype=str
+            )
             form = df_tables.loc[list_fname_minio.index[i], 'form_name']
             # print('-----------------------')
             print(fname)
@@ -256,6 +268,7 @@ class RedcapToCbioportalFormat(object):
 
             # Create header
             cols_header = list(df_select.columns)
+            
             df_header = self._format_data_dictionary(
                 df=df_metadata[filt_table_use]
             )
@@ -275,7 +288,7 @@ class RedcapToCbioportalFormat(object):
             df_select = df_select[cols_summary_order]
             
             print('df_select--------------------')
-            print(df_select[df_select['PATIENT_ID'].isin(['P-0000397', 'P-0000789', 'P-0000112', 'P-0000358', 'P-0002845'])])
+            print(df_select.head())
             print(df_select.shape)
             
             # Merge with template cases and reformat according to heading
@@ -289,22 +302,22 @@ class RedcapToCbioportalFormat(object):
                 fill_value = df_header.loc[df_header['heading'] == current_col, 'fill_value'].iloc[0]
                 print('fill_value--------------------')
                 print(fill_value)
-                if fill_value == 'NA':
-                    fill_value = np.NaN
+                # if fill_value == 'NA':
+                #     fill_value = np.NaN
                 data_type = df_header.loc[df_header['heading'] == current_col, 'data_type'].iloc[0]
                 print('data_type--------------------')
                 print(data_type)
                 
-                if data_type == 'INT':
-                    df_select_f = convert_to_int(df=df_select_f, list_cols=[current_col])
-                    fill_value = int(fill_value)
+                # if data_type == 'INT':
+                #     df_select_f = convert_to_int(df=df_select_f, list_cols=[current_col])
+                #     fill_value = int(fill_value)
                 
                 # TODO (Chris): Do something with the floats, if needed. Otherwise FLOAT shouldn't be a datatype.
                 
                 df_select_f[current_col] = df_select_f[current_col].fillna(fill_value)
                 
             print('df_select_f--------------------')
-            print(df_select_f[df_select_f['PATIENT_ID'].isin(['P-0000397', 'P-0000789', 'P-0000112', 'P-0000358', 'P-0002845'])])
+            print(df_select_f.head())
             print(df_select_f.shape)
                 
             
@@ -327,7 +340,7 @@ class RedcapToCbioportalFormat(object):
             ## Save data and header files --------------------------------------------------
             ### Save cbioportal formatted patient level dx data and header files 
             print('Saving %s' % fname_save_data)
-            print(df_select_f[df_select_f['PATIENT_ID'].isin(['P-0000397', 'P-0000789', 'P-0000112', 'P-0000358', 'P-0002845'])])
+            print(df_select_f.head())
             self._obj_minio.save_obj(
                 df=df_select_f, 
                 path_object=fname_save_data, 

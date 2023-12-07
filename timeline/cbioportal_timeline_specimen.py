@@ -129,7 +129,13 @@ class cBioPortalSpecimenInfo(object):
         fname = self._fname_sid
         print('Loading %s' % fname)
         obj = self._obj_minio.load_obj(path_object=fname)
-        df_samples_current = pd.read_csv(obj, header=0, low_memory=False, sep='\t', usecols=usecols)
+        df_samples_current = pd.read_csv(
+            obj, 
+            header=0, 
+            low_memory=False, 
+            sep='\t', 
+            # usecols=usecols
+        )
         df_samples_current = df_samples_current.rename(columns=cols_replace)
         
         self._df_sid = df_samples_current
@@ -150,7 +156,6 @@ class cBioPortalSpecimenInfo(object):
 
         # Rename columns
         df_samples_seq_f = df_samples_seq_f.rename(columns={'DMP_ID': 'PATIENT_ID'}) 
-        df_samples_seq_f = df_samples_seq_f[COL_ORDER_SEQ]
 
         # Drop samples without sequencing date
         df_samples_seq_f = df_samples_seq_f[df_samples_seq_f['START_DATE'].notnull()]
@@ -158,6 +163,7 @@ class cBioPortalSpecimenInfo(object):
         
         # Drop any duplicates
         df_samples_seq_f = df_samples_seq_f.groupby(['SAMPLE_ID']).first().reset_index()
+        df_samples_seq_f = df_samples_seq_f[COL_ORDER_SEQ]
         
         return df_samples_seq_f
     
@@ -177,7 +183,6 @@ class cBioPortalSpecimenInfo(object):
 
         # Rename columns
         df_samples_surg_f = df_samples_surg_f.rename(columns={'DMP_ID': 'PATIENT_ID'}) 
-        df_samples_surg_f = df_samples_surg_f[COL_ORDER_SPEC]
 
         # Drop samples without sequencing date        
         df_samples_surg_f = df_samples_surg_f[df_samples_surg_f['START_DATE'].notnull()]
@@ -191,6 +196,7 @@ class cBioPortalSpecimenInfo(object):
         
         # Drop any duplicates
         df_samples_surg_f = df_samples_surg_f.groupby(['SAMPLE_ID']).first().reset_index()
+        df_samples_surg_f = df_samples_surg_f[COL_ORDER_SPEC]
         
         return df_samples_surg_f
 

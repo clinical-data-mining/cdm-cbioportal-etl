@@ -93,23 +93,24 @@ class cBioPortalSummaryMergeTool(object):
         
     def _summary_loader(self, fname):
         print('Loading %s' % fname)
-        # obj = self._obj_minio.load_obj(path_object=fname)
-        df_data = pd.read_csv(fname, header=4, sep='\t', dtype=str)
-        df_header = pd.read_csv(fname, header=0, sep='\t', nrows=4, dtype=str)
+        obj = self._obj_minio.load_obj(path_object=fname)
+        df_data = pd.read_csv(obj, header=4, sep='\t', dtype=str)
+        obj = self._obj_minio.load_obj(path_object=fname)
+        df_header = pd.read_csv(obj, header=0, sep='\t', nrows=4)
 
         return df_header, df_data
 
     def add_annotation_loader(self, fname_header, fname_data):
         print('Loading %s' % fname_data)
         obj = self._obj_minio.load_obj(path_object=fname_data)
-        df_data = pd.read_csv(obj, header=0, sep=',')
+        df_data = pd.read_csv(obj, header=0, sep=',', dtype=str)
         print(df_data.sample(1))
         print('Loading %s' % fname_header)        
         obj = self._obj_minio.load_obj(path_object=fname_header)
-        df_header = pd.read_csv(obj, header=0, sep=',')
+        df_header = pd.read_csv(obj, header=0, sep=',', dtype=str)
         print(df_header.sample(1))
         
-        df_header = convert_to_int(df=df_header, list_cols=['visible'])
+        # df_header = convert_to_int(df=df_header, list_cols=['visible'])
 
         # Transpose header df
         cols = ['label', 'comment', 'data_type', 'visible', 'heading']

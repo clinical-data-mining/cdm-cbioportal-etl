@@ -1,5 +1,5 @@
-GITHUB_REPO_PATH=/mind_data/cdm_repos/impact/mskimpact_cdm_cdsi/
-PROGRAM_NAME=CDM_GIT_PUSH_TEST
+GITHUB_REPO_PATH=/mind_data/cdm_repos/datahubs/cdm-automation
+PROGRAM_NAME=CDM_GIT_PUSH_COPY_CDSI
 PUSH_TO_REPO=yes
 # GITHUB_REPO_PATH: github repository path
 cd "$GITHUB_REPO_PATH"
@@ -21,3 +21,4 @@ if [ "$PUSH_TO_REPO" = "yes" ]; then
     fi
 fi
 exit $return_value
+

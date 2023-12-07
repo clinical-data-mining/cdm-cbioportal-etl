@@ -24,7 +24,7 @@ from utils import mrn_zero_pad, print_df_without_index, set_debug_console, conve
 
 FNAME_MINIO_ENV = config_rrpt.minio_env
 FNAME_PATHOLOGY = config_rrpt.fname_path_clean
-COLS_PATHOLOGY = ['MRN', 'DTE_PATH_PROCEDURE', 'DMP_ID', 'SAMPLE_ID']
+COLS_PATHOLOGY = ['MRN', 'DTE_PATH_PROCEDURE', 'SAMPLE_ID']
 
 
 
@@ -41,18 +41,23 @@ def get_anchor_dates():
         df_path['DTE_PATH_PROCEDURE'],
         errors='coerce'
     )
+    df_path_filt = df_path[df_path['SAMPLE_ID'].notnull() & df_path['SAMPLE_ID'].str.contains('T')]
+    df_path_filt['DMP_ID'] = df_path_filt['SAMPLE_ID'].apply(lambda x: x[:9])
 
-    df_path = df_path.sort_values(by=['MRN', 'DTE_PATH_PROCEDURE'])
-    df_path_g = df_path.groupby(['MRN', 'DMP_ID'])['DTE_PATH_PROCEDURE'].first().reset_index()
+    df_path_filt = df_path_filt.sort_values(by=['MRN', 'DTE_PATH_PROCEDURE'])
+    df_path_g = df_path_filt.groupby(['MRN', 'DMP_ID'])['DTE_PATH_PROCEDURE'].first().reset_index()
     
     df_path_g = mrn_zero_pad(df=df_path_g, col_mrn='MRN')
     
     # Remove mismapped cases
-    filt_p0 = df_path_g['DMP_ID'] != 'P-0000000'
-    df_path_g = df_path_g[filt_p0]
     filt_mismapped = df_path_g['MRN'].duplicated(keep=False) | df_path_g['DMP_ID'].duplicated(keep=False)
-    df_path_g = df_path_g[~filt_mismapped]
+    df_path_g_f = df_path_g[~filt_mismapped]
+    
+    df_path_g_error = df_path_g[filt_mismapped]
+    print('Error in mapping summary:')
+    print(df_path_g_error)
+    
     
     print('Done!')
     
-    return df_path_g
+    return df_path_g_f

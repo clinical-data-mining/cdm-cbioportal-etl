@@ -1,4 +1,4 @@
-GITHUB_REPO_PATH=/mind_data/cdm_repos/msk-mind-datahub3/
+GITHUB_REPO_PATH=/mind_data/cdm_repos/msk-mind-datahub7/
 PUSH_TO_REPO=no
 # If we aren't pushing to the remote repo, we want to
 # examine the data locally and git clean manually.
