@@ -1,4 +1,4 @@
-GITHUB_REPO_PATH=/mind_data/cdm_repos/datahubs/cdm-automation
+GITHUB_REPO_PATH=/mind_data/cdm_repos/datahubs/cdm
 cd "$GITHUB_REPO_PATH"
 current_github_branch=$(git rev-parse --abbrev-ref HEAD)
 
