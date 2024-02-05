@@ -101,6 +101,47 @@ DICT_FILES_TIMELINE = {
     config_cbio_etl.fname_timeline_fu: config_cbio_etl.fname_save_timeline_follow_up
 }
 
+
+path_datahub_testing = '/mind_data/cdm_repos/datahubs/impact_beta_testing/mskimpact_cdm_cdsi/'
+timeline_surg = 'data_timeline_surgery.txt'
+timeline_rt = 'data_timeline_radiation.txt'
+timeline_meds = 'data_timeline_treatment.txt'
+timeline_disease_status = 'data_timeline_disease_status.txt'
+timeline_dx_primary = 'data_timeline_diagnosis.txt'
+timeline_spec = 'data_timeline_specimen.txt'
+timeline_spec_surg = 'data_timeline_specimen_surgery.txt'
+timeline_gleason = 'data_timeline_gleason.txt'
+timeline_pdl1 = 'data_timeline_pdl1.txt'
+timeline_prior_meds = 'data_timeline_prior_meds.txt'
+timeline_tumor_sites = 'data_timeline_tumor_sites.txt'
+timeline_follow_up: str = 'data_timeline_timeline_follow_up.txt'
+fname_save_surg_timeline: str = os.path.join(path_datahub_testing, timeline_surg)
+fname_save_rt_timeline: str = os.path.join(path_datahub_testing, timeline_rt)
+fname_save_meds_timeline: str = os.path.join(path_datahub_testing, timeline_meds)
+fname_save_dx_prim_timeline: str = os.path.join(path_datahub_testing, timeline_dx_primary)
+fname_save_spec_timeline: str = os.path.join(path_datahub_testing, timeline_spec)
+fname_save_spec_surg_timeline: str = os.path.join(path_datahub_testing, timeline_spec_surg)
+fname_save_timeline_gleason: str = os.path.join(path_datahub_testing, timeline_gleason)
+fname_save_timeline_pdl1: str = os.path.join(path_datahub_testing, timeline_pdl1)
+fname_save_timeline_prior_meds: str = os.path.join(path_datahub_testing, timeline_prior_meds)
+fname_save_timeline_tumor_sites: str = os.path.join(path_datahub_testing, timeline_tumor_sites)
+fname_save_timeline_follow_up: str = os.path.join(path_datahub_testing, timeline_follow_up)
+
+DICT_FILES_TIMELINE_TESTING = {
+    config_cdm.fname_path_sequencing_cbio_timeline: fname_save_spec_timeline,
+    config_cdm.fname_path_specimen_surgery_cbio_timeline: fname_save_spec_surg_timeline,    
+    config_cdm.fname_dx_timeline_prim: fname_save_dx_prim_timeline,
+    config_cdm.fname_timeline_surg: fname_save_surg_timeline,
+    config_cdm.fname_timeline_rt: fname_save_rt_timeline,
+    config_cdm.fname_timeline_meds: fname_save_meds_timeline,
+    config_cdm.fname_path_gleason_cbio_timeline: fname_save_timeline_gleason,
+    config_cdm.fname_path_pdl1_cbio_timeline: fname_save_timeline_pdl1,
+    config_cdm.fname_prior_meds_predictions_timeline: fname_save_timeline_prior_meds,
+    config_cdm.fname_tumor_sites_timeline_cbio: fname_save_timeline_tumor_sites,
+    config_cbio_etl.fname_timeline_fu: fname_save_timeline_follow_up
+}
+
+
 COLS_ORDER_GENERAL = [
     'PATIENT_ID', 
     'START_DATE', 
@@ -111,7 +152,7 @@ COLS_ORDER_GENERAL = [
 # Constants for custom built timeline file generators
 
 ## IMPACT sequencing and surgical specimens
-FNAME_CBIO_SID = config_cdm.fname_cbio_samples_clean
+FNAME_CBIO_SID = config_cdm.fname_cbio_sid
 FNAME_DEMO = config_cdm.fname_demo
 FNAME_OS = 'demographics/overall_survival_cbioportal.tsv'
 # FNAME_IMPACT_SUMMARY_SAMPLE = config_cdm.fname_path_summary

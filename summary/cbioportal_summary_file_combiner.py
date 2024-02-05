@@ -23,12 +23,21 @@ from constants import (
 
 
 class cbioportalSummaryFileCombiner(object):
-    def __init__(self, fname_minio_env, fname_manifest, fname_current_summary, patient_or_sample):
+    def __init__(
+        self, 
+        *,
+        fname_minio_env, 
+        fname_manifest, 
+        fname_current_summary, 
+        patient_or_sample,
+        production_or_test
+    ):
         # Input filenames
         self._fname_minio_env = ENV_MINIO
         self._fname_current_summary = fname_current_summary
         self._fname_manifest = fname_manifest
         self._patient_or_sample = patient_or_sample
+        self._production_or_test = production_or_test
         
         self._var_summary_fname = COL_SUMMARY_FNAME_SAVE
         self._var_header_fname = COL_SUMMARY_HEADER_FNAME_SAVE
@@ -50,7 +59,8 @@ class cbioportalSummaryFileCombiner(object):
     def _load_current_summary(self):
         obj_patient_merge = cBioPortalSummaryMergeTool(
             fname_minio_env=self._fname_minio_env,
-            fname_current_summary=self._fname_current_summary
+            fname_current_summary=self._fname_current_summary,
+            production_or_test=self._production_or_test
         )
         self._obj_patient_merge = obj_patient_merge
         

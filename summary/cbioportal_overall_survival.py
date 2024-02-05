@@ -20,8 +20,6 @@ from constants import (
 from get_anchor_dates import get_anchor_dates
 
 
-FNAME_DEMO = config_cdm.fname_demo
-FNAME_IDS = config_cdm.fname_cbio_sid
 COLS_OS = ['DMP_ID', 'OS_MONTHS', 'OS_STATUS']
 
 
@@ -41,8 +39,19 @@ def _load_data(
 
     # IMPACT ids
     print('Loading %s' % fname_sid)
-    obj = obj_minio.load_obj(path_object=fname_sid)
-    df_ids = pd.read_csv(obj, sep='\t', low_memory=False)
+    # obj = obj_minio.load_obj(path_object=fname_sid)
+    # df_ids = pd.read_csv(fname_sid, sep='\t', low_memory=False)
+    
+    usecols=['SAMPLE_ID', 'PATIENT_ID']
+    dict_patient = {'PATIENT_ID':'DMP_ID'}
+    df_ids = pd.read_csv(
+        fname_sid, 
+        sep='\t', 
+        header=4, 
+        low_memory=False, 
+        usecols=usecols
+    )
+    df_ids = df_ids.rename(columns=dict_patient)
 
     print('Data loaded')
     

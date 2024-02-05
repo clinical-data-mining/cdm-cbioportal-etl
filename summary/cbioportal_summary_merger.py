@@ -13,13 +13,32 @@ sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '.
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'minio_api/')))
 from minio_api import MinioAPI
 from utils import convert_to_int
+COLS_PRODUCTION = ['label', 'comment', 'data_type', 'visible', 'heading']
+COLS_TESTING = ['label', 'comment', 'data_type', 'patient_or_sample', 'visible', 'heading']
 
 
 class cBioPortalSummaryMergeTool(object):
-    def __init__(self, fname_minio_env, fname_current_summary):
+    def __init__(
+        self, 
+        fname_minio_env, 
+        fname_current_summary, 
+        production_or_test='production'
+    ):
         # Input filenames
         self._fname_minio_env = fname_minio_env
         self._fname_current_summary = fname_current_summary
+        self._production_or_test = production_or_test
+        
+        # Transpose header df
+        if self._production_or_test == 'production':
+            self._cols_header = COLS_PRODUCTION
+            self._row_label = 3
+        elif self._production_or_test == 'test':
+            self._cols_header = COLS_TESTING
+            self._row_label = 4
+        else:
+            cols = COLS_PRODUCTION
+            self._row_label = 3
         
         # DataFrame variables
         self._df_summary_orig = None
@@ -78,7 +97,7 @@ class cBioPortalSummaryMergeTool(object):
             )
             
             # Clean header so that all label values are upper case
-            df_header_merged.loc[3, :] = df_header_merged.loc[3, :].str.upper()
+            df_header_merged.loc[self._row_label, :] = df_header_merged.loc[self._row_label, :].str.upper()
             df_data_merged.columns = df_data_merged.columns.str.upper() 
             
             # Save as member variable
@@ -93,14 +112,23 @@ class cBioPortalSummaryMergeTool(object):
         
     def _summary_loader(self, fname):
         print('Loading %s' % fname)
+        if self._production_or_test == 'test':
+            nrows = 5
+        elif self._production_or_test == 'production':
+            nrows = 4
+            
         obj = self._obj_minio.load_obj(path_object=fname)
-        df_data = pd.read_csv(obj, header=4, sep='\t', dtype=str)
+        df_data = pd.read_csv(obj, header=nrows, sep='\t', dtype=str)
         obj = self._obj_minio.load_obj(path_object=fname)
-        df_header = pd.read_csv(obj, header=0, sep='\t', nrows=4)
+        df_header = pd.read_csv(obj, header=0, sep='\t', nrows=nrows)
 
         return df_header, df_data
 
-    def add_annotation_loader(self, fname_header, fname_data):
+    def add_annotation_loader(
+        self, 
+        fname_header, 
+        fname_data
+    ):
         print('Loading %s' % fname_data)
         obj = self._obj_minio.load_obj(path_object=fname_data)
         df_data = pd.read_csv(obj, header=0, sep=',', dtype=str)
@@ -109,12 +137,8 @@ class cBioPortalSummaryMergeTool(object):
         obj = self._obj_minio.load_obj(path_object=fname_header)
         df_header = pd.read_csv(obj, header=0, sep=',', dtype=str)
         print(df_header.sample(1))
-        
-        # df_header = convert_to_int(df=df_header, list_cols=['visible'])
-
-        # Transpose header df
-        cols = ['label', 'comment', 'data_type', 'visible', 'heading']
-        df_header = df_header[cols]
+            
+        df_header = df_header[self._cols_header]
         df_header_f = df_header.T.reset_index(drop=True)
 
         # Convert first row to column names
@@ -127,8 +151,8 @@ class cBioPortalSummaryMergeTool(object):
         header_new = header_new.drop(columns=list_keys_new)
         
         # Check if current summary has same columns and drop common from current summary (This will replace columns)
-        cols_current_raw = list(header_main.loc[3])
-        cols_replace = list(set.intersection(set(cols_current_raw), set(list(header_new.loc[3]))))
+        cols_current_raw = list(header_main.loc[self._row_label])
+        cols_replace = list(set.intersection(set(cols_current_raw), set(list(header_new.loc[self._row_label]))))
 
         cols_drop_index = [x in cols_replace for x in cols_current_raw]
         cols_drop = header_main.columns[cols_drop_index]
@@ -142,9 +166,9 @@ class cBioPortalSummaryMergeTool(object):
         print('MERGE NEW WITH MAIN----------------')
         print(df_header_new.head())
         
-        key_new = df_header_new[col_key][3]
+        key_new = df_header_new[col_key][self._row_label]
         print(key_new)
-        key_current = df_header_main[col_key][3]
+        key_current = df_header_main[col_key][self._row_label]
         
         # Drop columns from old df and replace if exists
         cols_drop = list(set.intersection(set(df_main.columns), set(list(df_new.columns))))
@@ -175,31 +199,13 @@ class cBioPortalSummaryMergeTool(object):
 
     def _summary_header_data_combiner(self):
         df_header, df_data = self.return_output()
-        col_name_data = list(df_header.loc[3, :])
-        col_name_new = list(df_header.loc[3, :].index)
+        col_name_data = list(df_header.loc[self._row_label, :])
+        col_name_new = list(df_header.loc[self._row_label, :].index)
         dict_col_name = dict(zip(col_name_data, col_name_new))
 
         df_summary_final = pd.concat([df_header, df_data.rename(columns=dict_col_name)], axis=0)
         
         self._df_summary_final = df_summary_final
-        
-    def _keep_columns(self, list_cols_keep):
-        # This function will keep columns from the *_orig dataframes and recombine frame and header.
-        df_header, df_summary = self.return_orig()
-        
-        cols_keep_logic = df_header.loc[3, :].isin(list_cols_keep)
-        cols_keep_header = list(df_header.columns[cols_keep_logic])
-        
-        # Subset sample data
-        df_subset = df_sample[cols_keep]
-        df_header_subset = df_header[cols_keep_header]
-        
-        # Set as output
-        self._df_header_output = df_header_subset
-        self._df_summary_output = df_subset
-        
-        # Combine header and data
-        obj_sample_merge._summary_header_data_combiner()
         
     def reset_origin(self):
         # This function will set the output header and frame to be the "original" dataset.
@@ -213,11 +219,6 @@ class cBioPortalSummaryMergeTool(object):
             self._df_header_addition = None
             self._df_header_output = None
             self._df_summary_final = None
-            
-    def export_header_file(self):
-        # TODO: Create csv of the header from from the original summary file
-        
-        return None
 
     def save_data(self, fname_save):
         # Check if summary file is available

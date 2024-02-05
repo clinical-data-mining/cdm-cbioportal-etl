@@ -1,5 +1,6 @@
 import os
 import sys
+import argparse
 
 import pandas as pd
 
@@ -29,17 +30,21 @@ from get_anchor_dates import get_anchor_dates
 from constants import (
     COLS_ORDER_GENERAL,
     DICT_FILES_TIMELINE,
+    DICT_FILES_TIMELINE_TESTING,
     ENV_MINIO
 ) 
 
 
-def cbioportal_deid_timeline_files():
+def cbioportal_deid_timeline_files(
+    fname_minio_env,
+    dict_files_timeline
+):
     df_path_g = get_anchor_dates()
-    obj_minio = MinioAPI(fname_minio_env=ENV_MINIO)
+    obj_minio = MinioAPI(fname_minio_env=fname_minio_env)
     
-    for fname in DICT_FILES_TIMELINE:
+    for fname in dict_files_timeline:
         print(fname)
-        file_deid = DICT_FILES_TIMELINE[fname]
+        file_deid = dict_files_timeline[fname]
         print(file_deid)
         obj = obj_minio.load_obj(path_object=fname)
         df_ = pd.read_csv(obj, header=0, low_memory=False, sep='\t')
@@ -84,8 +89,37 @@ def cbioportal_deid_timeline_files():
     
 
 def main():
-
-    _ = cbioportal_deid_timeline_files()
+    parser = argparse.ArgumentParser(
+        description="Script for deidentifying timeline files for cbioportal."
+    )
+    parser.add_argument(
+        "--fname_minio_env",
+        action="store",
+        dest="fname_minio_env",
+        default=ENV_MINIO,
+        help="Minio environment file.",
+    )
+    parser.add_argument(
+        "--production_or_test",
+        action="store",
+        dest="production_or_test",
+        default="production",
+        help="Logic for using the timelines for testing or production.",
+    )
+    
+    args = parser.parse_args()
+    if args.production_or_test == 'production':
+        dict_files_timeline = DICT_FILES_TIMELINE
+    elif args.production_or_test == 'test':
+        dict_files_timeline = DICT_FILES_TIMELINE_TESTING
+    else:
+        dict_files_timeline = DICT_FILES_TIMELINE_TESTING
+    
+    
+    _ = cbioportal_deid_timeline_files(
+        fname_minio_env=args.fname_minio_env,
+        dict_files_timeline=dict_files_timeline
+    )
 
 
 if __name__ == '__main__':

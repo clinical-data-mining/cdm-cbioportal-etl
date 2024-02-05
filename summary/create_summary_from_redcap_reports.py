@@ -38,10 +38,6 @@ from constants import (
     FNAME_MANIFEST_SAMPLE,
     FNAME_SUMMARY_TEMPLATE_P,
     FNAME_SUMMARY_TEMPLATE_S,
-    FNAME_SUMMARY_P,
-    FNAME_SUMMARY_S,
-    FNAME_SUMMARY_P_MINIO,
-    FNAME_SUMMARY_S_MINIO,
     PATH_MINIO_CBIO_SUMMARY_INTERMEDIATE,
     ENV_MINIO,
     COL_PID,
@@ -90,11 +86,40 @@ class RedcapToCbioportalFormat(object):
     def return_manifest(self):  # ----------------------------------------------------
         return self._df_manifest
         
-    def _format_data_dictionary(self, df): # -----------------------------------------------------------
+    def _format_data_dictionary(
+        self, 
+        df,
+        patient_or_sample,
+        production_or_test
+    ): # -----------------------------------------------------------
         # Reformat the data_types to cbioportal format
-
         ## Constants
-        list_order_header = ['label', 'comment', 'data_type', 'visible', 'heading', 'is_date', 'fill_value']
+        if production_or_test == 'test':
+            list_order_header = [
+                'label', 
+                'comment', 
+                'data_type', 
+                'patient_or_sample',
+                'visible', 
+                'heading', 
+                'is_date', 
+                'fill_value'
+            ]
+            if patient_or_sample == 'patient':
+                col_patient_or_sample = 'PATIENT'
+            else:
+                col_patient_or_sample = 'SAMPLE'
+        else:
+            list_order_header = [
+                'label', 
+                'comment', 
+                'data_type', 
+                'visible', 
+                'heading', 
+                'is_date', 
+                'fill_value'
+            ]
+            
         dict_redcap_header = {
             'field_label': 'label', 
             'data_type': 'data_type',
@@ -103,6 +128,8 @@ class RedcapToCbioportalFormat(object):
             'is_date': 'is_date',
             'fill_value': 'fill_value'
         }
+        
+            
         list_redcap_map = list(dict_redcap_header.keys())
 
         # For checkboxes, create new rows with actual names
@@ -139,17 +166,25 @@ class RedcapToCbioportalFormat(object):
 
         # Create header dataframe
         df_header = df_header1[list_redcap_map].rename(columns=dict_redcap_header)
+        if production_or_test == 'test':
+            df_header = df_header.assign(patient_or_sample=col_patient_or_sample)
+        
         df_header = df_header.assign(visible='1')
         df_header = df_header[list_order_header]
 
         # Fill comment section with header if section is NA
         df_header['comment'] = df_header['comment'].fillna(df_header['label'])
+        
+        print(df_header)
 
         return df_header
     
-    def create_summaries_and_headers(    # -----------------------------------------------------
+    def create_summaries_and_headers(
         self, 
-        patient_or_sample
+        patient_or_sample,
+        fname_manifest,
+        fname_template,
+        production_or_test='production'
     ):
         """
         This function creates cbioportal header and data files through the following steps:
@@ -162,6 +197,16 @@ class RedcapToCbioportalFormat(object):
         7) Create a manifest file that contains the file locations of header files 
         
         """
+        if production_or_test == 'production':
+            col_metadata_list = 'for_cbioportal'
+            header_len = 4
+        elif production_or_test == 'test':
+            col_metadata_list = 'for_test_portal'
+            header_len = 5
+        else:
+            col_metadata_list = 'for_test_portal'
+            header_len = 5
+        
         # Initialize the manifest file
         self.summary_manifest_init()
         
@@ -175,7 +220,7 @@ class RedcapToCbioportalFormat(object):
         df_metadata['comment'] = ' ---DESCRIPTION: ' + df_metadata['field_note'] + ' ---MISSING DATA: ' + df_metadata['reasons_for_missing_data'] + ' ---SOURCE:' + df_metadata['souce_from_idb_or_cdm']
         
         # Get form names that contain data elements to host on cbioportal
-        logic_for_cbio = df_metadata['for_cbioportal'] == 'x'
+        logic_for_cbio = df_metadata[col_metadata_list] == 'x'
         forms = df_metadata.loc[logic_for_cbio, 'form_name'].unique()
 
         # From form names, get corresponding tables and their filenames
@@ -183,14 +228,14 @@ class RedcapToCbioportalFormat(object):
         
         if patient_or_sample == 'sample':
             id_label = '#Sample Identifier'
-            fname_manifest = FNAME_MANIFEST_SAMPLE
-            fname_template = FNAME_SUMMARY_TEMPLATE_S
+            # fname_manifest = FNAME_MANIFEST_SAMPLE
+            # fname_template = FNAME_SUMMARY_TEMPLATE_S
             f2 = df_tables['cbio_summary_id_sample'].notnull()
             col_id_change = 'SAMPLE_ID'
         elif patient_or_sample == 'patient':
             id_label = '#Patient Identifier'
-            fname_manifest = FNAME_MANIFEST_PATIENT
-            fname_template = FNAME_SUMMARY_TEMPLATE_P
+            # fname_manifest = FNAME_MANIFEST_PATIENT
+            # fname_template = FNAME_SUMMARY_TEMPLATE_P
             f2 = df_tables['cbio_summary_id_sample'].isnull()
             col_id_change = 'PATIENT_ID'
             
@@ -201,7 +246,7 @@ class RedcapToCbioportalFormat(object):
         obj = self._obj_minio.load_obj(path_object=fname_template)
         df_template = pd.read_csv(
             obj, 
-            header=4, 
+            header=header_len, 
             low_memory=False,
             sep='\t',
             dtype=str
@@ -209,6 +254,7 @@ class RedcapToCbioportalFormat(object):
         print('TEMPLATE------------------------------------------------')
         print(df_template)
         print(df_template.shape)
+        print(list_fname_minio)
 
         # Cycle through the list of CDM dataset to be loaded
         for i,fname in enumerate(list_fname_minio):
@@ -241,7 +287,7 @@ class RedcapToCbioportalFormat(object):
             cols_filter = key + list(cols_to_use)    
 
             # print(key)
-            # print(cols_filter)
+            print(cols_filter)
             # print(cols_dates)
 
             # Merge with anchor dates and de-id
@@ -270,7 +316,9 @@ class RedcapToCbioportalFormat(object):
             cols_header = list(df_select.columns)
             
             df_header = self._format_data_dictionary(
-                df=df_metadata[filt_table_use]
+                df=df_metadata[filt_table_use],
+                patient_or_sample=patient_or_sample,
+                production_or_test=production_or_test
             )
             length_header = df_header.shape[0]
             df_header.loc[length_header, 'label'] = id_label
@@ -287,9 +335,17 @@ class RedcapToCbioportalFormat(object):
             cols_summary_order = list(df_header['heading'])
             df_select = df_select[cols_summary_order]
             
+            print('df_header--------------------')
+            print(df_header.head())
+            print(df_header.shape)
+            
             print('df_select--------------------')
             print(df_select.head())
             print(df_select.shape)
+            
+            print('df_template--------------------')
+            print(df_template.head())
+            print(df_template.shape)
             
             # Merge with template cases and reformat according to heading
             df_select_f = df_template.merge(
