@@ -1,23 +1,13 @@
-GITHUB_REPO_PATH=/mind_data/cdm_repos/impact/mskimpact_cdm_cdsi/
-PROGRAM_NAME=CDM_GIT_PUSH_TEST
-PUSH_TO_REPO=yes
+#!/bin/bash
+set -eE -v
+trap 'echo "Last command exited with status code of $?, exiting..."' ERR
+
+test -n "$GITHUB_REPO_PATH"
+
 # GITHUB_REPO_PATH: github repository path
 cd "$GITHUB_REPO_PATH"
 
-git status
-echo "git add *"
-git add * ; return_value=$?
-if [ $return_value -gt 0 ] ; then
-    echo "Return value of $return_value for command: \"git add *\""
-    exit $return_value
-fi
-git commit -m "Latest GDC Dataset: $PROGRAM_NAME"
-if [ "$PUSH_TO_REPO" = "yes" ]; then
-    echo "git push origin"
-    git push origin ; return_value=$?
-    if [ $return_value -gt 0 ] ; then
-        echo "Return value of $return_value for command: \"git push origin\""
-        exit $return_value
-    fi
-fi
-exit $return_value
+git add *
+# `git commit` will exit 1 if there is nothing to commit, ignore the error in that case
+git commit -m "Latest MSK-CHORD Dataset" || true
+git push origin

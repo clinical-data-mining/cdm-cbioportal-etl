@@ -1,29 +1,17 @@
-GITHUB_REPO_PATH=/mind_data/cdm_repos/impact/mskimpact_cdm_cdsi/
+#!/bin/bash
+set -eE -v
+trap 'echo "Last command exited with status code of $?, exiting..."' ERR
+
+test -n "$GITHUB_REPO_PATH"
+
+# GITHUB_REPO_PATH: github repository path
 cd "$GITHUB_REPO_PATH"
 current_github_branch=$(git rev-parse --abbrev-ref HEAD)
 
-echo "git fetch"
-git fetch ; return_value=$?
-if [ $return_value -gt 0 ] ; then
-    echo "Return value of $return_value for command: \"git fetch\""
-    exit $return_value
-fi
-echo "git reset --hard origin/$current_github_branch"
-git reset --hard origin/$current_github_branch ; return_value=$?
-if [ $return_value -gt 0 ] ; then
-    echo "Return value of $return_value for command: \"git fetch\""
-    exit $return_value
-fi
-echo "git lfs pull"
-git lfs pull ; return_value=$?
-if [ $return_value -gt 0 ] ; then
-    echo "Return value of $return_value for command: \"git lfs pull\""
-    exit $return_value
-fi
-echo "git clean -f -d"
-git clean -f -d ; return_value=$?
-if [ $return_value -gt 0 ] ; then
-    echo "Return value of $return_value for command: \"git clean -f -d\""
-    exit $return_value
-fi
-exit $return_value
+git fetch
+git reset --hard origin/$current_github_branch
+git pull origin $current_github_branch
+# Download relevant LFS files for current commit
+# This doesn't actually check for new commits, which is why we had to run `git pull` separately.
+git lfs pull -I 'msk_solid_heme'
+git clean -f -d
