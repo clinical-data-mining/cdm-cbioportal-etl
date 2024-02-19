@@ -13,5 +13,7 @@ git reset --hard origin/$current_github_branch
 git pull origin $current_github_branch
 # Download relevant LFS files for current commit
 # This doesn't actually check for new commits, which is why we had to run `git pull` separately.
-git lfs pull -I 'msk_solid_heme'
+if test -n "$LFS_SUBDIR" ; then
+    git lfs pull -I "$LFS_SUBDIR"
+fi
 git clean -f -d
