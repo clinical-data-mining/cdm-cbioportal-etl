@@ -1,4 +1,4 @@
-GITHUB_REPO_PATH=/mind_data/cdm_repos/datahubs/msk-impact-airflow/ 
+GITHUB_REPO_PATH=/mind_data/cdm_repos/datahubs/msk-impact/ 
 cd "$GITHUB_REPO_PATH"
 current_github_branch=$(git rev-parse --abbrev-ref HEAD)
 

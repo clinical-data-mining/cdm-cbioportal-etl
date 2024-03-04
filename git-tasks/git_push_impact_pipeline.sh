@@ -1,4 +1,4 @@
-GITHUB_REPO_PATH=/mind_data/cdm_repos/datahubs/cdm-automation
+GITHUB_REPO_PATH=<cdsi/cdm_repo_location>
 PROGRAM_NAME=CDM_GIT_PUSH_COPY_CDSI
 PUSH_TO_REPO=yes
 # GITHUB_REPO_PATH: github repository path
