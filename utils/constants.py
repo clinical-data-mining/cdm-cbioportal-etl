@@ -1,15 +1,8 @@
-import sys
 import os
 
-sys.path.insert(
-    0,
-    os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "..", "..", "cdm-utilities")
-    ),
-)
-sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..')))
-from data_classes_cdm import CDMProcessingVariables as config_cdm
-from data_classes_cdm import CDMProcessingVariablesCbioportal as config_cbio_etl
+from msk_cdm.data_classes.legacy import CDMProcessingVariables as config_cdm
+from msk_cdm.data_classes.legacy import CDMProcessingVariablesCbioportal as config_cbio_etl
+
 
 
 # Data dictionary

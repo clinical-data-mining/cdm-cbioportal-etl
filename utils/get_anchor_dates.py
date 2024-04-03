@@ -1,28 +1,8 @@
-import os
-import sys
-
 import pandas as pd
 
-sys.path.insert(
-    0,
-    os.path.abspath(
-        os.path.join('', "..", "..", "cdm-utilities")
-    ),
-)
-sys.path.insert(
-    0,
-    os.path.abspath(
-        os.path.join(
-            '', "..", "utils"
-        )
-    ),
-)
-
-from data_classes_cdm import CDMProcessingVariables as config_rrpt
-from minio_api import MinioAPI
-from utils import mrn_zero_pad, print_df_without_index, set_debug_console, convert_to_int
-
-from constants import DICT_FILES_TO_COPY
+from msk_cdm.data_classes.legacy import CDMProcessingVariables as config_rrpt
+from msk_cdm.minio import MinioAPI
+from msk_cdm.data_processing import set_debug_console, mrn_zero_pad
 
 
 FNAME_MINIO_ENV = config_rrpt.minio_env

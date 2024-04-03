@@ -1,8 +1,6 @@
-import sys
 import pandas as pd
-import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', '..', 'cdm-utilities', 'minio_api/')))
-from minio_api import MinioAPI
+
+from msk_cdm.minio import MinioAPI
 from constants import (
     DICT_FILES_TO_COPY, 
     ENV_MINIO
