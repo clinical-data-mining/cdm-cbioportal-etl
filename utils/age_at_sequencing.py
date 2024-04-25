@@ -16,6 +16,8 @@ from msk_cdm.minio import MinioAPI
 from msk_cdm.data_processing import mrn_zero_pad
 from msk_cdm.data_classes.legacy import CDMProcessingVariables as config_cdm
 
+AGE_CONVERSION_FACTOR = 365.2422
+
 def compute_age_at_sequencing(
         *,
         minio_env,
@@ -37,11 +39,14 @@ def compute_age_at_sequencing(
     obj_minio = MinioAPI(fname_minio_env=minio_env)
 
     ## Load demographics for date of birth
-    col_keep = ['MRN', 'PT_BIRTH_DTE']
+    col_keep = ['MRN', 'PT_BIRTH_DTE', 'PT_DEATH_DTE', 'PLA_LAST_CONTACT_DTE']
     obj = obj_minio.load_obj(path_object=fname_demo)
     df_demo = pd.read_csv(obj, sep='\t', usecols=col_keep)
     df_demo = mrn_zero_pad(df=df_demo, col_mrn='MRN')
     df_demo['PT_BIRTH_DTE'] = pd.to_datetime(df_demo['PT_BIRTH_DTE'])
+    df_demo['PT_DEATH_DTE'] = pd.to_datetime(df_demo['PT_DEATH_DTE'])
+    df_demo['PLA_LAST_CONTACT_DTE'] = pd.to_datetime(df_demo['PLA_LAST_CONTACT_DTE'])
+    df_demo['OS_DTE'] = df_demo['PT_DEATH_DTE'].fillna(df_demo['PLA_LAST_CONTACT_DTE'])
 
     ## Load pathology report table
     col_keep = ['MRN', 'DTE_PATH_PROCEDURE', 'DMP_ID', 'SAMPLE_ID']
@@ -57,11 +62,25 @@ def compute_age_at_sequencing(
     df_f = df_path_clean.merge(right=df_demo, how='left', on=['MRN'])
 
     ## Compute age at sequencing
-    df_f['AGE_AT_SEQUENCING_DAYS'] = (df_f['DTE_PATH_PROCEDURE'] - df_f['PT_BIRTH_DTE']).dt.days
+    df_f['AGE_AT_SEQUENCING_DAYS_PHI'] = (df_f['DTE_PATH_PROCEDURE'] - df_f['PT_BIRTH_DTE']).dt.days
+
+    ## Compute OS interval
+    df_f['OS_INT'] = (df_f['OS_DTE'] - df_f['DTE_PATH_PROCEDURE']).dt.days
+
+    df_f['AGE_AT_SEQUENCING_YEARS_PHI'] = int(df_f['AGE_AT_SEQUENCING_DAYS_PHI']/AGE_CONVERSION_FACTOR)
+    df_f['AGE_AT_SEQUENCING_YEARS_WITH_OS_INT_PHI'] = int((df_f['AGE_AT_SEQUENCING_DAYS_PHI'] + df_f['OS_INT'])/AGE_CONVERSION_FACTOR)
+
+    ## Deidentify age
+    log_under18 = df_f['AGE_AT_SEQUENCING_YEARS_PHI'] < 18
+    log_over89 = df_f['AGE_AT_SEQUENCING_YEARS_WITH_OS_INT_PHI'] > 89
+
+    df_f['AGE_AT_SEQUENCING_YEARS'] = df_f['AGE_AT_SEQUENCING_YEARS_PHI'].astype(str)
+    df_f.loc[log_under18, 'AGE_AT_SEQUENCING_YEARS'] = '<18'
+    df_f.loc[log_over89, 'AGE_AT_SEQUENCING_YEARS'] = '>' + df_f.loc[log_over89, 'AGE_AT_SEQUENCING_YEARS_PHI']
 
     ## Drop columns that contain PHI
-    cols_phi = ['MRN', 'DTE_PATH_PROCEDURE', 'PT_BIRTH_DTE']
-    df_f = df_f.drop(columns=cols_phi)
+    cols_keep = ['DMP_ID', 'SAMPLE_ID', 'AGE_AT_SEQUENCING_YEARS']
+    df_f = df_f[cols_keep]
 
     # Save dataframe
     obj_minio.save_obj(
