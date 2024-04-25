@@ -13,7 +13,7 @@ import argparse
 import pandas as pd
 
 from msk_cdm.minio import MinioAPI
-from msk_cdm.data_processing import mrn_zero_pad
+from msk_cdm.data_processing import mrn_zero_pad, convert_to_int
 from msk_cdm.data_classes.legacy import CDMProcessingVariables as config_cdm
 
 AGE_CONVERSION_FACTOR = 365.2422
@@ -67,8 +67,9 @@ def compute_age_at_sequencing(
     ## Compute OS interval
     df_f['OS_INT'] = (df_f['OS_DTE'] - df_f['DTE_PATH_PROCEDURE']).dt.days
 
-    df_f['AGE_AT_SEQUENCING_YEARS_PHI'] = (df_f['AGE_AT_SEQUENCING_DAYS_PHI']/AGE_CONVERSION_FACTOR).astype(int)
-    df_f['AGE_AT_SEQUENCING_YEARS_WITH_OS_INT_PHI'] = ((df_f['AGE_AT_SEQUENCING_DAYS_PHI'] + df_f['OS_INT'])/AGE_CONVERSION_FACTOR).astype(int)
+    df_f['AGE_AT_SEQUENCING_YEARS_PHI'] = (df_f['AGE_AT_SEQUENCING_DAYS_PHI']/AGE_CONVERSION_FACTOR)
+    df_f['AGE_AT_SEQUENCING_YEARS_WITH_OS_INT_PHI'] = ((df_f['AGE_AT_SEQUENCING_DAYS_PHI'] + df_f['OS_INT'])/AGE_CONVERSION_FACTOR)
+    df_f = convert_to_int(df=df_f, list_cols=['AGE_AT_SEQUENCING_YEARS_PHI', 'AGE_AT_SEQUENCING_YEARS_WITH_OS_INT_PHI'])
 
     ## Deidentify age
     log_under18 = df_f['AGE_AT_SEQUENCING_YEARS_PHI'] < 18
