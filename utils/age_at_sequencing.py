@@ -67,8 +67,8 @@ def compute_age_at_sequencing(
     ## Compute OS interval
     df_f['OS_INT'] = (df_f['OS_DTE'] - df_f['DTE_PATH_PROCEDURE']).dt.days
 
-    df_f['AGE_AT_SEQUENCING_YEARS_PHI'] = int(df_f['AGE_AT_SEQUENCING_DAYS_PHI']/AGE_CONVERSION_FACTOR)
-    df_f['AGE_AT_SEQUENCING_YEARS_WITH_OS_INT_PHI'] = int((df_f['AGE_AT_SEQUENCING_DAYS_PHI'] + df_f['OS_INT'])/AGE_CONVERSION_FACTOR)
+    df_f['AGE_AT_SEQUENCING_YEARS_PHI'] = (df_f['AGE_AT_SEQUENCING_DAYS_PHI']/AGE_CONVERSION_FACTOR).astype(int)
+    df_f['AGE_AT_SEQUENCING_YEARS_WITH_OS_INT_PHI'] = ((df_f['AGE_AT_SEQUENCING_DAYS_PHI'] + df_f['OS_INT'])/AGE_CONVERSION_FACTOR).astype(int)
 
     ## Deidentify age
     log_under18 = df_f['AGE_AT_SEQUENCING_YEARS_PHI'] < 18
@@ -80,7 +80,7 @@ def compute_age_at_sequencing(
 
     ## Drop columns that contain PHI
     cols_keep = ['DMP_ID', 'SAMPLE_ID', 'AGE_AT_SEQUENCING_YEARS']
-    df_f = df_f[cols_keep]
+    # df_f = df_f[cols_keep]
 
     # Save dataframe
     obj_minio.save_obj(
