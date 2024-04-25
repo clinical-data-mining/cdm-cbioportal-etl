@@ -1,17 +1,13 @@
-import os
-import sys
 import argparse
 from datetime import date
 
 import pandas as pd
 
-sys.path.insert(0, os.path.abspath('/mind_data/cdm_repos/cdm-cbioportal-etl/utils'))
-from constants import DICT_FILES_TO_COPY
+from utils.constants import DICT_FILES_TO_COPY
 
 
 cols_fixed = ['SAMPLE_ID', 'PATIENT_ID', 'STOP_DATE', 'SUBTYPE']
 today = date.today()
-FNAME_ERROR_LOG = f'/mind_data/cdm_repos/cdm-cbioportal-etl/logs/log_error_cdm_cbioportal_etl_{today}.csv'
 
 
 def monitor_completeness(fname_log):
@@ -49,9 +45,7 @@ def monitor_completeness(fname_log):
     print('------------------------------')
     
     if test_for_empty_all[0].any():
-        print('Monitoring test FAILED. Writing results to log: %s' % FNAME_ERROR_LOG)
-        
-        test_for_empty_all.to_csv(FNAME_ERROR_LOG, sep=',')
+        print('Monitoring test FAILED.')
         
         return True
     

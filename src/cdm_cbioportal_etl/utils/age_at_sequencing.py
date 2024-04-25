@@ -15,6 +15,7 @@ import pandas as pd
 from msk_cdm.minio import MinioAPI
 from msk_cdm.data_processing import mrn_zero_pad, convert_to_int
 from msk_cdm.data_classes.legacy import CDMProcessingVariables as config_cdm
+from get_anchor_dates import get_anchor_dates
 
 AGE_CONVERSION_FACTOR = 365.2422
 
@@ -54,6 +55,10 @@ def compute_age_at_sequencing(
     df_path = pd.read_csv(obj, sep='\t', usecols=col_keep, low_memory=False)
     df_path = mrn_zero_pad(df=df_path, col_mrn='MRN')
 
+    ## Load anchor dates
+    df_archor_dates = get_anchor_dates()
+    df_sample_ids_used = df_archor_dates[['SAMPLE_ID']].copy()
+
     # Clean and Combine data
     df_path_clean = df_path[df_path['SAMPLE_ID'].notnull()].copy()
     df_path_clean['DTE_PATH_PROCEDURE'] = pd.to_datetime(df_path_clean['DTE_PATH_PROCEDURE'])
@@ -82,6 +87,7 @@ def compute_age_at_sequencing(
     ## Drop columns that contain PHI
     cols_keep = ['DMP_ID', 'SAMPLE_ID', 'AGE_AT_SEQUENCING_YEARS']
     # df_f = df_f[cols_keep]
+    df_f = df_f[df_f['SAMPLE_ID'].isin(df_sample_ids_used['SAMPLE_ID'])].copy()
 
     # Save dataframe
     obj_minio.save_obj(
