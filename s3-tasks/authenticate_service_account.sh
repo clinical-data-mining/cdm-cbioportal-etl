@@ -1,39 +1,20 @@
-#!/usr/bin/env bash
-
-PIPELINES_HOSTNAME=pipelines.cbioportal.mskcc.org
-
-# authentication doens't need to be run when running from pipelines
-if [ `hostname` == $PIPELINES_HOSTNAME ] ; then
-    exit 0
-fi
-
 cluster_account=$1
 
-# TODO change paths
-EKS_ACCOUNT_CREDENTIALS_FILE=/home/chennac/eks-account.credentials
-PUBLIC_ACCOUNT_CREDENTIALS_FILE=/home/chennac/public-account.credentials
+EKS_ACCOUNT_PRIVATE_CREDENTIALS_FILE=/var/lib/airflow/.eks-account.private.credentials
 
-if ! [[ -f $EKS_ACCOUNT_CREDENTIALS_FILE && -f $PUBLIC_ACCOUNT_CREDENTIALS_FILE ]] ; then
-    echo "$EKS_ACCOUNT_CREDENTIALS_FILE and $PUBLIC_ACCOUNT_CREDENTIALS_FILE could not be found, exiting..."
+if ! [[ -f $EKS_ACCOUNT_PRIVATE_CREDENTIALS_FILE ]] ; then
+    echo "$EKS_ACCOUNT_PRIVATE_CREDENTIALS_FILE could not be found, exiting..."
     exit 2
-fi
-
-if ! [[ -r $EKS_ACCOUNT_CREDENTIALS_FILE && -r $PUBLIC_ACCOUNT_CREDENTIALS_FILE ]] ; then
-   echo "$EKS_ACCOUNT_CREDENTIALS_FILE and $PUBLIC_ACCOUNT_CREDENTIALS_FILE could not be read, exiting..."
-   exit 2
 fi
 
 unset TO_USE_CREDENTIALS_FILE
 case $cluster_account in
-    "eks")
-      TO_USE_CREDENTIALS_FILE=$EKS_ACCOUNT_CREDENTIALS_FILE
-      # copy kubeconfig over
-      ;;
-    "public")
-      TO_USE_CREDENTIALS_FILE=$PUBLIC_ACCOUNT_CREDENTIALS_FILE
+    "private")
+      TO_USE_CREDENTIALS_FILE=$EKS_ACCOUNT_PRIVATE_CREDENTIALS_FILE
+      cp /var/lib/airflow/.kube/privateconfig /var/lib/airflow/.kube/config
       ;;
     *)
-      echo "Attempting to connect to unrecognized clusterr $cluster_account, exiting..."
+      echo "Attempting to connect to unrecognized cluster $cluster_account, exiting..."
       exit 2
       ;;
 esac
@@ -50,20 +31,6 @@ fi
 
 set -euo pipefail
 
-BASEDIR=$(dirname "$0")
-
-if [ "$(docker images -q saml2aws)" = "" ]; then
-    docker build -t saml2aws "$BASEDIR"
-fi
-
-if [ ! -f "$HOME/.saml2aws" ]; then
-    touch "$HOME/.saml2aws"
-fi
-
-docker run --rm -i \
-    -u "$(id -u):$(id -g)" \
-    -v "$HOME/.saml2aws:/saml2aws/.saml2aws" \
-    -v "$HOME/.aws:/saml2aws/.aws" \
-    saml2aws --role arn:aws:iam::$SERVICE_ACCOUNT_NUMBER:role/$SERVICE_ACCOUNT_ROLE login --force --mfa=Auto --username=$SERVICE_ACCOUNT_NAME --password=$SERVICE_ACCOUNT_PASSWORD --skip-prompt \
+saml2aws --role arn:aws:iam::$SERVICE_ACCOUNT_NUMBER:role/$SERVICE_ACCOUNT_ROLE login --force --mfa=Auto --username=$SERVICE_ACCOUNT_NAME --password=$SERVICE_ACCOUNT_PASSWORD --skip-prompt
 
 set +uo pipefail
