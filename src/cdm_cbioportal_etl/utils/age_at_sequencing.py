@@ -48,6 +48,7 @@ def compute_age_at_sequencing(
     df_demo['PT_BIRTH_DTE'] = pd.to_datetime(df_demo['PT_BIRTH_DTE'])
     df_demo['PT_DEATH_DTE'] = pd.to_datetime(df_demo['PT_DEATH_DTE'])
     df_demo['PLA_LAST_CONTACT_DTE'] = df_demo['PLA_LAST_CONTACT_DTE'].fillna(today)
+    df_demo['PLA_LAST_CONTACT_DTE'] = pd.to_datetime(df_demo['PLA_LAST_CONTACT_DTE'])
     df_demo['OS_DTE'] = df_demo['PT_DEATH_DTE'].fillna(df_demo['PLA_LAST_CONTACT_DTE'])
 
     ## Load pathology report table
