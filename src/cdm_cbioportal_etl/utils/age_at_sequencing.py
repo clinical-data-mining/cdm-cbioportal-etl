@@ -63,6 +63,7 @@ def compute_age_at_sequencing(
 
     # Clean and Combine data
     df_path_clean = df_path[df_path['SAMPLE_ID'].notnull() & df_path['DMP_ID'].isin(list_sample_ids_used)].copy()
+    df_path_clean = df_path_clean[df_path_clean['SAMPLE_ID'].str.contains('-T')].copy()
     df_path_clean['DMP_ID_DERIVED'] = df_path_clean['SAMPLE_ID'].apply(lambda x: x[:9])
     df_path_clean = df_path_clean[df_path_clean['DMP_ID_DERIVED'] == df_path_clean['DMP_ID']].copy()
     df_path_clean['DTE_PATH_PROCEDURE'] = pd.to_datetime(df_path_clean['DTE_PATH_PROCEDURE'])
@@ -105,7 +106,7 @@ def compute_age_at_sequencing(
 
     ## Drop columns that contain PHI
     cols_keep = ['DMP_ID', 'SAMPLE_ID', 'AGE_AT_SEQUENCING_YEARS']
-    # df_f = df_f[cols_keep]
+    df_f = df_f[cols_keep]
 
     # Save dataframe
     obj_minio.save_obj(
