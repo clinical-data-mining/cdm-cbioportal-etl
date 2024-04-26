@@ -25,7 +25,12 @@ def get_anchor_dates():
     )
     
     df_path_filt = df_path[df_path['SAMPLE_ID'].notnull() & df_path['SAMPLE_ID'].str.contains('T')]
-    df_path_filt['DMP_ID'] = df_path_filt['SAMPLE_ID'].apply(lambda x: x[:9])
+    df_path_filt['DMP_ID_DERIVED'] = df_path_filt['SAMPLE_ID'].apply(lambda x: x[:9])
+
+    # Remove cases where DMP_ID does not match DMP_ID Derived
+    df_path_sample_id_error = df_path_filt[df_path_filt['DMP_ID_DERIVED'] != df_path_filt['DMP_ID']]
+    df_path_filt = df_path_filt[df_path_filt['DMP_ID_DERIVED'] == df_path_filt['DMP_ID']]
+
 
     df_path_filt = df_path_filt.sort_values(by=['MRN', 'DTE_PATH_PROCEDURE'])
     df_path_g = df_path_filt.groupby(['MRN', 'DMP_ID'])['DTE_PATH_PROCEDURE'].first().reset_index()
@@ -39,7 +44,7 @@ def get_anchor_dates():
     df_path_g_error = df_path_g[filt_mismapped].copy()
     print('Error in mapping summary:')
     print(df_path_g_error)
-
+    print(df_path_sample_id_error)
     
     print('Done!')
     
