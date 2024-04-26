@@ -8,7 +8,7 @@ Age at sequencing computed in days
 
 Data is saved to MinIO
 """
-import argparse
+from datetime import date
 
 import pandas as pd
 
@@ -34,6 +34,7 @@ def compute_age_at_sequencing(
     :param fname_save_age_at_seq: object path to where age at sequencing is saved
     :return: df_f: dataframe with age at sequencing
     """
+    today = date.today()
 
     # Load data
     ## Create Minio object
@@ -46,7 +47,7 @@ def compute_age_at_sequencing(
     df_demo = mrn_zero_pad(df=df_demo, col_mrn='MRN')
     df_demo['PT_BIRTH_DTE'] = pd.to_datetime(df_demo['PT_BIRTH_DTE'])
     df_demo['PT_DEATH_DTE'] = pd.to_datetime(df_demo['PT_DEATH_DTE'])
-    df_demo['PLA_LAST_CONTACT_DTE'] = pd.to_datetime(df_demo['PLA_LAST_CONTACT_DTE'])
+    df_demo['PLA_LAST_CONTACT_DTE'] = df_demo['PLA_LAST_CONTACT_DTE'].fillna(today)
     df_demo['OS_DTE'] = df_demo['PT_DEATH_DTE'].fillna(df_demo['PLA_LAST_CONTACT_DTE'])
 
     ## Load pathology report table
