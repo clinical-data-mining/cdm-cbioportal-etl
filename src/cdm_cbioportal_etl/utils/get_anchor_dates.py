@@ -7,7 +7,7 @@ from msk_cdm.data_processing import set_debug_console, mrn_zero_pad
 
 FNAME_MINIO_ENV = config_rrpt.minio_env
 FNAME_PATHOLOGY = config_rrpt.fname_path_clean
-COLS_PATHOLOGY = ['MRN', 'DTE_PATH_PROCEDURE', 'SAMPLE_ID']
+COLS_PATHOLOGY = ['MRN', 'DTE_PATH_PROCEDURE', 'SAMPLE_ID', 'DMP_ID']
 
 
 def get_anchor_dates():
