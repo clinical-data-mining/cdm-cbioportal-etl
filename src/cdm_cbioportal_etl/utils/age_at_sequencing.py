@@ -90,6 +90,19 @@ def compute_age_at_sequencing(
     df_f.loc[log_under18, 'AGE_AT_SEQUENCING_YEARS'] = '<18'
     df_f.loc[log_over89, 'AGE_AT_SEQUENCING_YEARS'] = '>' + df_f.loc[log_over89, 'AGE_AT_SEQUENCING_YEARS']
 
+    ## Deidentify age
+    log_under18 = df_f['AGE_AT_SEQUENCING_YEARS_PHI'] < 18
+    log_over89_fix = (df_f['AGE_AT_SEQUENCING_YEARS_PHI'] > 89)
+    log_over89 = (df_f['AGE_AT_SEQUENCING_YEARS_WITH_OS_INT_PHI'] > 89) | log_over89_fix
+
+    ### Create new anonymized column for age at seq
+    df_f['AGE_AT_SEQUENCING_YEARS'] = df_f['AGE_AT_SEQUENCING_YEARS_PHI']
+    df_f.loc[log_over89_fix, 'AGE_AT_SEQUENCING_YEARS'] = 89
+    df_f['AGE_AT_SEQUENCING_YEARS'] = df_f['AGE_AT_SEQUENCING_YEARS'].astype(str)
+
+    df_f.loc[log_under18, 'AGE_AT_SEQUENCING_YEARS'] = '<18'
+    df_f.loc[log_over89, 'AGE_AT_SEQUENCING_YEARS'] = '>' + df_f.loc[log_over89, 'AGE_AT_SEQUENCING_YEARS']
+
     ## Drop columns that contain PHI
     cols_keep = ['DMP_ID', 'SAMPLE_ID', 'AGE_AT_SEQUENCING_YEARS']
     # df_f = df_f[cols_keep]
