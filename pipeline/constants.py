@@ -39,7 +39,7 @@ ENV_MINIO = '/gpfs/mindphidata/fongc2/minio_env.txt'
 ### Columns of interest for joining or removing
 COL_PID = 'DMP_ID'
 COL_PID_CBIO = 'PATIENT_ID'
-FNAME_CBIO_SID = config_cdm.fname_cbio_sid
+FNAME_CBIO_SID = '/gpfs/mindphidata/cdm_repos/datahub/impact-data/data_clinical_sample.txt'
 FNAME_SAMPLE_REMOVE = os.path.abspath(os.path.join(os.path.dirname( __file__ ), "mskimpact_clinical_data_remove.tsv"))
 
 ### Column names for the manifest file

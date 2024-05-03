@@ -2,6 +2,8 @@ import pandas as pd
 
 from msk_cdm.minio import MinioAPI
 
+COL_P_ID = 'PATIENT_ID_x'
+COL_S_ID = 'SAMPLE_ID'
 
 def _remove_cases(df, fname_sample_rmv):
     # Remove cases without assay
@@ -11,7 +13,7 @@ def _remove_cases(df, fname_sample_rmv):
         sep='\t'
     )
     
-    logic_keep = ~df['SAMPLE_ID'].isin(df_samples_rmv['SAMPLE_ID'])
+    logic_keep = ~df[COL_S_ID].isin(df_samples_rmv[COL_S_ID])
     df_path_all_assays = df[logic_keep].copy()
     
     return df_path_all_assays
@@ -38,11 +40,11 @@ def generate_cbioportal_template(
 
     # Load most current IDs -- 2024/01/22 moved to getting sample/patient IDs from msk-impact datahub. Expect at least a one day lag.
     print('Loading current IMPACT IDs')
-    usecols=['SAMPLE_ID', 'PATIENT_ID']
+    usecols=[COL_S_ID, COL_P_ID]
     df_id_current = pd.read_csv(
         fname_cbio_sid,
         sep='\t',
-        header=4,
+        header=0,
         low_memory=False,
         usecols=usecols
     )
@@ -54,12 +56,12 @@ def generate_cbioportal_template(
     )
 
     print('Creating cbioportal template files')
-    dict_patient = {'SAMPLE_ID':'#Sample Identifier', 'PATIENT_ID':'Patient Identifier'}
+    dict_patient = {COL_S_ID:'#Sample Identifier', COL_P_ID:'Patient Identifier'}
     df_id_current_s = df_id_current.rename(columns=dict_patient)
     df_f_s = pd.concat([df_header_template_s, df_id_current_s], axis=0)
 
-    dict_patient = {'PATIENT_ID':'#Patient Identifier'}
-    df_id_current_p = df_id_current[['PATIENT_ID']].drop_duplicates().rename(columns=dict_patient)
+    dict_patient = {COL_P_ID:'#Patient Identifier'}
+    df_id_current_p = df_id_current[[COL_P_ID]].drop_duplicates().rename(columns=dict_patient)
     df_f_p = pd.concat([df_header_template_p, df_id_current_p], axis=0)
 
     ## Save data
