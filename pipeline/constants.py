@@ -72,8 +72,6 @@ DICT_FILES_TO_COPY = {
     config_cbio_etl.fname_save_timeline_follow_up: config_cbio_etl.fname_save_timeline_follow_up_minio
 }
 
-fname_minio_env = config_cdm.minio_env
-
 
 """
 Constants for cBioPortal timeline files
