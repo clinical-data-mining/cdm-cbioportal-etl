@@ -146,7 +146,6 @@ COLS_ORDER_GENERAL = [
 # Constants for custom built timeline file generators
 
 ## IMPACT sequencing and surgical specimens
-FNAME_CBIO_SID = config_cdm.fname_cbio_sid
 FNAME_DEMO = config_cdm.fname_demo
 FNAME_OS = 'demographics/overall_survival_cbioportal.tsv'
 # FNAME_IMPACT_SUMMARY_SAMPLE = config_cdm.fname_path_summary
