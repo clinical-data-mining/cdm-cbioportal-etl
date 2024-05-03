@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 # Define which variables to use from msk_cdm.data_classes.<class> library
-# TODO make these inputs instead of hardcoded variables
 VAR_SCRIPT="config_cbio_etl.script_create_summary_templates"
 
 set -e

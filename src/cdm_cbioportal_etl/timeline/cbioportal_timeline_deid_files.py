@@ -1,38 +1,14 @@
-import os
-import sys
-import argparse
-
 import pandas as pd
 
-sys.path.insert(
-    0,
-    os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "..", "..", "cdm-utilities")
-    ),
-)
-sys.path.insert(
-    0,
-    os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "..", "..", "cdm-utilities", "minio_api")
-    ),
-)
-sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'utils')))
-from minio_api import MinioAPI
-from utils import (
+from msk_cdm.minio import MinioAPI
+from cdm_cbioportal.utils import get_anchor_dates
+from msk_cdm.data_processing import (
     mrn_zero_pad, 
     print_df_without_index, 
     set_debug_console, 
     convert_to_int, 
     save_appended_df
 )
-
-from get_anchor_dates import get_anchor_dates
-from constants import (
-    COLS_ORDER_GENERAL,
-    DICT_FILES_TIMELINE,
-    DICT_FILES_TIMELINE_TESTING,
-    ENV_MINIO
-) 
 
 
 def cbioportal_deid_timeline_files(
@@ -87,40 +63,3 @@ def cbioportal_deid_timeline_files(
         
     return None
     
-
-def main():
-    parser = argparse.ArgumentParser(
-        description="Script for deidentifying timeline files for cbioportal."
-    )
-    parser.add_argument(
-        "--fname_minio_env",
-        action="store",
-        dest="fname_minio_env",
-        default=ENV_MINIO,
-        help="Minio environment file.",
-    )
-    parser.add_argument(
-        "--production_or_test",
-        action="store",
-        dest="production_or_test",
-        default="production",
-        help="Logic for using the timelines for testing or production.",
-    )
-    
-    args = parser.parse_args()
-    if args.production_or_test == 'production':
-        dict_files_timeline = DICT_FILES_TIMELINE
-    elif args.production_or_test == 'test':
-        dict_files_timeline = DICT_FILES_TIMELINE_TESTING
-    else:
-        dict_files_timeline = DICT_FILES_TIMELINE_TESTING
-    
-    
-    _ = cbioportal_deid_timeline_files(
-        fname_minio_env=args.fname_minio_env,
-        dict_files_timeline=dict_files_timeline
-    )
-
-
-if __name__ == '__main__':
-    main()
