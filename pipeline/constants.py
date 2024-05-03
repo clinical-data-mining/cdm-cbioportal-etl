@@ -147,73 +147,7 @@ COLS_ORDER_GENERAL = [
 
 ## IMPACT sequencing and surgical specimens
 FNAME_DEMO = config_cdm.fname_demo
+FNAME_TIMELINE_FU = config_cbio_etl.fname_timeline_fu
+
+
 FNAME_OS = 'demographics/overall_survival_cbioportal.tsv'
-# FNAME_IMPACT_SUMMARY_SAMPLE = config_cdm.fname_path_summary
-# FNAME_SAVE_TIMELINE_SEQ = config_cdm.fname_save_spec_timeline
-# FNAME_SAVE_TIMELINE_SPEC = config_cdm.fname_save_spec_surg_timeline
-# COL_ORDER_SEQ = [
-#     'PATIENT_ID', 
-#     'START_DATE', 
-#     'STOP_DATE', 
-#     'EVENT_TYPE', 
-#     'SAMPLE_ID'
-# ]
-# COL_ORDER_SPEC = [
-#     'PATIENT_ID', 
-#     'START_DATE', 
-#     'STOP_DATE', 
-#     'EVENT_TYPE', 
-#     'SAMPLE_ID', 
-# ]
-
-# # 2023/10/18 Turned off CEA. Will turn back on at a later date. 
-# ## CEA Labs
-# FNAME_SAVE_CEA = config_cdm.fname_save_labs_cea
-# FILE_CEA = 'labs/CA_Antigen_PSA_TSH__with_TESTNAMES_as_Select_LCI_CTLG_ITEM_GUID_LCI_SUBTEST_NAME_fr_202303151545.csv'
-# COLS_ORDER_CEA = [
-#     'PATIENT_ID', 
-#     'START_DATE', 
-#     'STOP_DATE', 
-#     'EVENT_TYPE', 
-#     'TEST', 
-#     'RESULT'
-# ]
-
-# # 2023/10/18 Turned off progression. Will turn back on at a later date. 
-# ## Cancer progression predictions
-# FNAME_PROGRESSION = config_cdm.fname_radiology_progression_pred
-# FNAME_RADIOLOGY = config_cdm.fname_radiology_full_parsed
-# FNAME_SAVE_PROGRESSION_TIMELINE = config_cdm.fname_save_progression
-
-# COL_ORDER_PROGRESSION = [
-#     'PATIENT_ID', 
-#     'START_DATE',
-#     'STOP_DATE',
-#     'EVENT_TYPE',
-#     'SUBTYPE',
-#     'SOURCE',
-#     'SOURCE_SPECIFIC',
-#     'PROGRESSION',
-#     'INFERRED_PROGRESSION_PROB',
-#     'STYLE_COLOR'
-# ]
-
-# ## Disease status
-# COL_ORDER_DISEASE_STATUS = [
-#     'PATIENT_ID', 
-#     'START_DATE', 
-#     'STOP_DATE', 
-#     'EVENT_TYPE', 
-#     'SUBTYPE', 
-#     'SOURCE', 
-#     'SOURCE_SPECIFIC', 
-#     'DISEASE_STATUS_PREDICTED', 
-#     'DISEASE_STATUS_KNOWN', 
-#     'STYLE_COLOR'
-# ]
-
- 
-# FNAME_IDS = config_cdm.fname_id_map,
-# FNAME_RESULTS_DISEASE_STATUS = '/mind_data/watersm/Projects/cdm_breast_dmt/data/initial_first_met_test_predictions_Clinical_Longform_Breast_DMT_met_recurrence_ft_9-12-2022_epoch_9.csv',
-# FNAME_RESULTS_STATS = '/mind_data/watersm/Projects/cdm_breast_dmt/data/percent_met_mrns_stats.csv'
-# FNAME_SAVE_TIMELINE_DATAHUB = config_cdm.fname_save_disease_status_timeline
