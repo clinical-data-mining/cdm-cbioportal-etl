@@ -6,7 +6,7 @@ from msk_cdm.data_classes.legacy import CDMProcessingVariablesCbioportal as conf
 
 
 # Data dictionary
-path_docs = '/mind_data/cdm_repos/cancer-data-science-initiative/docs/tables/'
+path_docs = '/gpfs/mindphidata/fongc2/github/docs/docs/tables/'
 FNAME_METADATA = os.path.join(path_docs, 'CDM-Codebook - metadata.csv')
 FNAME_PROJECT = os.path.join(path_docs, 'CDM-Codebook - project.csv')
 FNAME_TABLES = os.path.join(path_docs, 'CDM-Codebook - tables.csv')
@@ -38,6 +38,8 @@ ENV_MINIO=config_cdm.minio_env
 ### Columns of interest for joining or removing
 COL_PID = 'DMP_ID'
 COL_PID_CBIO = 'PATIENT_ID'
+FNAME_CBIO_SID = config_cdm.fname_cbio_sid
+FNAME_SAMPLE_REMOVE = os.path.abspath(os.path.join(os.path.dirname( __file__ ), "mskimpact_clinical_data_remove.tsv"))
 
 ### Column names for the manifest file
 COL_SUMMARY_FNAME_SAVE = 'SUMMARY_FILENAME'
@@ -95,7 +97,7 @@ DICT_FILES_TIMELINE = {
 }
 
 
-path_datahub_testing = '/mind_data/cdm_repos/datahubs/impact_beta_testing/mskimpact_cdm_cdsi/'
+path_datahub_testing = '/gpfs/mindphidata/cdm_repos/github/datahubs/impact_beta_testing/mskimpact_cdm_cdsi/'
 timeline_surg = 'data_timeline_surgery.txt'
 timeline_rt = 'data_timeline_radiation.txt'
 timeline_meds = 'data_timeline_treatment.txt'

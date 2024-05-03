@@ -1,8 +1,6 @@
 """"
 cbioportal_summary_merger.py
 
-By Chris Fong - MSKCC 2021
-
 This class will update clinical patient and sample summary files on cbioportal.
 Object requires the path to the original sample/patient file, and for new/replacement annotations, a header and dataframe file (csv format)
 """

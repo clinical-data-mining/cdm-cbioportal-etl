@@ -1,5 +1,5 @@
 import pandas as pd
-from constants import (
+from pipeline.constants import (
     FNAME_METADATA, 
     FNAME_PROJECT, 
     FNAME_TABLES
