@@ -34,7 +34,8 @@ FNAME_SUMMARY_S = config_cbio_etl.fname_summary_sample
 #### Summary files to save (MinIO)
 FNAME_SUMMARY_P_MINIO = config_cbio_etl.fname_summary_patient_minio
 FNAME_SUMMARY_S_MINIO = config_cbio_etl.fname_summary_sample_minio
-ENV_MINIO=config_cdm.minio_env
+# ENV_MINIO=config_cdm.minio_env
+ENV_MINIO = '/gpfs/mindphidata/fongc2/minio_env.txt'
 ### Columns of interest for joining or removing
 COL_PID = 'DMP_ID'
 COL_PID_CBIO = 'PATIENT_ID'
