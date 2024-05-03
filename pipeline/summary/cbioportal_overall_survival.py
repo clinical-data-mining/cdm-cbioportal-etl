@@ -2,33 +2,31 @@ import os
 import sys
 
 import pandas as pd
-import numpy as np
 
-sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'utils')))
-sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', '..', 'cdm-utilities')))
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', '..', 'cdm-utilities', 'minio_api')))
-from data_classes_cdm import CDMProcessingVariables as config_cdm
-from data_classes_cdm import CDMProcessingVariablesCbioportal as config_cbio_etl
-from utils import mrn_zero_pad, convert_col_to_datetime
-from minio_api import MinioAPI
+sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..')))
+from msk_cdm.minio import MinioAPI
 from constants import (
     FNAME_DEMO,
     FNAME_CBIO_SID,
     FNAME_OS,
     ENV_MINIO
-) 
-from get_anchor_dates import get_anchor_dates
+)
+from msk_cdm.data_processing import (
+    mrn_zero_pad,
+    convert_col_to_datetime
+)
+from cdm_cbioportal_etl.utils import get_anchor_dates
 
 
 COLS_OS = ['DMP_ID', 'OS_MONTHS', 'OS_STATUS']
-
+COL_P_ID = 'PATIENT_ID_x'
+COL_S_ID = 'SAMPLE_ID'
 
 def _load_data(
     obj_minio,
     fname_sid, 
     fname_demo
 ):
-
     # Demographics
     print('Loading %s' % fname_demo)
     obj = obj_minio.load_obj(path_object=fname_demo)
@@ -39,15 +37,12 @@ def _load_data(
 
     # IMPACT ids
     print('Loading %s' % fname_sid)
-    # obj = obj_minio.load_obj(path_object=fname_sid)
-    # df_ids = pd.read_csv(fname_sid, sep='\t', low_memory=False)
-    
-    usecols=['SAMPLE_ID', 'PATIENT_ID']
-    dict_patient = {'PATIENT_ID':'DMP_ID'}
+    usecols=[COL_S_ID, COL_P_ID]
+    dict_patient = {COL_P_ID:'DMP_ID'}
     df_ids = pd.read_csv(
         fname_sid, 
         sep='\t', 
-        header=4, 
+        header=0,
         low_memory=False, 
         usecols=usecols
     )
@@ -71,10 +66,7 @@ def _clean_and_merge(
     df_demo_f = convert_col_to_datetime(df=df_demo_f, col='PT_DEATH_DTE')
     df_demo_f = convert_col_to_datetime(df=df_demo_f, col='PLA_LAST_CONTACT_DTE')
 
-    # df_ids_f = df_ids[['patientId']].rename(columns={'patientId': 'DMP_ID'}).drop_duplicates()
-    df_ids_f = df_ids
-
-    df_os = df_ids_f.merge(right=df_path_g, how='left', on='DMP_ID')
+    df_os = df_ids.merge(right=df_path_g, how='left', on='DMP_ID')
     df_os = df_os.merge(right=df_demo_f, how='left', on='MRN')
     
     return df_os
