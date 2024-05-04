@@ -19,7 +19,6 @@ def cdm_custom_summary_dx_sample(obj_minio, df_redcap_map, df_header, REPORT_NAM
     id_label = '#Sample Identifier'
     col_bday = 'PT_BIRTH_DTE'
     col_pid_phi = 'MRN'
-    col_pid = 'DMP_ID'
     col_sid = 'SAMPLE_ID'
     
     ### List of dates that will be converted to age, columns containing PHI to be dropped

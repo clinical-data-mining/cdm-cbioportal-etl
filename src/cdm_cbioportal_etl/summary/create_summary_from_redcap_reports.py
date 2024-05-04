@@ -19,39 +19,32 @@ Load spec. sheet for converting report to cbioportal format
 Load function to do the custom transformations and aggregations
 
 """
-import os
-import sys
-
 import pandas as pd
 import numpy as np
 
-sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'utils')))
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', '..', 'cdm-utilities')))
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', '..', 'cdm-utilities', 'minio_api/')))
-from minio_api import MinioAPI
-from utils import convert_to_int, mrn_zero_pad, set_debug_console
-from data_classes_cdm import CDMProcessingVariables as config_cdm
-from data_loader import init_metadata
-from get_anchor_dates import get_anchor_dates
-from constants import (
-    FNAME_MANIFEST_PATIENT,
-    FNAME_MANIFEST_SAMPLE,
-    FNAME_SUMMARY_TEMPLATE_P,
-    FNAME_SUMMARY_TEMPLATE_S,
-    PATH_MINIO_CBIO_SUMMARY_INTERMEDIATE,
-    ENV_MINIO,
-    COL_PID,
-    COL_PID_CBIO,
-    COL_SUMMARY_FNAME_SAVE,
-    COL_SUMMARY_HEADER_FNAME_SAVE,
-    COL_RPT_NAME
-) 
+from msk_cdm.minio import MinioAPI
+from msk_cdm.data_processing import mrn_zero_pad
 
-set_debug_console()
+from cdm_cbioportal_etl.utils import (
+    init_metadata,
+    get_anchor_dates
+)
+
+COL_PID = 'DMP_ID'
+COL_PID_CBIO = 'PATIENT_ID'
+
+### Column names for the manifest file
+COL_SUMMARY_FNAME_SAVE = 'SUMMARY_FILENAME'
+COL_SUMMARY_HEADER_FNAME_SAVE = 'SUMMARY_HEADER_FILENAME'
+COL_RPT_NAME = 'REPORT_NAME'
 
 
 class RedcapToCbioportalFormat(object):
-    def __init__(self):
+    def __init__(
+        self,
+        fname_minio_env,
+        path_minio_summary_intermediate
+    ):
         
         # Dataframes
         # self._df_rc_summary = None
@@ -61,13 +54,16 @@ class RedcapToCbioportalFormat(object):
         self._df_metadata = None
         self._df_tables = None 
         self._df_project = None
+
+        self._fname_minio_env = fname_minio_env
+        self._path_minio_summary_intermediate = path_minio_summary_intermediate
         
         self._init()
 
     def _init(self):
          # Process data
         self._obj_minio = MinioAPI(
-            fname_minio_env=ENV_MINIO
+            fname_minio_env=self._fname_minio_env
         )
         
         # Load anchor data containing data to deidentify tables
@@ -128,8 +124,7 @@ class RedcapToCbioportalFormat(object):
             'is_date': 'is_date',
             'fill_value': 'fill_value'
         }
-        
-            
+
         list_redcap_map = list(dict_redcap_header.keys())
 
         # For checkboxes, create new rows with actual names
@@ -228,14 +223,10 @@ class RedcapToCbioportalFormat(object):
         
         if patient_or_sample == 'sample':
             id_label = '#Sample Identifier'
-            # fname_manifest = FNAME_MANIFEST_SAMPLE
-            # fname_template = FNAME_SUMMARY_TEMPLATE_S
             f2 = df_tables['cbio_summary_id_sample'].notnull()
             col_id_change = 'SAMPLE_ID'
         elif patient_or_sample == 'patient':
             id_label = '#Patient Identifier'
-            # fname_manifest = FNAME_MANIFEST_PATIENT
-            # fname_template = FNAME_SUMMARY_TEMPLATE_P
             f2 = df_tables['cbio_summary_id_sample'].isnull()
             col_id_change = 'PATIENT_ID'
             
@@ -364,12 +355,6 @@ class RedcapToCbioportalFormat(object):
                 print('data_type--------------------')
                 print(data_type)
                 
-                # if data_type == 'INT':
-                #     df_select_f = convert_to_int(df=df_select_f, list_cols=[current_col])
-                #     fill_value = int(fill_value)
-                
-                # TODO (Chris): Do something with the floats, if needed. Otherwise FLOAT shouldn't be a datatype.
-                
                 df_select_f[current_col] = df_select_f[current_col].fillna(fill_value)
                 
             print('df_select_f--------------------')
@@ -384,8 +369,8 @@ class RedcapToCbioportalFormat(object):
 
             # Create manifest file
             ## Modify/create manifest files --------------------------------------------------
-            fname_save_data = PATH_MINIO_CBIO_SUMMARY_INTERMEDIATE + form.lower().replace(' ','_') + '_data.csv'
-            fname_save_header = PATH_MINIO_CBIO_SUMMARY_INTERMEDIATE + form.lower().replace(' ','_') + '_header.csv'
+            fname_save_data = self._path_minio_summary_intermediate + form.lower().replace(' ','_') + '_data.csv'
+            fname_save_header = self._path_minio_summary_intermediate + form.lower().replace(' ','_') + '_header.csv'
             ##### This file will be used for merging data    
             self.summary_manifest_append(
                 instr_name=form,
