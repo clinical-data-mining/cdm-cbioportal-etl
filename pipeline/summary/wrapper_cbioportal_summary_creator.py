@@ -7,16 +7,13 @@ then combine into a single file to be pushed to cbioportal
 
 
 """
-import os
 import sys
+import os
 import argparse
-sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'utils')))
-sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', '..', 'cdm-utilities')))
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', '..', 'cdm-utilities', 'minio_api')))
-from data_classes_cdm import CDMProcessingVariables as config_cdm
+
 from cbioportal_summary_file_combiner import cbioportalSummaryFileCombiner
 from create_summary_from_redcap_reports import RedcapToCbioportalFormat
-from minio_api import MinioAPI
+sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..')))
 from constants import (
     FNAME_MANIFEST_PATIENT,
     FNAME_MANIFEST_SAMPLE,
@@ -26,16 +23,21 @@ from constants import (
     FNAME_SUMMARY_S,
     FNAME_SUMMARY_P_MINIO,
     FNAME_SUMMARY_S_MINIO,
-    ENV_MINIO
+    ENV_MINIO,
+    COL_SUMMARY_FNAME_SAVE,
+    COL_SUMMARY_HEADER_FNAME_SAVE
 ) 
 
 
 def create_cbioportal_summary(
+
     patient_or_sample,
     fname_manifest, 
     fname_current_summary, 
     fname_new_summary,
-    production_or_test
+    production_or_test,
+    fname_save_var_summary,
+    fname_save_header_summary
 ):
     obj_format_cbio = RedcapToCbioportalFormat()
     
@@ -53,7 +55,10 @@ def create_cbioportal_summary(
         fname_manifest=fname_manifest, 
         fname_current_summary=fname_current_summary, 
         patient_or_sample=patient_or_sample,
-        production_or_test=production_or_test
+        production_or_test=production_or_test,
+        fname_save_var_summary=fname_save_var_summary,
+        fname_save_header_summary=fname_save_header_summary
+
     )
     
     # Save the merged summaries to file
@@ -112,6 +117,13 @@ def main():
         default='production',
         help="For logic to decide if production portal or testing portal will be updated.",
     )
+    parser.add_argument(
+        "--fname_save_var_summary",
+        action="store",
+        dest="fname_save_var_summary",
+        default=FNAME_SUMMARY_S,
+        help="Output file for the sample level summary to be pushed to cBioPortal.",
+    )
     
     args = parser.parse_args()
     # Create patient summary
@@ -121,7 +133,9 @@ def main():
         fname_manifest=args.fname_manifest_patient, 
         fname_current_summary=args.fname_summary_template_patient, 
         fname_new_summary=args.fname_summary_patient,
-        production_or_test=args.production_or_test
+        production_or_test=args.production_or_test,
+        fname_save_var_summary=args.fname_save_var_summary,
+        fname_save_header_summary=args.fname_save_header_summary
     )
 
     # Create sample summary

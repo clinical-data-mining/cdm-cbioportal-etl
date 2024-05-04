@@ -4,7 +4,6 @@ from msk_cdm.data_classes.legacy import CDMProcessingVariables as config_cdm
 from msk_cdm.data_classes.legacy import CDMProcessingVariablesCbioportal as config_cbio_etl
 
 
-
 # Data dictionary
 path_docs = '/gpfs/mindphidata/fongc2/github/docs/docs/tables/'
 FNAME_METADATA = os.path.join(path_docs, 'CDM-Codebook - metadata.csv')
