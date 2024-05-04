@@ -18,9 +18,6 @@ PATH_HEADER_PATIENT = config_cbio_etl.fname_cbio_header_template_p
 #### Current summary files
 FNAME_SUMMARY_TEMPLATE_P = config_cbio_etl.fname_p_sum_template_cdsi
 FNAME_SUMMARY_TEMPLATE_S = config_cbio_etl.fname_s_sum_template_cdsi
-# #### Current summary files
-# FNAME_SUMMARY_TEMPLATE_P = config_cdm.fname_p_sum_template
-# FNAME_SUMMARY_TEMPLATE_S = config_cdm.fname_s_sum_template
 
 #### Redcap report manifest files
 FNAME_MANIFEST_PATIENT = 'cbioportal/summary_manifests/summary_manifest_patient.csv'
@@ -36,15 +33,10 @@ FNAME_SUMMARY_S_MINIO = config_cbio_etl.fname_summary_sample_minio
 # ENV_MINIO=config_cdm.minio_env
 ENV_MINIO = '/gpfs/mindphidata/fongc2/minio_env.txt'
 ### Columns of interest for joining or removing
-COL_PID = 'DMP_ID'
-COL_PID_CBIO = 'PATIENT_ID'
 FNAME_CBIO_SID = '/gpfs/mindphidata/cdm_repos/datahub/impact-data/data_clinical_sample.txt'
 FNAME_SAMPLE_REMOVE = os.path.abspath(os.path.join(os.path.dirname( __file__ ), "mskimpact_clinical_data_remove.tsv"))
 
-### Column names for the manifest file
-COL_SUMMARY_FNAME_SAVE = 'SUMMARY_FILENAME'
-COL_SUMMARY_HEADER_FNAME_SAVE = 'SUMMARY_HEADER_FILENAME'
-COL_RPT_NAME = 'REPORT_NAME'
+
 
 """
 For use in `utils/cmd_cbioportal_copy_to_minio.py`
@@ -147,6 +139,4 @@ COLS_ORDER_GENERAL = [
 ## IMPACT sequencing and surgical specimens
 FNAME_DEMO = config_cdm.fname_demo
 FNAME_TIMELINE_FU = config_cbio_etl.fname_timeline_fu
-
-
 FNAME_OS = 'demographics/overall_survival_cbioportal.tsv'

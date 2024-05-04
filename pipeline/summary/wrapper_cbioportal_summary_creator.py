@@ -1,10 +1,8 @@
 """
 cmd-cbioportal-summary-creator.py
 
-
 Create summary files and corresponding headers from CDM data, 
 then combine into a single file to be pushed to cbioportal
-
 
 """
 import sys
@@ -30,16 +28,21 @@ from constants import (
 
 
 def create_cbioportal_summary(
-
+    fname_minio_env,
     patient_or_sample,
     fname_manifest, 
     fname_current_summary, 
     fname_new_summary,
     production_or_test,
     fname_save_var_summary,
-    fname_save_header_summary
+    fname_save_header_summary,
+    path_minio_summary_intermediate
 ):
-    obj_format_cbio = RedcapToCbioportalFormat()
+    obj_format_cbio = RedcapToCbioportalFormat(
+        fname_minio_env=fname_minio_env,
+        path_minio_summary_intermediate=path_minio_summary_intermediate
+
+    )
     
     ## Create individual summary and header files, with a manifest file summarizing the outputs
     obj_format_cbio.create_summaries_and_headers(
@@ -51,7 +54,7 @@ def create_cbioportal_summary(
     
     ## Merge summaries and headers
     obj_p_combiner = cbioportalSummaryFileCombiner(
-        fname_minio_env=ENV_MINIO,
+        fname_minio_env=fname_minio_env,
         fname_manifest=fname_manifest, 
         fname_current_summary=fname_current_summary, 
         patient_or_sample=patient_or_sample,
