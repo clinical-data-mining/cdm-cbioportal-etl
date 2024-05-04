@@ -7,19 +7,10 @@ Object requires
 - path to the manifest file containing all of the redcap summary file and header paths
 - path to current patient and sample summary paths 
 """
-import sys
-import os
-sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'utils')))
-sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..')))
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'minio_api/')))
 import pandas as pd
-from minio_api import MinioAPI
-from cbioportal_summary_merger import cBioPortalSummaryMergeTool
-from constants import (
-    ENV_MINIO,
-    COL_SUMMARY_FNAME_SAVE,
-    COL_SUMMARY_HEADER_FNAME_SAVE
-) 
+
+from msk_cdm.minio import MinioAPI
+from cdm_cbioportal_etl.summary import cBioPortalSummaryMergeTool
 
 
 class cbioportalSummaryFileCombiner(object):
@@ -30,17 +21,19 @@ class cbioportalSummaryFileCombiner(object):
         fname_manifest, 
         fname_current_summary, 
         patient_or_sample,
-        production_or_test
+        production_or_test,
+        fname_save_var_summary,
+        fname_save_header_summary
     ):
         # Input filenames
-        self._fname_minio_env = ENV_MINIO
+        self._fname_minio_env = fname_minio_env
         self._fname_current_summary = fname_current_summary
         self._fname_manifest = fname_manifest
         self._patient_or_sample = patient_or_sample
         self._production_or_test = production_or_test
         
-        self._var_summary_fname = COL_SUMMARY_FNAME_SAVE
-        self._var_header_fname = COL_SUMMARY_HEADER_FNAME_SAVE
+        self._var_summary_fname = fname_save_var_summary
+        self._var_header_fname = fname_save_header_summary
         
         # DataFrame variables
         self._obj_patient_merge = None      

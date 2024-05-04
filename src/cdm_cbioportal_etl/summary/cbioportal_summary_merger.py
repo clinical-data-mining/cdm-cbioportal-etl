@@ -5,12 +5,9 @@ This class will update clinical patient and sample summary files on cbioportal.
 Object requires the path to the original sample/patient file, and for new/replacement annotations, a header and dataframe file (csv format)
 """
 import pandas as pd
-import sys
-import os
-sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..')))
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'minio_api/')))
-from minio_api import MinioAPI
-from utils import convert_to_int
+
+from msk_cdm.minio import MinioAPI
+
 COLS_PRODUCTION = ['label', 'comment', 'data_type', 'visible', 'heading']
 COLS_TESTING = ['label', 'comment', 'data_type', 'patient_or_sample', 'visible', 'heading']
 
