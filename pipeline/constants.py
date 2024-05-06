@@ -126,14 +126,6 @@ DICT_FILES_TIMELINE_TESTING = {
     config_cbio_etl.fname_timeline_fu: fname_save_timeline_follow_up
 }
 
-
-COLS_ORDER_GENERAL = [
-    'PATIENT_ID', 
-    'START_DATE', 
-    'STOP_DATE', 
-    'EVENT_TYPE', 
-    'SUBTYPE'
-]
 # Constants for custom built timeline file generators
 
 ## IMPACT sequencing and surgical specimens
