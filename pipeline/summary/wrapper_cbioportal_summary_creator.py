@@ -9,8 +9,8 @@ import sys
 import os
 import argparse
 
-from cbioportal_summary_file_combiner import cbioportalSummaryFileCombiner
-from create_summary_from_redcap_reports import RedcapToCbioportalFormat
+from cdm_cbioportal_etl.summary import cbioportalSummaryFileCombiner
+from cdm_cbioportal_etl.summary import RedcapToCbioportalFormat
 sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..')))
 from constants import (
     FNAME_MANIFEST_PATIENT,
@@ -124,8 +124,15 @@ def main():
         "--fname_save_var_summary",
         action="store",
         dest="fname_save_var_summary",
-        default=FNAME_SUMMARY_S,
-        help="Output file for the sample level summary to be pushed to cBioPortal.",
+        default=COL_SUMMARY_FNAME_SAVE,
+        help=".",
+    )
+    parser.add_argument(
+        "--fname_save_header_summary",
+        action="store",
+        dest="fname_save_header_summary",
+        default=COL_SUMMARY_HEADER_FNAME_SAVE,
+        help=".",
     )
     
     args = parser.parse_args()
@@ -148,7 +155,9 @@ def main():
         fname_manifest=args.fname_manifest_sample, 
         fname_current_summary=args.fname_summary_template_sample, 
         fname_new_summary=args.fname_summary_sample,
-        production_or_test=args.production_or_test
+        production_or_test=args.production_or_test,
+        fname_save_var_summary=args.fname_save_var_summary,
+        fname_save_header_summary=args.fname_save_header_summary
     )
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 import pandas as pd
 
 from msk_cdm.minio import MinioAPI
-from cdm_cbioportal.utils import get_anchor_dates
+from cdm_cbioportal_etl.utils import get_anchor_dates
 from msk_cdm.data_processing import (
     mrn_zero_pad, 
     print_df_without_index, 
