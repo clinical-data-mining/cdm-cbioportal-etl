@@ -26,7 +26,6 @@ from msk_cdm.minio import MinioAPI
 from msk_cdm.data_processing import mrn_zero_pad
 
 from cdm_cbioportal_etl.utils import (
-    init_metadata,
     get_anchor_dates
 )
 
@@ -43,8 +42,15 @@ class RedcapToCbioportalFormat(object):
     def __init__(
         self,
         fname_minio_env,
-        path_minio_summary_intermediate
+        path_minio_summary_intermediate,
+        fname_metadata,
+        fname_metaproject,
+        fname_metatables
     ):
+        # Filenames
+        self._fname_metadata = fname_metadata
+        self._fname_metaproject = fname_metaproject
+        self._fname_metatables = fname_metatables
         
         # Dataframes
         # self._df_rc_summary = None
@@ -69,7 +75,7 @@ class RedcapToCbioportalFormat(object):
         # Load anchor data containing data to deidentify tables
         self._df_anchor = get_anchor_dates()
         
-        df_metadata, df_tables, df_project = init_metadata()
+        df_metadata, df_tables, df_project = self.init_metadata()
         self._df_metadata = df_metadata
         self._df_tables = df_tables 
         self._df_project = df_project
@@ -173,6 +179,14 @@ class RedcapToCbioportalFormat(object):
         print(df_header)
 
         return df_header
+
+    def init_metadata(self):
+        # Load CDM Codebook files
+        df_metadata = pd.read_csv(self._fname_metadata)
+        df_project = pd.read_csv(self._fname_metaproject)
+        df_tables = pd.read_csv(self._fname_metatables)
+
+        return df_metadata, df_tables, df_project
     
     def create_summaries_and_headers(
         self, 
