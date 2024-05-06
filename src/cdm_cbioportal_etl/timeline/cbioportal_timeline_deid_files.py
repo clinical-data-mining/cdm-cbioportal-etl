@@ -10,6 +10,14 @@ from msk_cdm.data_processing import (
     save_appended_df
 )
 
+COLS_ORDER_GENERAL = [
+    'PATIENT_ID',
+    'START_DATE',
+    'STOP_DATE',
+    'EVENT_TYPE',
+    'SUBTYPE'
+]
+
 
 def cbioportal_deid_timeline_files(
     fname_minio_env,
