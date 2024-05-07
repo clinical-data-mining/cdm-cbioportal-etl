@@ -25,7 +25,8 @@ from variables import (
     ENV_MINIO,
     FNAME_METADATA,
     FNAME_PROJECT,
-    FNAME_TABLES
+    FNAME_TABLES,
+    PATH_MINIO_CBIO_SUMMARY_INTERMEDIATE
 )
 
 COL_SUMMARY_FNAME_SAVE = constants.COL_SUMMARY_FNAME_SAVE
@@ -139,30 +140,38 @@ def main():
         default=COL_SUMMARY_HEADER_FNAME_SAVE,
         help=".",
     )
+
+    # TODO Put the following variables in the argparsing
+    fname_minio_env = ENV_MINIO
+    path_minio_summary_intermediate = PATH_MINIO_CBIO_SUMMARY_INTERMEDIATE
     
     args = parser.parse_args()
     # Create patient summary
     patient_or_sample = 'patient'
     create_cbioportal_summary(
+        fname_minio_env = fname_minio_env,
         patient_or_sample=patient_or_sample,
         fname_manifest=args.fname_manifest_patient, 
         fname_current_summary=args.fname_summary_template_patient, 
         fname_new_summary=args.fname_summary_patient,
         production_or_test=args.production_or_test,
         fname_save_var_summary=args.fname_save_var_summary,
-        fname_save_header_summary=args.fname_save_header_summary
+        fname_save_header_summary=args.fname_save_header_summary,
+        path_minio_summary_intermediate=path_minio_summary_intermediate
     )
 
     # Create sample summary
     patient_or_sample = 'sample'
     create_cbioportal_summary(
+        fname_minio_env = fname_minio_env,
         patient_or_sample=patient_or_sample,
         fname_manifest=args.fname_manifest_sample, 
         fname_current_summary=args.fname_summary_template_sample, 
         fname_new_summary=args.fname_summary_sample,
         production_or_test=args.production_or_test,
         fname_save_var_summary=args.fname_save_var_summary,
-        fname_save_header_summary=args.fname_save_header_summary
+        fname_save_header_summary=args.fname_save_header_summary,
+        path_minio_summary_intermediate=path_minio_summary_intermediate
     )
 
 if __name__ == "__main__":
