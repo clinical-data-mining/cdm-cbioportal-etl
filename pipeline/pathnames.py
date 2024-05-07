@@ -7,6 +7,56 @@ root_path: str = "/gpfs/mindphidata/cdm_repos/github"
 class CDMProcessingVariablesCbioportal:
     root_path_cbio_etl: str = os.path.join(root_path, "cdm-cbioportal-etl")
 
+    # ##############################################################################
+    # # cBioPortal summary and timeline scripts
+    # ##############################################################################
+    # script_cbio_timeline_deid_files: str = os.path.join(
+    #     root_path_cbio_etl, "timeline/cbioportal_timeline_deid_files.py"
+    # )
+    # script_cbio_timeline_seq_spec: str = os.path.join(
+    #     root_path_cbio_etl, "timeline/cbioportal_timeline_specimen.py"
+    # )
+    # # script_cbio_timeline_progression: str = os.path.join(root_path_cbio_etl, 'timeline/cbioportal_timeline_progression.py')    # 2023/10/18 Turned off
+    # script_cbio_timeline_disease_status: str = os.path.join(
+    #     root_path_cbio_etl, "timeline/disease_status_cbioportal_timeline.py"
+    # )
+    # # script_cbio_timeline_cea_labs: str = os.path.join(root_path_cbio_etl, 'timeline/cbioportal_timeline_cea_labs.py')          # 2023/10/18 Turned off
+    # script_timeline_follow_up: str = os.path.join(
+    #     root_path_cbio_etl, "timeline/cbioportal_timeline_follow_up.py"
+    # )
+    # script_summary_overall_survival: str = os.path.join(
+    #     root_path_cbio_etl, "summary/cbioportal_overall_survival.py"
+    # )
+    #
+    # script_create_summary_templates: str = os.path.join(
+    #     root_path_cbio_etl, "summary/cbioportal_template_generator.py "
+    # )
+    # script_summary_formatting: str = os.path.join(
+    #     root_path_cbio_etl, "summary/wrapper_cbioportal_summary_creator.py"
+    # )
+    # script_copy_to_minio: str = os.path.join(
+    #     root_path_cbio_etl, "utils/wrapper_cbioportal_copy_to_minio.py"
+    # )
+    # script_copy_to_cdsi_repo: str = os.path.join(
+    #     root_path_cbio_etl, "utils/copy_cbio_files_to_automation_folder.py"
+    # )
+    #
+    # script_cbio_etl_git_fetch: str = os.path.join(
+    #     root_path_cbio_etl, "git-tasks/git_fetch.sh "
+    # )
+    # script_cbio_etl_git_fetch_cdsi_copy: str = os.path.join(
+    #     root_path_cbio_etl, "git-tasks/git_fetch_impact_pipeline.sh "
+    # )
+    # script_cbio_etl_git_push: str = os.path.join(
+    #     root_path_cbio_etl, "git-tasks/git_push.sh "
+    # )
+    # script_cbio_etl_git_push_cdsi_copy: str = os.path.join(
+    #     root_path_cbio_etl, "git-tasks/git_push_impact_pipeline.sh "
+    # )
+    # script_cbio_etl_git_fetch_impact: str = os.path.join(
+    #     root_path_cbio_etl, "git-tasks/git_fetch_impact_ids.sh "
+    # )
+
     ##############################################################################
     # cBioPortal summary and timeline scripts
     ##############################################################################
