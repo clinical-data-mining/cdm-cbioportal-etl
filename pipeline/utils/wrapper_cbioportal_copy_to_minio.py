@@ -1,7 +1,11 @@
+import os
+import sys
+
 import pandas as pd
 
 from msk_cdm.minio import MinioAPI
-from pipeline.variables import (
+sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..')))
+from variables import (
     DICT_FILES_TO_COPY, 
     ENV_MINIO
 )
