@@ -175,7 +175,8 @@ class RedcapToCbioportalFormat(object):
 
         # Fill comment section with header if section is NA
         df_header['comment'] = df_header['comment'].fillna(df_header['label'])
-        
+
+        print('Sample of final header')
         print(df_header)
 
         return df_header
@@ -444,8 +445,9 @@ class RedcapToCbioportalFormat(object):
                        COL_SUMMARY_HEADER_FNAME_SAVE:fname_header_save}
         print(df_manifest.head())
         print(dict_append)
-        df_manifest = df_manifest.append(dict_append, ignore_index=True)
-        
+
+        new_row_df = pd.DataFrame(dict_append.values(), columns=df_manifest.columns)
+        df_manifest = pd.concat([df_manifest, new_row_df], ignore_index=True)
         self._df_manifest = df_manifest
         
         return None
