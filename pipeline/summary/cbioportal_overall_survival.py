@@ -5,7 +5,7 @@ import pandas as pd
 
 sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..')))
 from msk_cdm.minio import MinioAPI
-from constants import (
+from variables import (
     FNAME_DEMO,
     FNAME_CBIO_SID,
     FNAME_OS,

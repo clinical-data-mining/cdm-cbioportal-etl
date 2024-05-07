@@ -3,7 +3,7 @@ import sys
 import argparse
 
 sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..')))
-from constants import (
+from variables import (
     DICT_FILES_TIMELINE,
     DICT_FILES_TIMELINE_TESTING,
     ENV_MINIO

@@ -1,9 +1,12 @@
+import os
+import sys
 import argparse
 from datetime import date
 
 import pandas as pd
 
-from utils.constants import DICT_FILES_TO_COPY
+sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..')))
+from variables import DICT_FILES_TO_COPY
 
 
 cols_fixed = ['SAMPLE_ID', 'PATIENT_ID', 'STOP_DATE', 'SUBTYPE']
