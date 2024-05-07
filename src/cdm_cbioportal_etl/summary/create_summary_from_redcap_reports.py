@@ -446,7 +446,7 @@ class RedcapToCbioportalFormat(object):
         print(df_manifest.head())
         print(dict_append)
 
-        new_row_df = pd.DataFrame(dict_append.values(), columns=df_manifest.columns)
+        new_row_df = pd.DataFrame.from_dict(dict_append, orient='index').T
         df_manifest = pd.concat([df_manifest, new_row_df], ignore_index=True)
         self._df_manifest = df_manifest
         

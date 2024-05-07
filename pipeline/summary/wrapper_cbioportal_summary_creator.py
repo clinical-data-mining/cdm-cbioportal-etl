@@ -100,7 +100,7 @@ def main():
     parser.add_argument(
         "--fname_summary_template_patient",
         action="store",
-        dest="`fname_summary_template_patient`",
+        dest="fname_summary_template_patient",
         default=FNAME_SUMMARY_TEMPLATE_P,
         help="TSV template file containing list of patient IDs.",
     )
