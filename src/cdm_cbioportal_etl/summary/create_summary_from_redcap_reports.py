@@ -440,6 +440,8 @@ class RedcapToCbioportalFormat(object):
         dict_append = {COL_RPT_NAME:instr_name, 
                        COL_SUMMARY_FNAME_SAVE:fname_df_save, 
                        COL_SUMMARY_HEADER_FNAME_SAVE:fname_header_save}
+        print(df_manifest.head())
+        print(dict_append)
         df_manifest = df_manifest.append(dict_append, ignore_index=True)
         
         self._df_manifest = df_manifest
