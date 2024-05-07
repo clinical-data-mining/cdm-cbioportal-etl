@@ -1,7 +1,7 @@
 import pandas as pd
 
 from msk_cdm.minio import MinioAPI
-from pipeline.constants import (
+from pipeline.variables import (
     DICT_FILES_TO_COPY, 
     ENV_MINIO
 )
