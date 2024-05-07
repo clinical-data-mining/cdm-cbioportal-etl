@@ -100,7 +100,7 @@ def main():
     parser.add_argument(
         "--fname_summary_template_patient",
         action="store",
-        dest="fname_summary_template_patient",
+        dest="`fname_summary_template_patient`",
         default=FNAME_SUMMARY_TEMPLATE_P,
         help="TSV template file containing list of patient IDs.",
     )
@@ -161,7 +161,7 @@ def main():
         fname_minio_env = fname_minio_env,
         patient_or_sample=patient_or_sample,
         fname_manifest=args.fname_manifest_patient, 
-        fname_current_summary=args.fname_summary_template_patient, 
+        fname_current_summary=args.fname_summary_template_patient,
         fname_new_summary=args.fname_summary_patient,
         production_or_test=args.production_or_test,
         fname_save_var_summary=args.fname_save_var_summary,
