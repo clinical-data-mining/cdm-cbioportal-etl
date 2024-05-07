@@ -261,8 +261,10 @@ class RedcapToCbioportalFormat(object):
         print(df_template.shape)
         print(list_fname_minio)
 
+        print('CYCLE THROUGH CDM DATA SUMMARIES')
         # Cycle through the list of CDM dataset to be loaded
         for i,fname in enumerate(list_fname_minio):
+            print('------------------------------------------------')
             print('Loading %s' % fname)
             obj = self._obj_minio.load_obj(path_object=fname)
             df_ = pd.read_csv(
@@ -272,10 +274,8 @@ class RedcapToCbioportalFormat(object):
                 sep='\t',
                 dtype=str
             )
+            print('Gathering metadata from documentation tables')
             form = df_tables.loc[list_fname_minio.index[i], 'form_name']
-            # print('-----------------------')
-            print(fname)
-            # print(form)
             filt_table_use = logic_for_cbio & (df_metadata['form_name'] == form)
             filt_col_dates = df_metadata.loc[filt_table_use]['text_validation_type_or_sh'] == 'date_mdy'
             cols_to_use = list(df_metadata.loc[filt_table_use, 'field_name'])
@@ -284,18 +284,14 @@ class RedcapToCbioportalFormat(object):
             key_sample = active_tables['cbio_summary_id_sample'].iloc[i]
 
             if pd.isna(key_sample):
-
                 key = [key_patient]
             else:
                 key = [key_sample, key_patient]
 
-            cols_filter = key + list(cols_to_use)    
-
-            # print(key)
-            print(cols_filter)
-            # print(cols_dates)
+            cols_filter = key + list(cols_to_use)
 
             # Merge with anchor dates and de-id
+            print('Determining column key with patient ID')
             df_select = df_[cols_filter]
 
             if (key_patient == 'MRN'):
@@ -309,8 +305,10 @@ class RedcapToCbioportalFormat(object):
                     how='inner', 
                     right_on=key_patient, 
                     left_on='DMP_ID'
-                ) 
+                )
+
             # Convert dates to intervals
+            print('Converting dates to intervals')
             df_select[cols_dates] = df_select[cols_dates].apply(lambda x: pd.to_datetime(x, errors='coerce'))
             df_select[cols_dates] = df_select[cols_dates].apply(lambda x: (x - df_select['DTE_PATH_PROCEDURE']).dt.days)
             df_select = df_select.drop(columns=['DTE_PATH_PROCEDURE'])
@@ -318,6 +316,7 @@ class RedcapToCbioportalFormat(object):
             df_select.columns = [x.upper().replace(' ', '_') for x in df_select.columns]
 
             # Create header
+            print('Creating header')
             cols_header = list(df_select.columns)
             
             df_header = self._format_data_dictionary(
@@ -348,17 +347,16 @@ class RedcapToCbioportalFormat(object):
             print(df_select.head())
             print(df_select.shape)
             
-            print('df_template--------------------')
-            print(df_template.head())
-            print(df_template.shape)
-            
             # Merge with template cases and reformat according to heading
+            print('Merging with template')
             df_select_f = df_template.merge(
                 right=df_select, 
                 how='left', 
                 on=col_id_change
             )
-            
+
+            # Impute fill values
+            print('Imputing fill values')
             for current_col in cols_summary_order:
                 fill_value = df_header.loc[df_header['heading'] == current_col, 'fill_value'].iloc[0]
                 print('fill_value--------------------')
@@ -370,12 +368,12 @@ class RedcapToCbioportalFormat(object):
                 print(data_type)
                 
                 df_select_f[current_col] = df_select_f[current_col].fillna(fill_value)
-                
+
+            print('Sample of final result')
             print('df_select_f--------------------')
             print(df_select_f.head())
             print(df_select_f.shape)
-                
-            
+
             # Remove columns not needed in header file
             df_header.drop(columns=['Rank', 'is_date', 'fill_value'], axis=1, inplace = True)
             # Replace all values that are INT or FLOAT to NUMBER
@@ -383,8 +381,11 @@ class RedcapToCbioportalFormat(object):
 
             # Create manifest file
             ## Modify/create manifest files --------------------------------------------------
+            print('Adding table and info to manifest file')
             fname_save_data = self._path_minio_summary_intermediate + form.lower().replace(' ','_') + '_data.csv'
             fname_save_header = self._path_minio_summary_intermediate + form.lower().replace(' ','_') + '_header.csv'
+
+            print(form)
             ##### This file will be used for merging data    
             self.summary_manifest_append(
                 instr_name=form,
@@ -393,7 +394,8 @@ class RedcapToCbioportalFormat(object):
             )
 
             ## Save data and header files --------------------------------------------------
-            ### Save cbioportal formatted patient level dx data and header files 
+            ### Save cbioportal formatted patient level dx data and header files
+            print('Saving header and summary data')
             print('Saving %s' % fname_save_data)
             print(df_select_f.head())
             self._obj_minio.save_obj(
