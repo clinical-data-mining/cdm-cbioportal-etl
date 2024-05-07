@@ -11,8 +11,9 @@ import argparse
 
 from cdm_cbioportal_etl.summary import cbioportalSummaryFileCombiner
 from cdm_cbioportal_etl.summary import RedcapToCbioportalFormat
+from cdm_cbioportal_etl.utils import constants
 sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..')))
-from constants import (
+from variables import (
     FNAME_MANIFEST_PATIENT,
     FNAME_MANIFEST_SAMPLE,
     FNAME_SUMMARY_TEMPLATE_P,
@@ -22,12 +23,13 @@ from constants import (
     FNAME_SUMMARY_P_MINIO,
     FNAME_SUMMARY_S_MINIO,
     ENV_MINIO,
-    COL_SUMMARY_FNAME_SAVE,
-    COL_SUMMARY_HEADER_FNAME_SAVE,
     FNAME_METADATA,
     FNAME_PROJECT,
     FNAME_TABLES
-) 
+)
+
+COL_SUMMARY_FNAME_SAVE = constants.COL_SUMMARY_FNAME_SAVE
+COL_SUMMARY_HEADER_FNAME_SAVE = constants.COL_SUMMARY_HEADER_FNAME_SAVE
 
 
 def create_cbioportal_summary(

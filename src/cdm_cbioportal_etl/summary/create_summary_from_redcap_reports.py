@@ -32,11 +32,6 @@ from cdm_cbioportal_etl.utils import (
 COL_PID = 'DMP_ID'
 COL_PID_CBIO = 'PATIENT_ID'
 
-### Column names for the manifest file
-COL_SUMMARY_FNAME_SAVE = 'SUMMARY_FILENAME'
-COL_SUMMARY_HEADER_FNAME_SAVE = 'SUMMARY_HEADER_FILENAME'
-COL_RPT_NAME = 'REPORT_NAME'
-
 
 class RedcapToCbioportalFormat(object):
     def __init__(
