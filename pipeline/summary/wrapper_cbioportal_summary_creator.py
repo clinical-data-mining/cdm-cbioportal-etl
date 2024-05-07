@@ -42,11 +42,17 @@ def create_cbioportal_summary(
     production_or_test,
     fname_save_var_summary,
     fname_save_header_summary,
-    path_minio_summary_intermediate
+    path_minio_summary_intermediate,
+    fname_meta_data,
+    fname_meta_table,
+    fname_meta_project
 ):
     obj_format_cbio = RedcapToCbioportalFormat(
         fname_minio_env=fname_minio_env,
-        path_minio_summary_intermediate=path_minio_summary_intermediate
+        path_minio_summary_intermediate=path_minio_summary_intermediate,
+        fname_metadata=fname_meta_data,
+        fname_metaproject=fname_meta_project,
+        fname_metatables=fname_meta_table
 
     )
     
@@ -144,6 +150,9 @@ def main():
     # TODO Put the following variables in the argparsing
     fname_minio_env = ENV_MINIO
     path_minio_summary_intermediate = PATH_MINIO_CBIO_SUMMARY_INTERMEDIATE
+    fname_meta_data = FNAME_METADATA
+    fname_meta_project = FNAME_PROJECT
+    fname_meta_table = FNAME_TABLES
     
     args = parser.parse_args()
     # Create patient summary
@@ -157,7 +166,11 @@ def main():
         production_or_test=args.production_or_test,
         fname_save_var_summary=args.fname_save_var_summary,
         fname_save_header_summary=args.fname_save_header_summary,
-        path_minio_summary_intermediate=path_minio_summary_intermediate
+        path_minio_summary_intermediate=path_minio_summary_intermediate,
+        fname_meta_data = fname_meta_data,
+        fname_meta_table = fname_meta_table,
+        fname_meta_project = fname_meta_project
+
     )
 
     # Create sample summary
@@ -171,7 +184,10 @@ def main():
         production_or_test=args.production_or_test,
         fname_save_var_summary=args.fname_save_var_summary,
         fname_save_header_summary=args.fname_save_header_summary,
-        path_minio_summary_intermediate=path_minio_summary_intermediate
+        path_minio_summary_intermediate=path_minio_summary_intermediate,
+        fname_meta_data = fname_meta_data,
+        fname_meta_table = fname_meta_table,
+        fname_meta_project = fname_meta_project
     )
 
 if __name__ == "__main__":
