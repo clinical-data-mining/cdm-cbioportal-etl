@@ -28,9 +28,14 @@ from msk_cdm.data_processing import mrn_zero_pad
 from cdm_cbioportal_etl.utils import (
     get_anchor_dates
 )
+from cdm_cbioportal_etl.utils import constants
 
-COL_PID = 'DMP_ID'
-COL_PID_CBIO = 'PATIENT_ID'
+COL_SUMMARY_FNAME_SAVE = constants.COL_SUMMARY_FNAME_SAVE
+COL_SUMMARY_HEADER_FNAME_SAVE = constants.COL_SUMMARY_HEADER_FNAME_SAVE
+COL_RPT_NAME = constants.COL_RPT_NAME
+
+COL_PID = constants.COL_PID
+COL_PID_CBIO = constants.COL_PID_CBIO
 
 
 class RedcapToCbioportalFormat(object):
