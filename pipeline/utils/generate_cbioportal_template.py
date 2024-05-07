@@ -3,7 +3,7 @@ import os
 
 from cdm_cbioportal_etl.summary import generate_cbioportal_template
 sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..')))
-from constants import (
+from variables import (
     ENV_MINIO,
     PATH_HEADER_SAMPLE,
     PATH_HEADER_PATIENT,
