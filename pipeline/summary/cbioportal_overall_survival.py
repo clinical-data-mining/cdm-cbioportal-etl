@@ -20,7 +20,6 @@ from cdm_cbioportal_etl.utils import get_anchor_dates
 
 COLS_OS = ['DMP_ID', 'OS_MONTHS', 'OS_STATUS']
 COL_P_ID = 'PATIENT_ID_x'
-COL_S_ID = 'SAMPLE_ID'
 
 def _load_data(
     obj_minio,
@@ -31,13 +30,14 @@ def _load_data(
     print('Loading %s' % fname_demo)
     obj = obj_minio.load_obj(path_object=fname_demo)
     df_demo = pd.read_csv(obj, sep='\t', low_memory=False)
+    df_demo = df_demo.drop_duplicates()
 
     # Pathology table for sequencing date
     df_path_g = get_anchor_dates()
 
     # IMPACT ids
     print('Loading %s' % fname_sid)
-    usecols=[COL_S_ID, COL_P_ID]
+    usecols=[COL_P_ID]
     dict_patient = {COL_P_ID:'DMP_ID'}
     df_ids = pd.read_csv(
         fname_sid, 
@@ -47,6 +47,7 @@ def _load_data(
         usecols=usecols
     )
     df_ids = df_ids.rename(columns=dict_patient)
+    df_ids = df_ids.drop_duplicates()
 
     print('Data loaded')
     
