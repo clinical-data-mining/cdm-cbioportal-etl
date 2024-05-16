@@ -74,6 +74,7 @@ def dmp_id_case_to_remove(
 def main():
     list_dmp_id_error = dmp_id_case_to_remove()
 
+    print('Cases to remove from ')
     print(list_dmp_id_error)
 
 if __name__ == '__main__':
