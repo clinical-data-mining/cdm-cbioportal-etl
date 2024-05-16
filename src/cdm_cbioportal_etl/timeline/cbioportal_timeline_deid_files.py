@@ -23,6 +23,11 @@ def cbioportal_deid_timeline_files(
     fname_minio_env,
     dict_files_timeline
 ):
+    """ De-identifies timeline files listed in `dict_files_timeline` and saves to object storage. Dates are deidentified using `get_anchor_dates`
+    :param fname_minio_env: Minio environment file for loading and saving data
+    :param dict_files_timeline: Dictionary of cbioportal formatted timeline file names to load (containing PHI) and corresponding filenames of files to be pushed to cbioportal
+    :return: None
+    """
     df_path_g = get_anchor_dates()
     obj_minio = MinioAPI(fname_minio_env=fname_minio_env)
     
