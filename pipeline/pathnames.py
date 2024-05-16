@@ -63,14 +63,10 @@ class CDMProcessingVariablesCbioportal:
     path_map: str = "/config/redcap_report_api_map_cdm.csv"
     path_vars: str = "/config/redcap_variables_cdm.csv"
     redcap_rpt_map: str = "redcap_exports/cdm_cbioportal_codebook/Extraction_of_Clinical_Data_for_MSK-IMPACT_patients__MSK-MIND__redcap_report_mapping.tsv"
-    path_redcap_dest: str = "redcap_exports/cdm_cbioportal_codebook"
-    config_redcap: str = "-t {{ params.TOKEN }} -u {{ params.URL }} -map {{ params.ID }} -vars {{params.VARS}} -dest {{ params.PATH }}  -minio {{ params.MINIO }}"
 
     ##############################################################################
     # cBioPortal setup files
     ##############################################################################
-    path_datahub_testing: str = "/gpfs/mindphidata/fongc2/datahubs/cdm/msk-chord/"
-
     # For IMPACT transition with cbioportal backend team
     path_datahub: str = "/gpfs/mindphidata/cdm_repos/datahub/cdm-data/"
     fname_cbio_header_template_p: str = (
