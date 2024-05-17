@@ -4,6 +4,11 @@ from msk_cdm.data_classes.legacy import CDMProcessingVariables as config_cdm
 from pathnames import CDMProcessingVariablesCbioportal as config_cbio_etl
 
 
+## IMPACT sequencing and surgical specimens
+FNAME_DEMO = config_cdm.fname_demo
+FNAME_TIMELINE_FU = config_cbio_etl.fname_timeline_fu
+FNAME_OS = 'demographics/overall_survival_cbioportal.tsv'
+
 # Data dictionary
 path_docs = '/gpfs/mindphidata/fongc2/github/docs/docs/tables/'
 FNAME_METADATA = os.path.join(path_docs, 'CDM-Codebook - metadata.csv')
@@ -86,7 +91,3 @@ DICT_FILES_TIMELINE = {
     config_cbio_etl.fname_timeline_fu: config_cbio_etl.fname_save_timeline_follow_up
 }
 
-## IMPACT sequencing and surgical specimens
-FNAME_DEMO = config_cdm.fname_demo
-FNAME_TIMELINE_FU = config_cbio_etl.fname_timeline_fu
-FNAME_OS = 'demographics/overall_survival_cbioportal.tsv'
