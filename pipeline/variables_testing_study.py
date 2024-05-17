@@ -27,6 +27,7 @@ FNAME_SUMMARY_TEMPLATE_P = 'cbioportal/intermediate_files/data_clinical_patient_
 FNAME_SUMMARY_TEMPLATE_S = 'cbioportal/intermediate_files/data_clinical_sample_template_testing_study.txt'
 
 fname_timeline_progression_phi = 'radiology/progression/impact/table_timeline_radiology_cancer_progression_predictions.tsv'
+fname_timeline_pathology_mmr_phi = 'pathology/table_timeline_mmr_calls.tsv'
 
 summary_p = "data_clinical_patient.txt"
 summary_s = "data_clinical_sample.txt"
@@ -39,6 +40,7 @@ timeline_spec = 'data_timeline_specimen.txt'
 timeline_spec_surg = 'data_timeline_specimen_surgery.txt'
 timeline_gleason = 'data_timeline_gleason.txt'
 timeline_pdl1 = 'data_timeline_pdl1.txt'
+timeline_pathology_mmr = 'data_timeline_mmr.txt'
 timeline_prior_meds = 'data_timeline_prior_meds.txt'
 timeline_tumor_sites = 'data_timeline_tumor_sites.txt'
 timeline_follow_up: str = 'data_timeline_timeline_follow_up.txt'
@@ -57,6 +59,7 @@ fname_save_timeline_prior_meds: str = os.path.join(path_datahub_testing, timelin
 fname_save_timeline_tumor_sites: str = os.path.join(path_datahub_testing, timeline_tumor_sites)
 fname_save_timeline_follow_up: str = os.path.join(path_datahub_testing, timeline_follow_up)
 fname_save_timeline_progression: str = os.path.join(path_datahub_testing, timeline_progression)
+fname_save_timeline_pathology_mmr: str = os.path.join(path_datahub_testing, timeline_pathology_mmr)
 
 #### Redcap report manifest files
 FNAME_MANIFEST_PATIENT = 'cbioportal/summary_manifests/summary_manifest_patient_testing_study.csv'
@@ -88,7 +91,8 @@ DICT_FILES_TIMELINE_TESTING = {
     config_cdm.fname_prior_meds_predictions_timeline: fname_save_timeline_prior_meds,
     config_cdm.fname_tumor_sites_timeline_cbio: fname_save_timeline_tumor_sites,
     config_cbio_etl.fname_timeline_fu: fname_save_timeline_follow_up,
-    fname_timeline_progression_phi: fname_save_timeline_progression
+    fname_timeline_progression_phi: fname_save_timeline_progression,
+    fname_timeline_pathology_mmr_phi: fname_save_timeline_pathology_mmr
 }
 
 
