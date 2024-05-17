@@ -4,6 +4,11 @@ from msk_cdm.data_classes.legacy import CDMProcessingVariables as config_cdm
 from pathnames import CDMProcessingVariablesCbioportal as config_cbio_etl
 
 
+## IMPACT sequencing and surgical specimens
+FNAME_DEMO = config_cdm.fname_demo
+FNAME_TIMELINE_FU = config_cbio_etl.fname_timeline_fu
+FNAME_OS = 'demographics/overall_survival_cbioportal.tsv'
+
 # Data dictionary
 path_docs = '/gpfs/mindphidata/fongc2/github/docs/docs/tables/'
 FNAME_METADATA = os.path.join(path_docs, 'CDM-Codebook - metadata.csv')
@@ -21,6 +26,8 @@ PATH_HEADER_PATIENT = config_cbio_etl.fname_cbio_header_template_p
 FNAME_SUMMARY_TEMPLATE_P = 'cbioportal/intermediate_files/data_clinical_patient_template_testing_study.txt'
 FNAME_SUMMARY_TEMPLATE_S = 'cbioportal/intermediate_files/data_clinical_sample_template_testing_study.txt'
 
+fname_timeline_progression_phi = 'radiology/progression/impact/table_timeline_radiology_cancer_progression_predictions.tsv'
+
 summary_p = "data_clinical_patient.txt"
 summary_s = "data_clinical_sample.txt"
 timeline_surg = 'data_timeline_surgery.txt'
@@ -35,6 +42,7 @@ timeline_pdl1 = 'data_timeline_pdl1.txt'
 timeline_prior_meds = 'data_timeline_prior_meds.txt'
 timeline_tumor_sites = 'data_timeline_tumor_sites.txt'
 timeline_follow_up: str = 'data_timeline_timeline_follow_up.txt'
+timeline_progression: str = 'data_timeline_progression.txt'
 fname_summary_patient: str = os.path.join(path_datahub_testing, summary_p)
 fname_summary_sample: str = os.path.join(path_datahub_testing, summary_s)
 fname_save_surg_timeline: str = os.path.join(path_datahub_testing, timeline_surg)
@@ -48,6 +56,7 @@ fname_save_timeline_pdl1: str = os.path.join(path_datahub_testing, timeline_pdl1
 fname_save_timeline_prior_meds: str = os.path.join(path_datahub_testing, timeline_prior_meds)
 fname_save_timeline_tumor_sites: str = os.path.join(path_datahub_testing, timeline_tumor_sites)
 fname_save_timeline_follow_up: str = os.path.join(path_datahub_testing, timeline_follow_up)
+fname_save_timeline_progression: str = os.path.join(path_datahub_testing, timeline_progression)
 
 #### Redcap report manifest files
 FNAME_MANIFEST_PATIENT = 'cbioportal/summary_manifests/summary_manifest_patient_testing_study.csv'
@@ -78,10 +87,8 @@ DICT_FILES_TIMELINE_TESTING = {
     config_cdm.fname_path_pdl1_cbio_timeline: fname_save_timeline_pdl1,
     config_cdm.fname_prior_meds_predictions_timeline: fname_save_timeline_prior_meds,
     config_cdm.fname_tumor_sites_timeline_cbio: fname_save_timeline_tumor_sites,
-    config_cbio_etl.fname_timeline_fu: fname_save_timeline_follow_up
+    config_cbio_etl.fname_timeline_fu: fname_save_timeline_follow_up,
+    fname_timeline_progression_phi: fname_save_timeline_progression
 }
 
-## IMPACT sequencing and surgical specimens
-FNAME_DEMO = config_cdm.fname_demo
-FNAME_TIMELINE_FU = config_cbio_etl.fname_timeline_fu
-FNAME_OS = 'demographics/overall_survival_cbioportal.tsv'
+
