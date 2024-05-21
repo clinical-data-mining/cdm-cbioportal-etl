@@ -130,7 +130,7 @@ def main():
         "--production_or_test",
         action="store",
         dest="production_or_test",
-        default='production',
+        default='test',
         help="For logic to decide if production portal or testing portal will be updated.",
     )
     parser.add_argument(
