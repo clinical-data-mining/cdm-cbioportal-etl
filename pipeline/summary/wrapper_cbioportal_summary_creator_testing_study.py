@@ -47,22 +47,7 @@ def create_cbioportal_summary(
     fname_meta_table,
     fname_meta_project
 ):
-    # list_ = [
-    #     fname_minio_env,
-    #     patient_or_sample,
-    #     fname_manifest,
-    #     fname_current_summary,
-    #     fname_new_summary,
-    #     production_or_test,
-    #     fname_save_var_summary,
-    #     fname_save_header_summary,
-    #     path_minio_summary_intermediate,
-    #     fname_meta_data,
-    #     fname_meta_table,
-    #     fname_meta_project
-    # ]
 
-    # print(list_)
     obj_format_cbio = RedcapToCbioportalFormat(
         fname_minio_env=fname_minio_env,
         path_minio_summary_intermediate=path_minio_summary_intermediate,
@@ -145,7 +130,7 @@ def main():
         "--production_or_test",
         action="store",
         dest="production_or_test",
-        default='test',
+        default='production',
         help="For logic to decide if production portal or testing portal will be updated.",
     )
     parser.add_argument(
