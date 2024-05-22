@@ -31,8 +31,8 @@ fname_timeline_cancer_presence_phi = 'radiology/cancer_presence/impact/table_tim
 fname_timeline_pathology_mmr_phi = 'pathology/table_timeline_mmr_calls.tsv'
 fname_timeline_ecog_phi = 'clindoc/ecog/impact/table_timeline_ecog_kps.tsv'
 
-summary_p = "data_clinical_patient.txt"
-summary_s = "data_clinical_sample.txt"
+summary_p = "data_clinical_supp_cdmpatient.txt"
+summary_s = "data_clinical_supp_cdmsample.txt"
 timeline_surg = 'data_timeline_surgery.txt'
 timeline_rt = 'data_timeline_radiation.txt'
 timeline_meds = 'data_timeline_treatment.txt'
