@@ -2,8 +2,6 @@ cluster_account=$1
 
 EKS_ACCOUNT_PRIVATE_CREDENTIALS_FILE=/var/lib/airflow/.eks-account.private.credentials
 
-export PATH=/opt/rh/rh-python36/root/usr/bin:/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/var/lib/snapd/snap/bin:/var/lib/airflow/bin:/usr/lib/jvm/java-11-openjdk-11.0.6.10-3.el7.x86_64//bin
-
 if ! [[ -f $EKS_ACCOUNT_PRIVATE_CREDENTIALS_FILE ]] ; then
     echo "$EKS_ACCOUNT_PRIVATE_CREDENTIALS_FILE could not be found, exiting..."
     exit 2
