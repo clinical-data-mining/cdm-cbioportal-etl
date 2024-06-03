@@ -59,10 +59,10 @@ DICT_FILES_TIMELINE = {
     config_cdm.fname_prior_meds_predictions_timeline: config_cbio_etl.fname_save_timeline_prior_meds,
     config_cdm.fname_tumor_sites_timeline_cbio: config_cbio_etl.fname_save_timeline_tumor_sites,
     config_cbio_etl.fname_timeline_fu: config_cbio_etl.fname_save_timeline_follow_up,
-    config_cdm.fname_timeline_progression_phi: config_cdm.fname_save_timeline_progression,
-    config_cdm.fname_timeline_pathology_mmr_phi: config_cdm.fname_save_timeline_pathology_mmr,
-    config_cdm.fname_timeline_cancer_presence_phi: config_cdm.fname_save_timeline_cancer_presence,
-    config_cdm.fname_timeline_ecog_phi: config_cdm.fname_save_timeline_ecog
+    config_cbio_etl.fname_timeline_progression_phi: config_cbio_etl.fname_save_timeline_progression,
+    config_cbio_etl.fname_timeline_pathology_mmr_phi: config_cbio_etl.fname_save_timeline_pathology_mmr,
+    config_cbio_etl.fname_timeline_cancer_presence_phi: config_cbio_etl.fname_save_timeline_cancer_presence,
+    config_cbio_etl.fname_timeline_ecog_phi: config_cbio_etl.fname_save_timeline_ecog
 }
 
 """
