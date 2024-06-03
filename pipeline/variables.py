@@ -42,33 +42,6 @@ FNAME_CBIO_SID = '/gpfs/mindphidata/cdm_repos/datahub/impact-data/data_clinical_
 FNAME_SAMPLE_REMOVE = os.path.abspath(os.path.join(os.path.dirname( __file__ ), "mskimpact_clinical_data_remove.tsv"))
 
 
-
-"""
-For use in `utils/cmd_cbioportal_copy_to_minio.py`
-Dictionary of files to copy from datahub to Minio
-"""
-DICT_FILES_TO_COPY = {
-    config_cbio_etl.fname_summary_patient: config_cbio_etl.fname_summary_patient_minio,                  
-    config_cbio_etl.fname_summary_sample: config_cbio_etl.fname_summary_sample_minio,
-    config_cbio_etl.fname_save_surg_timeline: config_cbio_etl.fname_save_surg_timeline_minio,
-    config_cbio_etl.fname_save_rt_timeline: config_cbio_etl.fname_save_rt_timeline_minio,
-    config_cbio_etl.fname_save_meds_timeline: config_cbio_etl.fname_save_meds_timeline_minio,
-    # config_cbio_etl.fname_save_disease_status_timeline: config_cbio_etl.fname_save_disease_status_timeline_minio,
-    config_cbio_etl.fname_save_dx_prim_timeline: config_cbio_etl.fname_save_dx_prim_timeline_minio,
-    # config_cbio_etl.fname_save_dx_met_timeline: config_cbio_etl.fname_save_dx_met_timeline_minio,
-    # config_cbio_etl.fname_save_dx_ln_timeline: config_cbio_etl.fname_save_dx_ln_timeline_minio,
-    config_cbio_etl.fname_save_spec_timeline: config_cbio_etl.fname_save_spec_timeline_minio,
-    # config_cbio_etl.fname_save_progression: config_cbio_etl.fname_save_progression_minio,
-    # config_cbio_etl.fname_save_labs_cea: config_cbio_etl.fname_save_labs_cea_minio,
-    config_cbio_etl.fname_save_timeline_gleason: config_cbio_etl.fname_save_timeline_gleason_minio,
-    config_cbio_etl.fname_save_timeline_pdl1: config_cbio_etl.fname_save_timeline_pdl1_minio,
-    config_cbio_etl.fname_save_timeline_prior_meds: config_cbio_etl.fname_save_timeline_prior_meds_minio,
-    config_cbio_etl.fname_save_timeline_tumor_sites: config_cbio_etl.fname_save_timeline_tumor_sites_minio,
-    config_cbio_etl.fname_save_spec_surg_timeline: config_cbio_etl.fname_save_spec_surg_timeline_minio,
-    config_cbio_etl.fname_save_timeline_follow_up: config_cbio_etl.fname_save_timeline_follow_up_minio
-}
-
-
 """
 Constants for cBioPortal timeline files
 """
@@ -77,10 +50,7 @@ Constants for cBioPortal timeline files
 DICT_FILES_TIMELINE = {
     config_cdm.fname_path_sequencing_cbio_timeline: config_cbio_etl.fname_save_spec_timeline,
     config_cdm.fname_path_specimen_surgery_cbio_timeline: config_cbio_etl.fname_save_spec_surg_timeline,
-    
     config_cdm.fname_dx_timeline_prim: config_cbio_etl.fname_save_dx_prim_timeline,
-    # config_cdm.fname_dx_timeline_met: config_cbio_etl.fname_save_dx_met_timeline,
-    # config_cdm.fname_dx_timeline_ln: config_cbio_etl.fname_save_dx_ln_timeline,
     config_cdm.fname_timeline_surg: config_cbio_etl.fname_save_surg_timeline,
     config_cdm.fname_timeline_rt: config_cbio_etl.fname_save_rt_timeline,
     config_cdm.fname_timeline_meds: config_cbio_etl.fname_save_meds_timeline,
@@ -88,6 +58,36 @@ DICT_FILES_TIMELINE = {
     config_cdm.fname_path_pdl1_cbio_timeline: config_cbio_etl.fname_save_timeline_pdl1,
     config_cdm.fname_prior_meds_predictions_timeline: config_cbio_etl.fname_save_timeline_prior_meds,
     config_cdm.fname_tumor_sites_timeline_cbio: config_cbio_etl.fname_save_timeline_tumor_sites,
-    config_cbio_etl.fname_timeline_fu: config_cbio_etl.fname_save_timeline_follow_up
+    config_cbio_etl.fname_timeline_fu: config_cbio_etl.fname_save_timeline_follow_up,
+    config_cdm.fname_timeline_progression_phi: config_cdm.fname_save_timeline_progression,
+    config_cdm.fname_timeline_pathology_mmr_phi: config_cdm.fname_save_timeline_pathology_mmr,
+    config_cdm.fname_timeline_cancer_presence_phi: config_cdm.fname_save_timeline_cancer_presence,
+    config_cdm.fname_timeline_ecog_phi: config_cdm.fname_save_timeline_ecog
 }
+
+"""
+For use in `utils/cmd_cbioportal_copy_to_minio.py`
+Dictionary of files to copy from datahub to Minio
+"""
+DICT_FILES_TO_COPY = {
+    config_cbio_etl.fname_summary_patient: config_cbio_etl.fname_summary_patient_minio,
+    config_cbio_etl.fname_summary_sample: config_cbio_etl.fname_summary_sample_minio,
+    config_cbio_etl.fname_save_surg_timeline: config_cbio_etl.fname_save_surg_timeline_minio,
+    config_cbio_etl.fname_save_rt_timeline: config_cbio_etl.fname_save_rt_timeline_minio,
+    config_cbio_etl.fname_save_meds_timeline: config_cbio_etl.fname_save_meds_timeline_minio,
+    config_cbio_etl.fname_save_dx_prim_timeline: config_cbio_etl.fname_save_dx_prim_timeline_minio,
+    config_cbio_etl.fname_save_spec_timeline: config_cbio_etl.fname_save_spec_timeline_minio,
+    config_cbio_etl.fname_save_timeline_gleason: config_cbio_etl.fname_save_timeline_gleason_minio,
+    config_cbio_etl.fname_save_timeline_pdl1: config_cbio_etl.fname_save_timeline_pdl1_minio,
+    config_cbio_etl.fname_save_timeline_prior_meds: config_cbio_etl.fname_save_timeline_prior_meds_minio,
+    config_cbio_etl.fname_save_timeline_tumor_sites: config_cbio_etl.fname_save_timeline_tumor_sites_minio,
+    config_cbio_etl.fname_save_spec_surg_timeline: config_cbio_etl.fname_save_spec_surg_timeline_minio,
+    config_cbio_etl.fname_save_timeline_follow_up: config_cbio_etl.fname_save_timeline_follow_up_minio,
+
+    config_cdm.fname_save_timeline_progression: config_cdm.fname_save_timeline_progression_minio,
+    config_cdm.fname_save_timeline_pathology_mmr: config_cdm.fname_save_timeline_pathology_mmr_minio,
+    config_cdm.fname_save_timeline_cancer_presence: config_cdm.fname_save_timeline_cancer_presence_minio,
+    config_cdm.fname_save_timeline_ecog: config_cdm.fname_save_timeline_ecog_minio
+}
+
 
