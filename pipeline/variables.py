@@ -84,10 +84,10 @@ DICT_FILES_TO_COPY = {
     config_cbio_etl.fname_save_spec_surg_timeline: config_cbio_etl.fname_save_spec_surg_timeline_minio,
     config_cbio_etl.fname_save_timeline_follow_up: config_cbio_etl.fname_save_timeline_follow_up_minio,
 
-    config_cdm.fname_save_timeline_progression: config_cdm.fname_save_timeline_progression_minio,
-    config_cdm.fname_save_timeline_pathology_mmr: config_cdm.fname_save_timeline_pathology_mmr_minio,
-    config_cdm.fname_save_timeline_cancer_presence: config_cdm.fname_save_timeline_cancer_presence_minio,
-    config_cdm.fname_save_timeline_ecog: config_cdm.fname_save_timeline_ecog_minio
+    config_cbio_etl.fname_save_timeline_progression: config_cbio_etl.fname_save_timeline_progression_minio,
+    config_cbio_etl.fname_save_timeline_pathology_mmr: config_cbio_etl.fname_save_timeline_pathology_mmr_minio,
+    config_cbio_etl.fname_save_timeline_cancer_presence: config_cbio_etl.fname_save_timeline_cancer_presence_minio,
+    config_cbio_etl.fname_save_timeline_ecog: config_cbio_etl.fname_save_timeline_ecog_minio
 }
 
 
