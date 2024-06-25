@@ -2,8 +2,7 @@
 set -eE -v
 trap 'echo "Last command exited with status code of $?, exiting..."' ERR
 
-test -n "$INPUT_DIR"
-test -n "$OUTPUT_DIR"
+echo $PATH
 
 /gpfs/mindphidata/cdm_repos/github/cdm-cbioportal-etl/s3-tasks/authenticate_service_account.sh private
-aws s3 sync $INPUT_DIR s3://cdm-deliverable/$OUTPUT_DIR --profile saml
+aws s3 cp s3://cdm-deliverable/data_clinical_sample.txt {{ params.output_dir }} --profile saml
