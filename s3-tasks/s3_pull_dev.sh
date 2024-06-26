@@ -2,6 +2,8 @@
 set -eE -v
 trap 'echo "Last command exited with status code of $?, exiting..."' ERR
 
+echo "OUTPUT_DIR FROM DAG: $OUTPUT_DIR"
+
 OUTPUT_DIR=$1
 test -n "$OUTPUT_DIR"
 
