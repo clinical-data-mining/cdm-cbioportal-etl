@@ -2,9 +2,6 @@
 set -eE -v
 trap 'echo "Last command exited with status code of $?, exiting..."' ERR
 
-INPUT_DIR=$1
-OUTPUT_DIR=$2
-
 test -n "$INPUT_DIR"
 test -n "$OUTPUT_DIR"
 

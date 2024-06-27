@@ -2,9 +2,6 @@
 set -eE -v
 trap 'echo "Last command exited with status code of $?, exiting..."' ERR
 
-echo "OUTPUT_DIR FROM DAG: $OUTPUT_DIR"
-
-OUTPUT_DIR=$1
 test -n "$OUTPUT_DIR"
 
 /gpfs/mindphidata/cdm_repos/github/cdm-cbioportal-etl/s3-tasks/authenticate_service_account_dev.sh private
