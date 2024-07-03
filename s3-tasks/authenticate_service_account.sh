@@ -1,6 +1,6 @@
 cluster_account=$1
 
-EKS_ACCOUNT_PRIVATE_CREDENTIALS_FILE=/var/lib/airflow/.eks-account.private.credentials
+EKS_ACCOUNT_PRIVATE_CREDENTIALS_FILE=$HOME/.eks-account.private.credentials
 
 if ! [[ -f $EKS_ACCOUNT_PRIVATE_CREDENTIALS_FILE ]] ; then
     echo "$EKS_ACCOUNT_PRIVATE_CREDENTIALS_FILE could not be found, exiting..."
@@ -11,7 +11,7 @@ unset TO_USE_CREDENTIALS_FILE
 case $cluster_account in
     "private")
       TO_USE_CREDENTIALS_FILE=$EKS_ACCOUNT_PRIVATE_CREDENTIALS_FILE
-      cp /var/lib/airflow/.kube/privateconfig /var/lib/airflow/.kube/config
+      cp $HOME/.kube/privateconfig $HOME/.kube/config
       ;;
     *)
       echo "Attempting to connect to unrecognized cluster $cluster_account, exiting..."
