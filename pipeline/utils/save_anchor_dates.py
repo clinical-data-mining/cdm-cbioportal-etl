@@ -25,12 +25,15 @@ def save_anchor_dates(fname_minio_env, fname_save):
     # Anchor dates
     df_path_g = get_anchor_dates()
 
+    print('Saving anchor dates: %s' % fname_save)
     # Save dataframe
     obj_minio.save_obj(
         df=df_path_g,
         path_object=fname_save,
         sep='\t'
     )
+
+    print('Done!')
 
 
 if __name__ == "__main__":
