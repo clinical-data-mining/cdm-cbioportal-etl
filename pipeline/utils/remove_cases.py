@@ -43,7 +43,7 @@ def dmp_id_case_to_remove(
     )
 
     # Generate list of sample and patient IDs from cbioportal backend
-    list_ids_p = list(set(df_ids['PATIENT_ID_x']))
+    list_ids_p = list(set(df_ids['PATIENT_ID']))
     list_ids_s = list(set(df_ids['SAMPLE_ID']))
 
     df_path_filt = df_path[df_path['SAMPLE_ID'].notnull() & df_path['SAMPLE_ID'].str.contains('T')].copy()

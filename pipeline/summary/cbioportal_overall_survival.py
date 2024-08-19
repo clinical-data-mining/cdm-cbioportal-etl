@@ -19,7 +19,7 @@ from cdm_cbioportal_etl.utils import get_anchor_dates
 
 
 COLS_OS = ['DMP_ID', 'OS_MONTHS', 'OS_STATUS']
-COL_P_ID = 'PATIENT_ID_x'
+COL_P_ID = 'PATIENT_ID'
 
 def _load_data(
     obj_minio,
