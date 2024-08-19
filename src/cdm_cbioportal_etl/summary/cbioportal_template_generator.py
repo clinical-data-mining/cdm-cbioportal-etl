@@ -11,7 +11,7 @@ def _remove_cases(df, fname_sample_rmv):
         fname_sample_rmv,
         header=0, 
         sep='\t'
-    )`
+    )
     
     logic_keep = ~df[COL_S_ID].isin(df_samples_rmv[COL_S_ID])
     df_path_all_assays = df[logic_keep].copy()
