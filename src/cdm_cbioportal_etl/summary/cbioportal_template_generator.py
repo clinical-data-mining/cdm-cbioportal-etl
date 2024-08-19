@@ -5,6 +5,7 @@ from msk_cdm.minio import MinioAPI
 COL_P_ID = 'PATIENT_ID'
 COL_S_ID = 'SAMPLE_ID'
 
+
 def _remove_cases(df, fname_sample_rmv):
     # Remove cases without assay
     df_samples_rmv = pd.read_csv(
