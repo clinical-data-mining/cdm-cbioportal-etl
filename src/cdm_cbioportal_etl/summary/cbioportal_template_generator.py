@@ -2,7 +2,7 @@ import pandas as pd
 
 from msk_cdm.minio import MinioAPI
 
-COL_P_ID = 'PATIENT_ID_x'
+COL_P_ID = 'PATIENT_ID'
 COL_S_ID = 'SAMPLE_ID'
 
 def _remove_cases(df, fname_sample_rmv):
