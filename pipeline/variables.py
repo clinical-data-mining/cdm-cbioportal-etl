@@ -10,7 +10,7 @@ FNAME_TIMELINE_FU = config_cbio_etl.fname_timeline_fu
 FNAME_OS = 'demographics/overall_survival_cbioportal.tsv'
 
 # Data dictionary
-path_docs = '/gpfs/mindphidata/fongc2/github/docs/docs/tables/'
+path_docs = '/gpfs/mindphidata/cdm_repos/github/docs/docs/tables/'
 FNAME_METADATA = os.path.join(path_docs, 'CDM-Codebook - metadata.csv')
 FNAME_PROJECT = os.path.join(path_docs, 'CDM-Codebook - project.csv')
 FNAME_TABLES = os.path.join(path_docs, 'CDM-Codebook - tables.csv')

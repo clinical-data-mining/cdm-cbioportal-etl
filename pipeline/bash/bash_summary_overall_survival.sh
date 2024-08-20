@@ -12,7 +12,7 @@ conda activate conda-env-cdm
 
 # Get variables
 #SCRIPT=$(python -c "from msk_cdm.data_classes.legacy import CDMProcessingVariablesCbioportal as config_cbio_etl; print (${VAR_SCRIPT})")
-SCRIPT="/gpfs/mindphidata/fongc2/github/cdm-cbioportal-etl/pipeline/summary/cbioportal_overall_survival.py"
+SCRIPT="/gpfs/mindphidata/cdm_repos/github/cdm-cbioportal-etl/pipeline/summary/cbioportal_overall_survival.py"
 
 # Run script
 python $SCRIPT
