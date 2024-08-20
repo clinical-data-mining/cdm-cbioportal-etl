@@ -1,8 +1,6 @@
 cluster_account=$1
 
-EKS_ACCOUNT_PRIVATE_CREDENTIALS_FILE=/var/lib/airflow/.eks-account.private.credentials
-
-export PATH=/opt/rh/rh-python36/root/usr/bin:/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/var/lib/snapd/snap/bin:/var/lib/airflow/bin:/usr/lib/jvm/java-11-openjdk-11.0.6.10-3.el7.x86_64//bin
+EKS_ACCOUNT_PRIVATE_CREDENTIALS_FILE=$HOME/.eks-account.private.credentials
 
 if ! [[ -f $EKS_ACCOUNT_PRIVATE_CREDENTIALS_FILE ]] ; then
     echo "$EKS_ACCOUNT_PRIVATE_CREDENTIALS_FILE could not be found, exiting..."
@@ -13,7 +11,7 @@ unset TO_USE_CREDENTIALS_FILE
 case $cluster_account in
     "private")
       TO_USE_CREDENTIALS_FILE=$EKS_ACCOUNT_PRIVATE_CREDENTIALS_FILE
-      cp /var/lib/airflow/.kube/privateconfig /var/lib/airflow/.kube/config
+      cp $HOME/.kube/privateconfig $HOME/.kube/config
       ;;
     *)
       echo "Attempting to connect to unrecognized cluster $cluster_account, exiting..."
