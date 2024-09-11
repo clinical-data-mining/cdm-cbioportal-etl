@@ -13,6 +13,7 @@ from cdm_cbioportal_etl.summary import cbioportalSummaryFileCombiner
 from cdm_cbioportal_etl.summary import RedcapToCbioportalFormat
 from cdm_cbioportal_etl.utils import constants
 sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..')))
+# User defined variables
 from variables import (
     FNAME_MANIFEST_PATIENT,
     FNAME_MANIFEST_SAMPLE,
@@ -28,7 +29,7 @@ from variables import (
     FNAME_TABLES,
     PATH_MINIO_CBIO_SUMMARY_INTERMEDIATE
 )
-
+#Constants defined in python package
 COL_SUMMARY_FNAME_SAVE = constants.COL_SUMMARY_FNAME_SAVE
 COL_SUMMARY_HEADER_FNAME_SAVE = constants.COL_SUMMARY_HEADER_FNAME_SAVE
 
