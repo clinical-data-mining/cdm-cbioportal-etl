@@ -11,7 +11,6 @@ import argparse
 
 from cdm_cbioportal_etl.summary import cbioportalSummaryFileCombiner
 from cdm_cbioportal_etl.summary import RedcapToCbioportalFormat
-from cdm_cbioportal_etl.utils import constants
 sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..')))
 # User defined variables
 from variables import (
@@ -21,28 +20,21 @@ from variables import (
     FNAME_SUMMARY_TEMPLATE_S,
     FNAME_SUMMARY_P,
     FNAME_SUMMARY_S,
-    FNAME_SUMMARY_P_MINIO,
-    FNAME_SUMMARY_S_MINIO,
     ENV_MINIO,
     FNAME_METADATA,
     FNAME_PROJECT,
     FNAME_TABLES,
     PATH_MINIO_CBIO_SUMMARY_INTERMEDIATE
 )
-#Constants defined in python package
-COL_SUMMARY_FNAME_SAVE = constants.COL_SUMMARY_FNAME_SAVE
-COL_SUMMARY_HEADER_FNAME_SAVE = constants.COL_SUMMARY_HEADER_FNAME_SAVE
 
 
 def create_cbioportal_summary(
     fname_minio_env,
     patient_or_sample,
     fname_manifest, 
-    fname_current_summary, 
-    fname_new_summary,
+    fname_summary_template,
+    fname_summary_save,
     production_or_test,
-    fname_save_var_summary,
-    fname_save_header_summary,
     path_minio_summary_intermediate,
     fname_meta_data,
     fname_meta_table,
@@ -61,7 +53,7 @@ def create_cbioportal_summary(
     obj_format_cbio.create_summaries_and_headers(
         patient_or_sample=patient_or_sample,
         fname_manifest=fname_manifest,
-        fname_template=fname_current_summary,
+        fname_template=fname_summary_template,
         production_or_test=production_or_test
     )
     
@@ -69,16 +61,13 @@ def create_cbioportal_summary(
     obj_p_combiner = cbioportalSummaryFileCombiner(
         fname_minio_env=fname_minio_env,
         fname_manifest=fname_manifest, 
-        fname_current_summary=fname_current_summary, 
+        fname_current_summary=fname_summary_template,
         patient_or_sample=patient_or_sample,
-        production_or_test=production_or_test,
-        fname_save_var_summary=fname_save_var_summary,
-        fname_save_header_summary=fname_save_header_summary
-
+        production_or_test=production_or_test
     )
     
     # Save the merged summaries to file
-    obj_p_combiner.save_update(fname=fname_new_summary)
+    obj_p_combiner.save_update(fname=fname_summary_save)
     df_cbio_summary = obj_p_combiner.return_final()
 
 
@@ -96,7 +85,7 @@ def main():
         action="store",
         dest="fname_manifest_sample",
         default=FNAME_MANIFEST_SAMPLE,
-        help="CSV file containing list of patient level summary files.",
+        help="CSV file containing list of sample level summary files.",
     )
     parser.add_argument(
         "--fname_summary_template_patient",
@@ -133,20 +122,7 @@ def main():
         default='production',
         help="For logic to decide if production portal or testing portal will be updated.",
     )
-    parser.add_argument(
-        "--fname_save_var_summary",
-        action="store",
-        dest="fname_save_var_summary",
-        default=COL_SUMMARY_FNAME_SAVE,
-        help=".",
-    )
-    parser.add_argument(
-        "--fname_save_header_summary",
-        action="store",
-        dest="fname_save_header_summary",
-        default=COL_SUMMARY_HEADER_FNAME_SAVE,
-        help=".",
-    )
+
 
     # TODO Put the following variables in the argparsing
     fname_minio_env = ENV_MINIO
@@ -162,11 +138,9 @@ def main():
         fname_minio_env = fname_minio_env,
         patient_or_sample=patient_or_sample,
         fname_manifest=args.fname_manifest_patient, 
-        fname_current_summary=args.fname_summary_template_patient,
-        fname_new_summary=args.fname_summary_patient,
+        fname_summary_template=args.fname_summary_template_patient,
+        fname_summary_save=args.fname_summary_patient,
         production_or_test=args.production_or_test,
-        fname_save_var_summary=args.fname_save_var_summary,
-        fname_save_header_summary=args.fname_save_header_summary,
         path_minio_summary_intermediate=path_minio_summary_intermediate,
         fname_meta_data = fname_meta_data,
         fname_meta_table = fname_meta_table,
@@ -180,11 +154,9 @@ def main():
         fname_minio_env = fname_minio_env,
         patient_or_sample=patient_or_sample,
         fname_manifest=args.fname_manifest_sample, 
-        fname_current_summary=args.fname_summary_template_sample, 
-        fname_new_summary=args.fname_summary_sample,
+        fname_summary_template=args.fname_summary_template_sample,
+        fname_summary_save=args.fname_summary_sample,
         production_or_test=args.production_or_test,
-        fname_save_var_summary=args.fname_save_var_summary,
-        fname_save_header_summary=args.fname_save_header_summary,
         path_minio_summary_intermediate=path_minio_summary_intermediate,
         fname_meta_data = fname_meta_data,
         fname_meta_table = fname_meta_table,

@@ -46,7 +46,7 @@ obj_format_cbio.create_summaries_and_headers(
 - **`fname_template`**: Template file containing patient or sample IDs. Thsi file is created with the [Summary File Template Generator](summary_template_generation.md) 
 - **`production_or_test`**: (Deprecated) Decides whether the output is for production or testing.
 
-### **Combine the Summaries Using the `cbioportalSummaryFileCombiner` Class
+### Combine the Summaries Using the `cbioportalSummaryFileCombiner` Class
 
 Once individual summaries and headers are generated and manifest file created, data and headers are combined into a single file for cBioPortal using the `cbioportalSummaryFileCombiner` class
 ```python
@@ -54,20 +54,19 @@ from cdm_cbioportal_etl.summary import cbioportalSummaryFileCombiner
 
 obj_p_combiner = cbioportalSummaryFileCombiner(
     fname_minio_env=fname_minio_env,
-    fname_manifest=fname_manifest, 
-    fname_current_summary=fname_current_summary, 
+    fname_manifest=fname_manifest,
+    fname_summary_template=fname_summary_template, 
     patient_or_sample=patient_or_sample,
     production_or_test=production_or_test,
-    fname_save_var_summary=fname_save_var_summary,
-    fname_save_header_summary=fname_save_header_summary
 )
 ```
-- **`patient_or_sample`**: Determines whether the processing is for patient or sample data.
+- **`fname_minio_env`**: Configuration for the MinIO storage environment (used for storing intermediate files).
 - **`fname_manifest`**: Manifest filename (MinIO) to be saved listing patient or sample data to process.
-- **`fname_template`**: Template file containing patient or sample IDs. Thsi file is created with the [Summary File Template Generator](summary_template_generation.md)
+- **`fname_summary_template`**: Template file containing patient or sample IDs. This file is created with the [Summary File Template Generator](summary_template_generation.md)
+- **`patient_or_sample`**: Determines whether the processing is for patient or sample data.
 - **`production_or_test`**: (Deprecated) Decides whether the output is for production or testing.
-- **`fname_save_var_summary`**: 
-- **`fname_save_header_summary`** specify where the final summary and header files will be saved.
+
+
 
 #### d. **Save the Final Merged File**
 

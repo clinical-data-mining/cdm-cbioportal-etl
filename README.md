@@ -1,5 +1,5 @@
 # cdm-cbioportal-etl
-ETL processing to transform CDM data into a cBioPortal format
+ETL processing to transform CDM data into cBioPortal formatted files
 
 
 ## Requirements
