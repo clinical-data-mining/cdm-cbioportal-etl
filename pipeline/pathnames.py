@@ -2,10 +2,10 @@ import os
 from dataclasses import dataclass
 
 
-root_path: str = "/gpfs/mindphidata/cdm_repos/github"
+# root_path: str = "/gpfs/mindphidata/cdm_repos/github"
 @dataclass
 class CDMProcessingVariablesCbioportal:
-    root_path_cbio_etl: str = os.path.join(root_path, "cdm-cbioportal-etl")
+    # root_path_cbio_etl: str = os.path.join(root_path, "cdm-cbioportal-etl")
 
     # ##############################################################################
     # # cBioPortal summary and timeline scripts

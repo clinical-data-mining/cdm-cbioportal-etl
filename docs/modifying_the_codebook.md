@@ -1,0 +1,2 @@
+# Best Practices for Modifying the Codebook
+The [CDM Codebook](https://docs.google.com/spreadsheets/d/1po0GdSwqmmXibz4e-7YvTPUbXpi0WYv3c2ImdHXxyuc/edit?usp=sharing) is used to document the data tables and their columns. For `cdm-cbioportal-etl` purposes, the codebook informs the code important information to transform and import data into a cBioPortal study properly. 

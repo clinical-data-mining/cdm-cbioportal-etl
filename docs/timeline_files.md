@@ -3,12 +3,12 @@ The `cdm-cbioportal-etl.timeline.cbioportal_deid_timeline_files` function is des
 
 The resulting data format adheres to [cBioPortal's formatting for timeline files](https://docs.cbioportal.org/file-formats/#timeline-data)
 
-## Parameters:
+## Parameters
 `fname_minio_env`: A file that contains Minio environment configurations (used to load and save data from object storage).
 
 `dict_files_timeline`: A dictionary containing timeline file paths (with identifiable information) as keys and corresponding file names for the de-identified output files as values.
 
-## Key Steps:
+## Steps
 - Load Anchor Dates: The function retrieves anchor dates via the get_anchor_dates() utility, which provides a DataFrame that maps medical record numbers (MRNs) to anchor dates (used for de-identification).
 
 - MinioAPI Setup: A Minio object is instantiated using MinioAPI(fname_minio_env), allowing the function to load and save files from/to object storage.

@@ -6,7 +6,7 @@ Either a patient or sample summary files is generated using the `create_cbioport
 This code determines the sample and patient summary files to generate based on the annotations and metadata in the [CDM Codebook](https://docs.google.com/spreadsheets/d/1po0GdSwqmmXibz4e-7YvTPUbXpi0WYv3c2ImdHXxyuc/edit?usp=sharing)
 
 
-## Processing Flow
+##  Workflow
 Processing a cBioPortal summary is done with the`create_cbioportal_summary` function.
 The processing flow of this function follows these steps:
 
@@ -32,7 +32,7 @@ obj_format_cbio = RedcapToCbioportalFormat(
 
 ### Generate Summaries and Headers Using `create_summaries_and_headers`
 
-This step creates individual summaries and headers using the `create_summaries_and_headers` method. The filenames for the header and data files are stored in a separate manifest file (`fname_manifest`)  
+This step creates individual data summary and header files using the `create_summaries_and_headers` method. The filenames for the header and data files are stored in a separate manifest file (`fname_manifest`)  
 ```python
 obj_format_cbio.create_summaries_and_headers(
     patient_or_sample=patient_or_sample,
@@ -46,7 +46,7 @@ obj_format_cbio.create_summaries_and_headers(
 - **`fname_template`**: Template file containing patient or sample IDs. Thsi file is created with the [Summary File Template Generator](summary_template_generation.md) 
 - **`production_or_test`**: (Deprecated) Decides whether the output is for production or testing.
 
-### Combine the Summaries Using the `cbioportalSummaryFileCombiner` Class
+### Combine the Individual Summaries Using the `cbioportalSummaryFileCombiner` Class
 
 Once individual summaries and headers are generated and manifest file created, data and headers are combined into a single file for cBioPortal using the `cbioportalSummaryFileCombiner` class
 ```python
@@ -68,29 +68,12 @@ obj_p_combiner = cbioportalSummaryFileCombiner(
 
 
 
-#### d. **Save the Final Merged File**
+### Save the Final Merged Summary File
+This creates the summary file to be imported into cBioPortal
 
-The final merged summary is saved to disk using `save_update` and returned using `return_final`:
+The final merged summary is saved to MinIO using `save_update` and can be returned for inspection using `return_final`:
 ```python
 obj_p_combiner.save_update(fname=fname_new_summary)
 df_cbio_summary = obj_p_combiner.return_final()
 ```
-This ensures that the combined summaries are ready for cBioPortal.
 
-### 3. **Running the Workflow**
-
-The script first processes **patient** data, followed by **sample** data. For each, it runs `create_cbioportal_summary` with the relevant filenames and parameters passed through command-line arguments.
-
-### Flow Summary
-
-1. **Input manifests** for patient and sample data are read.
-2. **`RedcapToCbioportalFormat`** processes these manifests and generates individual summary and header files.
-3. **`cbioportalSummaryFileCombiner`** combines these summaries and headers into a single summary file for cBioPortal.
-4. **The final output** is saved to the designated file path for production or testing.
-
-### RedcapToCbioportalFormat Usage
-
-- The **`RedcapToCbioportalFormat`** class is used for formatting data into a structure that can be consumed by cBioPortal.
-- The key method is **`create_summaries_and_headers`**, which creates the necessary output files (summaries and headers) that will be combined in later steps.
-
-This structure efficiently moves from raw data in REDCap to the summary format required by cBioPortal, ensuring that the data is ready for use in the portal.
