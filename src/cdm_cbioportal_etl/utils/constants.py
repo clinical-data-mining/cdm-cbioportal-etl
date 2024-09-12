@@ -10,3 +10,17 @@ class constants:
 
     COL_PID: str = 'DMP_ID'
     COL_PID_CBIO: str = 'PATIENT_ID'
+
+    COL_P_ID_CBIO = 'PATIENT_ID'
+    COL_S_ID_CBIO = 'SAMPLE_ID'
+
+    COLS_PRODUCTION = ['label', 'comment', 'data_type', 'visible', 'heading']
+    COLS_TESTING = ['label', 'comment', 'data_type', 'patient_or_sample', 'visible', 'heading']
+
+    COLS_ORDER_GENERAL = [
+        'PATIENT_ID',
+        'START_DATE',
+        'STOP_DATE',
+        'EVENT_TYPE',
+        'SUBTYPE'
+    ]

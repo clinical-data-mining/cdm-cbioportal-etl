@@ -7,9 +7,10 @@ Object requires the path to the original sample/patient file, and for new/replac
 import pandas as pd
 
 from msk_cdm.minio import MinioAPI
+from cdm_cbioportal_etl.utils import constants
 
-COLS_PRODUCTION = ['label', 'comment', 'data_type', 'visible', 'heading']
-COLS_TESTING = ['label', 'comment', 'data_type', 'patient_or_sample', 'visible', 'heading']
+COLS_PRODUCTION = constants.COLS_PRODUCTION
+COLS_TESTING = constants.COLS_TESTING
 
 
 class cBioPortalSummaryMergeTool(object):

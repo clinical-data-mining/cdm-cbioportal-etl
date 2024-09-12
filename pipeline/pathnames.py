@@ -1,153 +1,95 @@
 import os
 from dataclasses import dataclass
+from msk_cdm.data_classes.legacy import CDMProcessingVariables as config_cdm
 
 
-# root_path: str = "/gpfs/mindphidata/cdm_repos/github"
 @dataclass
 class CDMProcessingVariablesCbioportal:
-    # root_path_cbio_etl: str = os.path.join(root_path, "cdm-cbioportal-etl")
-
-    # ##############################################################################
-    # # cBioPortal summary and timeline scripts
-    # ##############################################################################
-    # script_cbio_timeline_deid_files: str = os.path.join(
-    #     root_path_cbio_etl, "timeline/cbioportal_timeline_deid_files.py"
-    # )
-    # script_cbio_timeline_seq_spec: str = os.path.join(
-    #     root_path_cbio_etl, "timeline/cbioportal_timeline_specimen.py"
-    # )
-    # # script_cbio_timeline_progression: str = os.path.join(root_path_cbio_etl, 'timeline/cbioportal_timeline_progression.py')    # 2023/10/18 Turned off
-    # script_cbio_timeline_disease_status: str = os.path.join(
-    #     root_path_cbio_etl, "timeline/disease_status_cbioportal_timeline.py"
-    # )
-    # # script_cbio_timeline_cea_labs: str = os.path.join(root_path_cbio_etl, 'timeline/cbioportal_timeline_cea_labs.py')          # 2023/10/18 Turned off
-    # script_timeline_follow_up: str = os.path.join(
-    #     root_path_cbio_etl, "timeline/cbioportal_timeline_follow_up.py"
-    # )
-    # script_summary_overall_survival: str = os.path.join(
-    #     root_path_cbio_etl, "summary/cbioportal_overall_survival.py"
-    # )
-    #
-    # script_create_summary_templates: str = os.path.join(
-    #     root_path_cbio_etl, "summary/cbioportal_template_generator.py "
-    # )
-    # script_summary_formatting: str = os.path.join(
-    #     root_path_cbio_etl, "summary/wrapper_cbioportal_summary_creator.py"
-    # )
-    # script_copy_to_minio: str = os.path.join(
-    #     root_path_cbio_etl, "utils/wrapper_cbioportal_copy_to_minio.py"
-    # )
-    # script_copy_to_cdsi_repo: str = os.path.join(
-    #     root_path_cbio_etl, "utils/copy_cbio_files_to_automation_folder.py"
-    # )
-    #
-    # script_cbio_etl_git_fetch: str = os.path.join(
-    #     root_path_cbio_etl, "git-tasks/git_fetch.sh "
-    # )
-    # script_cbio_etl_git_fetch_cdsi_copy: str = os.path.join(
-    #     root_path_cbio_etl, "git-tasks/git_fetch_impact_pipeline.sh "
-    # )
-    # script_cbio_etl_git_push: str = os.path.join(
-    #     root_path_cbio_etl, "git-tasks/git_push.sh "
-    # )
-    # script_cbio_etl_git_push_cdsi_copy: str = os.path.join(
-    #     root_path_cbio_etl, "git-tasks/git_push_impact_pipeline.sh "
-    # )
-    # script_cbio_etl_git_fetch_impact: str = os.path.join(
-    #     root_path_cbio_etl, "git-tasks/git_fetch_impact_ids.sh "
-    # )
-
-    ##############################################################################
-    # cBioPortal summary and timeline scripts
-    ##############################################################################
-    path_map: str = "/config/redcap_report_api_map_cdm.csv"
-    path_vars: str = "/config/redcap_variables_cdm.csv"
-    redcap_rpt_map: str = "redcap_exports/cdm_cbioportal_codebook/Extraction_of_Clinical_Data_for_MSK-IMPACT_patients__MSK-MIND__redcap_report_mapping.tsv"
-
+    i = 0
     ##############################################################################
     # cBioPortal setup files
     ##############################################################################
     # For IMPACT transition with cbioportal backend team
-    path_datahub: str = "/gpfs/mindphidata/cdm_repos/datahub/cdm-data/"
-    fname_cbio_header_template_p: str = (
-        "cbioportal/cbioportal_summary_header_patient.tsv"
-    )
-    fname_cbio_header_template_s: str = (
-        "cbioportal/cbioportal_summary_header_sample.tsv"
-    )
-    fname_p_sum_template_cdsi: str = (
-        "cbioportal/intermediate_files/data_clinical_patient_template_cdsi.txt"
-    )
-    fname_s_sum_template_cdsi: str = (
-        "cbioportal/intermediate_files/data_clinical_sample_template_cdsi.txt"
-    )
+    # path_datahub: str = "/gpfs/mindphidata/cdm_repos/datahub/cdm-data/"
+    # fname_cbio_header_template_p: str = (
+    #     "cbioportal/cbioportal_summary_header_patient.tsv"
+    # )
+    # fname_cbio_header_template_s: str = (
+    #     "cbioportal/cbioportal_summary_header_sample.tsv"
+    # )
+    # fname_p_sum_template_cdsi: str = (
+    #     "cbioportal/intermediate_files/data_clinical_patient_template_cdsi.txt"
+    # )
+    # fname_s_sum_template_cdsi: str = (
+    #     "cbioportal/intermediate_files/data_clinical_sample_template_cdsi.txt"
+    # )
 
     ##############################################################################
     # Generated data files for cbioportal (Datahub)
     ##############################################################################
-    fname_timeline_progression_phi = 'radiology/progression/impact/table_timeline_radiology_cancer_progression_predictions.tsv'
-    fname_timeline_cancer_presence_phi = 'radiology/cancer_presence/impact/table_timeline_cancer_presence.tsv'
-    fname_timeline_pathology_mmr_phi = 'pathology/table_timeline_mmr_calls.tsv'
-    fname_timeline_ecog_phi = 'clindoc/ecog/impact/table_timeline_ecog_kps.tsv'
+    # fname_timeline_progression_phi = config_cdm.fname_progression_timeline_cbio
+    # fname_timeline_cancer_presence_phi = config_cdm.fname_radiology_cancer_presence_timeline
+    # fname_timeline_pathology_mmr_phi = config_cdm.fname_path_mmr_cbio_timeline
+    # fname_timeline_ecog_phi = config_cdm.fname_ecog_timeline_cbio
 
-    summary_p = "data_clinical_patient.txt"
-    summary_s = "data_clinical_sample.txt"
-    timeline_surg = "data_timeline_surgery.txt"
-    timeline_rt = "data_timeline_radiation.txt"
-    timeline_meds = "data_timeline_treatment.txt"
-    timeline_disease_status = "data_timeline_disease_status.txt"
-    timeline_dx_primary = "data_timeline_diagnosis.txt"
-    timeline_spec = "data_timeline_specimen.txt"
-    timeline_spec_surg = "data_timeline_specimen_surgery.txt"
-    timeline_gleason = "data_timeline_gleason.txt"
-    timeline_pdl1 = "data_timeline_pdl1.txt"
-    timeline_pathology_mmr = 'data_timeline_mmr.txt'
-    timeline_prior_meds = "data_timeline_prior_meds.txt"
-    timeline_tumor_sites = "data_timeline_tumor_sites.txt"
-    fname_timeline_fu: str = "demographics/table_timeline_follow_up.tsv"
-    timeline_follow_up: str = "data_timeline_timeline_follow_up.txt"
-    timeline_progression: str = 'data_timeline_progression.txt'
-    timeline_cancer_presence: str = 'data_timeline_cancer_presence.txt'
-    timeline_ecog_kps: str = 'data_timeline_ecog_kps.txt'
-
-    fname_summary_patient: str = os.path.join(path_datahub, summary_p)
-    fname_summary_sample: str = os.path.join(path_datahub, summary_s)
-    fname_save_surg_timeline: str = os.path.join(path_datahub, timeline_surg)
-    fname_save_rt_timeline: str = os.path.join(path_datahub, timeline_rt)
-    fname_save_meds_timeline: str = os.path.join(path_datahub, timeline_meds)
-    fname_save_dx_prim_timeline: str = os.path.join(path_datahub, timeline_dx_primary)
-    fname_save_spec_timeline: str = os.path.join(path_datahub, timeline_spec)
-    fname_save_spec_surg_timeline: str = os.path.join(path_datahub, timeline_spec_surg)
-    fname_save_timeline_gleason: str = os.path.join(path_datahub, timeline_gleason)
-    fname_save_timeline_pdl1: str = os.path.join(path_datahub, timeline_pdl1)
-    fname_save_timeline_prior_meds: str = os.path.join(path_datahub, timeline_prior_meds)
-    fname_save_timeline_tumor_sites: str = os.path.join(path_datahub, timeline_tumor_sites)
-    fname_save_timeline_follow_up: str = os.path.join(path_datahub, timeline_follow_up)
-    fname_save_timeline_progression: str = os.path.join(path_datahub, timeline_progression)
-    fname_save_timeline_pathology_mmr: str = os.path.join(path_datahub, timeline_pathology_mmr)
-    fname_save_timeline_cancer_presence: str = os.path.join(path_datahub, timeline_cancer_presence)
-    fname_save_timeline_ecog:  str = os.path.join(path_datahub, timeline_ecog_kps)
-
-    ##############################################################################
-    # Generated data files for cbioportal (MinIO)
-    ##############################################################################
-    path_minio_cbio = "cbioportal"
-    fname_summary_patient_minio: str = os.path.join(path_minio_cbio, summary_p)
-    fname_summary_sample_minio: str = os.path.join(path_minio_cbio, summary_s)
-    fname_save_surg_timeline_minio: str = os.path.join(path_minio_cbio, timeline_surg)
-    fname_save_rt_timeline_minio: str = os.path.join(path_minio_cbio, timeline_rt)
-    fname_save_meds_timeline_minio: str = os.path.join(path_minio_cbio, timeline_meds)
-    fname_save_dx_prim_timeline_minio: str = os.path.join(path_minio_cbio, timeline_dx_primary)
-    fname_save_spec_timeline_minio: str = os.path.join(path_minio_cbio, timeline_spec)
-    fname_save_spec_surg_timeline_minio: str = os.path.join(path_minio_cbio, timeline_spec_surg)
-    fname_save_timeline_gleason_minio: str = os.path.join(path_minio_cbio, timeline_gleason)
-    fname_save_timeline_pdl1_minio: str = os.path.join(path_minio_cbio, timeline_pdl1)
-    fname_save_timeline_prior_meds_minio: str = os.path.join(path_minio_cbio, timeline_prior_meds)
-    fname_save_timeline_tumor_sites_minio: str = os.path.join(path_minio_cbio, timeline_tumor_sites)
-    fname_save_timeline_follow_up_minio: str = os.path.join(path_minio_cbio, timeline_follow_up)
-
-    fname_save_timeline_progression_minio: str = os.path.join(path_minio_cbio, timeline_progression)
-    fname_save_timeline_pathology_mmr_minio: str = os.path.join(path_minio_cbio, timeline_pathology_mmr)
-    fname_save_timeline_cancer_presence_minio: str = os.path.join(path_minio_cbio, timeline_cancer_presence)
-    fname_save_timeline_ecog_minio: str = os.path.join(path_minio_cbio, timeline_ecog_kps)
-
+    # summary_p = "data_clinical_patient.txt"
+    # summary_s = "data_clinical_sample.txt"
+    # timeline_surg = "data_timeline_surgery.txt"
+    # timeline_rt = "data_timeline_radiation.txt"
+    # timeline_meds = "data_timeline_treatment.txt"
+    # timeline_disease_status = "data_timeline_disease_status.txt"
+    # timeline_dx_primary = "data_timeline_diagnosis.txt"
+    # timeline_spec = "data_timeline_specimen.txt"
+    # timeline_spec_surg = "data_timeline_specimen_surgery.txt"
+    # timeline_gleason = "data_timeline_gleason.txt"
+    # timeline_pdl1 = "data_timeline_pdl1.txt"
+    # timeline_pathology_mmr = 'data_timeline_mmr.txt'
+    # timeline_prior_meds = "data_timeline_prior_meds.txt"
+    # timeline_tumor_sites = "data_timeline_tumor_sites.txt"
+    # fname_timeline_fu: str = config_cdm.fname_timeline_fu
+    # timeline_follow_up: str = "data_timeline_timeline_follow_up.txt"
+    # timeline_progression: str = 'data_timeline_progression.txt'
+    # timeline_cancer_presence: str = 'data_timeline_cancer_presence.txt'
+    # timeline_ecog_kps: str = 'data_timeline_ecog_kps.txt'
+    #
+    # fname_summary_patient: str = os.path.join(path_datahub, summary_p)
+    # fname_summary_sample: str = os.path.join(path_datahub, summary_s)
+    # fname_save_surg_timeline: str = os.path.join(path_datahub, timeline_surg)
+    # fname_save_rt_timeline: str = os.path.join(path_datahub, timeline_rt)
+    # fname_save_meds_timeline: str = os.path.join(path_datahub, timeline_meds)
+    # fname_save_dx_prim_timeline: str = os.path.join(path_datahub, timeline_dx_primary)
+    # fname_save_spec_timeline: str = os.path.join(path_datahub, timeline_spec)
+    # fname_save_spec_surg_timeline: str = os.path.join(path_datahub, timeline_spec_surg)
+    # fname_save_timeline_gleason: str = os.path.join(path_datahub, timeline_gleason)
+    # fname_save_timeline_pdl1: str = os.path.join(path_datahub, timeline_pdl1)
+    # fname_save_timeline_prior_meds: str = os.path.join(path_datahub, timeline_prior_meds)
+    # fname_save_timeline_tumor_sites: str = os.path.join(path_datahub, timeline_tumor_sites)
+    # fname_save_timeline_follow_up: str = os.path.join(path_datahub, timeline_follow_up)
+    # fname_save_timeline_progression: str = os.path.join(path_datahub, timeline_progression)
+    # fname_save_timeline_pathology_mmr: str = os.path.join(path_datahub, timeline_pathology_mmr)
+    # fname_save_timeline_cancer_presence: str = os.path.join(path_datahub, timeline_cancer_presence)
+    # fname_save_timeline_ecog:  str = os.path.join(path_datahub, timeline_ecog_kps)
+    #
+    # ##############################################################################
+    # # Generated data files for cbioportal (MinIO)
+    # ##############################################################################
+    # path_minio_cbio = "cbioportal"
+    # fname_summary_patient_minio: str = os.path.join(path_minio_cbio, summary_p)
+    # fname_summary_sample_minio: str = os.path.join(path_minio_cbio, summary_s)
+    # fname_save_surg_timeline_minio: str = os.path.join(path_minio_cbio, timeline_surg)
+    # fname_save_rt_timeline_minio: str = os.path.join(path_minio_cbio, timeline_rt)
+    # fname_save_meds_timeline_minio: str = os.path.join(path_minio_cbio, timeline_meds)
+    # fname_save_dx_prim_timeline_minio: str = os.path.join(path_minio_cbio, timeline_dx_primary)
+    # fname_save_spec_timeline_minio: str = os.path.join(path_minio_cbio, timeline_spec)
+    # fname_save_spec_surg_timeline_minio: str = os.path.join(path_minio_cbio, timeline_spec_surg)
+    # fname_save_timeline_gleason_minio: str = os.path.join(path_minio_cbio, timeline_gleason)
+    # fname_save_timeline_pdl1_minio: str = os.path.join(path_minio_cbio, timeline_pdl1)
+    # fname_save_timeline_prior_meds_minio: str = os.path.join(path_minio_cbio, timeline_prior_meds)
+    # fname_save_timeline_tumor_sites_minio: str = os.path.join(path_minio_cbio, timeline_tumor_sites)
+    # fname_save_timeline_follow_up_minio: str = os.path.join(path_minio_cbio, timeline_follow_up)
+    #
+    # fname_save_timeline_progression_minio: str = os.path.join(path_minio_cbio, timeline_progression)
+    # fname_save_timeline_pathology_mmr_minio: str = os.path.join(path_minio_cbio, timeline_pathology_mmr)
+    # fname_save_timeline_cancer_presence_minio: str = os.path.join(path_minio_cbio, timeline_cancer_presence)
+    # fname_save_timeline_ecog_minio: str = os.path.join(path_minio_cbio, timeline_ecog_kps)
+    #

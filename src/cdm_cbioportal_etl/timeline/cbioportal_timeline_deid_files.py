@@ -1,22 +1,14 @@
 import pandas as pd
 
 from msk_cdm.minio import MinioAPI
-from cdm_cbioportal_etl.utils import get_anchor_dates
+from cdm_cbioportal_etl.utils import get_anchor_dates, constants
 from msk_cdm.data_processing import (
-    mrn_zero_pad, 
-    print_df_without_index, 
-    set_debug_console, 
+    mrn_zero_pad,
     convert_to_int, 
     save_appended_df
 )
 
-COLS_ORDER_GENERAL = [
-    'PATIENT_ID',
-    'START_DATE',
-    'STOP_DATE',
-    'EVENT_TYPE',
-    'SUBTYPE'
-]
+COLS_ORDER_GENERAL = constants.COLS_ORDER_GENERAL
 
 
 def cbioportal_deid_timeline_files(
