@@ -54,5 +54,9 @@ Timeline file generation is a much simpler, one-in-one-out process where each be
 2) [Summary File Formatting and Combining]()
 3) [De-identification and Transformation of Timeline Data Attributes]()
 
+### Workflow Diagram
+![cdm-cbioportal-etl workflow](https://github.com/clinical-data-mining/cdm-cbioportal-etl/blob/documentation-and-cleanup/docs/CDM-cBioPortal-ETL%20Process%20-%20Current%20process.png)
+
+
 
 
