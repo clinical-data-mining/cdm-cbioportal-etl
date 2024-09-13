@@ -11,21 +11,22 @@ import argparse
 
 from cdm_cbioportal_etl.summary import cbioportalSummaryFileCombiner
 from cdm_cbioportal_etl.summary import RedcapToCbioportalFormat
-sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..')))
-# User defined variables
-from variables import (
-    FNAME_MANIFEST_PATIENT,
-    FNAME_MANIFEST_SAMPLE,
-    FNAME_SUMMARY_TEMPLATE_P,
-    FNAME_SUMMARY_TEMPLATE_S,
-    FNAME_SUMMARY_P,
-    FNAME_SUMMARY_S,
-    ENV_MINIO,
-    FNAME_METADATA,
-    FNAME_PROJECT,
-    FNAME_TABLES,
-    PATH_MINIO_CBIO_SUMMARY_INTERMEDIATE
-)
+from cdm_cbioportal_etl.utils import yaml_config_parser
+# sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..')))
+# # User defined variables
+# from variables import (
+#     FNAME_MANIFEST_PATIENT,
+#     FNAME_MANIFEST_SAMPLE,
+#     FNAME_SUMMARY_TEMPLATE_P,
+#     FNAME_SUMMARY_TEMPLATE_S,
+#     FNAME_SUMMARY_P,
+#     FNAME_SUMMARY_S,
+#     ENV_MINIO,
+#     FNAME_METADATA,
+#     FNAME_PROJECT,
+#     FNAME_TABLES,
+#     PATH_MINIO_CBIO_SUMMARY_INTERMEDIATE
+# )
 
 
 def create_cbioportal_summary(
@@ -74,64 +75,76 @@ def create_cbioportal_summary(
 def main():
     parser = argparse.ArgumentParser(description="Wrapper for creating patient and sample summary files for cBioPortal.")
     parser.add_argument(
-        "--fname_manifest_patient",
+        "--config_yaml",
         action="store",
-        dest="fname_manifest_patient",
-        default=FNAME_MANIFEST_PATIENT,
-        help="CSV file containing list of patient level summary files.",
+        dest="config_yaml",
+        help="Yaml file containing run parameters and necessary file locations.",
     )
-    parser.add_argument(
-        "--fname_manifest_sample",
-        action="store",
-        dest="fname_manifest_sample",
-        default=FNAME_MANIFEST_SAMPLE,
-        help="CSV file containing list of sample level summary files.",
-    )
-    parser.add_argument(
-        "--fname_summary_template_patient",
-        action="store",
-        dest="fname_summary_template_patient",
-        default=FNAME_SUMMARY_TEMPLATE_P,
-        help="TSV template file containing list of patient IDs.",
-    )
-    parser.add_argument(
-        "--fname_summary_template_sample",
-        action="store",
-        dest="fname_summary_template_sample",
-        default=FNAME_SUMMARY_TEMPLATE_S,
-        help="TSV template file containing list of sample IDs.",
-    )
-    parser.add_argument(
-        "--fname_summary_patient",
-        action="store",
-        dest="fname_summary_patient",
-        default=FNAME_SUMMARY_P,
-        help="Output file for the patient level summary to be pushed to cBioPortal.",
-    )
-    parser.add_argument(
-        "--fname_summary_sample",
-        action="store",
-        dest="fname_summary_sample",
-        default=FNAME_SUMMARY_S,
-        help="Output file for the sample level summary to be pushed to cBioPortal.",
-    )
-    parser.add_argument(
-        "--production_or_test",
-        action="store",
-        dest="production_or_test",
-        default='production',
-        help="For logic to decide if production portal or testing portal will be updated.",
-    )
+    # parser.add_argument(
+    #     "--fname_manifest_patient",
+    #     action="store",
+    #     dest="fname_manifest_patient",
+    #     default=FNAME_MANIFEST_PATIENT,
+    #     help="CSV file containing list of patient level summary files.",
+    # )
+    # parser.add_argument(
+    #     "--fname_manifest_sample",
+    #     action="store",
+    #     dest="fname_manifest_sample",
+    #     default=FNAME_MANIFEST_SAMPLE,
+    #     help="CSV file containing list of sample level summary files.",
+    # )
+    # parser.add_argument(
+    #     "--fname_summary_template_patient",
+    #     action="store",
+    #     dest="fname_summary_template_patient",
+    #     default=FNAME_SUMMARY_TEMPLATE_P,
+    #     help="TSV template file containing list of patient IDs.",
+    # )
+    # parser.add_argument(
+    #     "--fname_summary_template_sample",
+    #     action="store",
+    #     dest="fname_summary_template_sample",
+    #     default=FNAME_SUMMARY_TEMPLATE_S,
+    #     help="TSV template file containing list of sample IDs.",
+    # )
+    # parser.add_argument(
+    #     "--fname_summary_patient",
+    #     action="store",
+    #     dest="fname_summary_patient",
+    #     default=FNAME_SUMMARY_P,
+    #     help="Output file for the patient level summary to be pushed to cBioPortal.",
+    # )
+    # parser.add_argument(
+    #     "--fname_summary_sample",
+    #     action="store",
+    #     dest="fname_summary_sample",
+    #     default=FNAME_SUMMARY_S,
+    #     help="Output file for the sample level summary to be pushed to cBioPortal.",
+    # )
+    # parser.add_argument(
+    #     "--production_or_test",
+    #     action="store",
+    #     dest="production_or_test",
+    #     default='production',
+    #     help="For logic to decide if production portal or testing portal will be updated.",
+    # )
+    args = parser.parse_args()
 
-
-    # TODO Put the following variables in the argparsing
-    fname_minio_env = ENV_MINIO
-    path_minio_summary_intermediate = PATH_MINIO_CBIO_SUMMARY_INTERMEDIATE
+    obj_yaml = yaml_config_parser(fname_yaml_config=args.config_yaml)
+    fname_minio_env = obj_yaml.return_credential_filename()
+    path_minio_summary_intermediate = obj_yaml.return_intermediate_folder_path()
     fname_meta_data = FNAME_METADATA
     fname_meta_project = FNAME_PROJECT
     fname_meta_table = FNAME_TABLES
-    
-    args = parser.parse_args()
+
+    # fname_minio_env = ENV_MINIO
+    # path_minio_summary_intermediate = PATH_MINIO_CBIO_SUMMARY_INTERMEDIATE
+    # fname_meta_data = FNAME_METADATA
+    # fname_meta_project = FNAME_PROJECT
+    # fname_meta_table = FNAME_TABLES
+    #
+
     # Create patient summary
     patient_or_sample = 'patient'
     create_cbioportal_summary(

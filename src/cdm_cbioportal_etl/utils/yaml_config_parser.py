@@ -26,6 +26,33 @@ class YamlParser(object):
         self._config = config
         self._load_codebook()
 
+    def return_filename_codebook_metadata(self):
+        # Load metadata sheet
+        config = self._config
+        # Codebook path
+        path_codebook = config.get('codebook', {}).get('path')
+        f = config.get('codebook', {}).get('fname_metadata')
+        filename = os.path.join(path_codebook, f)
+        return filename
+
+    def return_filename_codebook_tables(self):
+        # Load metadata sheet
+        config = self._config
+        # Codebook path
+        path_codebook = config.get('codebook', {}).get('path')
+        f = config.get('codebook', {}).get('fname_tables')
+        filename = os.path.join(path_codebook, f)
+        return filename
+
+    def return_filename_codebook_projects(self):
+        # Load metadata sheet
+        config = self._config
+        # Codebook path
+        path_codebook = config.get('codebook', {}).get('path')
+        f = config.get('codebook', {}).get('fname_project')
+        filename = os.path.join(path_codebook, f)
+        return filename
+
     def _load_codebook(self):
         """
         Load the codebook CSV files (metadata, table, project) as Pandas dataframes
@@ -34,26 +61,19 @@ class YamlParser(object):
         # Load the YAML configuration file
         config = self._config
 
-        # Codebook path
-        path_codebook = config.get('codebook', {}).get('path')
-
-        # Load metadata sheet
-        f = config.get('codebook', {}).get('fname_metadata')
-        filename = os.path.join(path_codebook, f)
+        filename = self.return_filename_codebook_metadata()
         # Load the JSON mapping file
         with open(filename, 'r') as fname_codebook_metadata:
             self._df_codebook_metadata = pd.read_csv(fname_codebook_metadata)
 
         # Load table sheet
-        f = config.get('codebook', {}).get('fname_tables')
-        filename = os.path.join(path_codebook, f)
+        filename = self.return_filename_codebook_tables()
         # Load the JSON mapping file
         with open(filename, 'r') as fname_codebook_table:
             self._df_codebook_table = pd.read_csv(fname_codebook_table)
 
         # Load project sheet
-        f = config.get('codebook', {}).get('fname_project')
-        filename = os.path.join(path_codebook, f)
+        filename = self.return_filename_codebook_projects()
         # Load the JSON mapping file
         with open(filename, 'r') as fname_codebook_project:
             self._df_codebook_project = pd.read_csv(fname_codebook_project)
@@ -125,6 +145,11 @@ class YamlParser(object):
         config = self._config
         path_minio_cbio_summary_intermediate = config.get('inputs', {}).get('path_minio_cbio_summary_intermediate')
         return path_minio_cbio_summary_intermediate
+
+    def return_production_or_test_indicator(self):
+        config = self._config
+        production_or_test = config.get('inputs', {}).get('production_or_test')
+        return production_or_test
 
     def return_template_info(self) -> dict:
         """

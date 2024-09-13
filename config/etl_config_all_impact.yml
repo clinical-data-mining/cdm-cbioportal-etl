@@ -19,6 +19,8 @@ inputs:
   # folder path for final deid files
   path_datahub: "/gpfs/mindphidata/cdm_repos/datahub/cdm-data/"
   path_minio_cbio: "cbioportal"
+  # Variable for cBioPortal production or test portal study use
+  production_or_test: "production"
 
 template_files:
   # Header template for patient summary file
