@@ -14,16 +14,20 @@ inputs:
   # Data manifest files (MinIO)
   fname_manifest_patient: "cbioportal/summary_manifests/summary_manifest_patient.csv"
   fname_manifest_sample: "cbioportal/summary_manifests/summary_manifest_sample.csv"
-  # Intermediate summary file and header location
+  # Intermediate summary file and header location on minio
   path_minio_cbio_summary_intermediate: "cbioportal/intermediate_files/"
   # folder path for final deid files
   path_datahub: "/gpfs/mindphidata/cdm_repos/datahub/cdm-data/"
   path_minio_cbio: "cbioportal"
 
 template_files:
+  # Header template for patient summary file
   fname_cbio_header_template_p: "cbioportal/cbioportal_summary_header_patient.tsv"
+  # Header template for sample summary file
   fname_cbio_header_template_s: "cbioportal/cbioportal_summary_header_sample.tsv"
+  # Patient ID list in the cbioportal format. Additional patient summary information is appended to this. Derived from `inputs.fname_cbio_sid`
   fname_p_sum_template_cdsi: "cbioportal/intermediate_files/data_clinical_patient_template_cdsi.txt"
+  # Sample ID list in the cbioportal format. Additional patient summary information is appended to this. Derived from `inputs.fname_cbio_sid`
   fname_s_sum_template_cdsi: "cbioportal/intermediate_files/data_clinical_sample_template_cdsi.txt"
 
 # TODO all tables on minio should be in codebook

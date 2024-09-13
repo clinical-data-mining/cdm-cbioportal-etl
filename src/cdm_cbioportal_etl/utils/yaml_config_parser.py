@@ -10,11 +10,10 @@ class YamlParser(object):
             fname_yaml_config: str
     ):
         """
-        Load filenames from a YAML configuration and map them to corresponding
-        filenames from a JSON mapping file.
+        Initialize the YamlParser object, which loads and processes a YAML configuration file.
 
         Args:
-            config_path (str): Path to the YAML configuration file.
+            fname_yaml_config: Path to the YAML configuration file.
         """
         # Codebook variables
         self._df_codebook_metadata = None
@@ -28,6 +27,10 @@ class YamlParser(object):
         self._load_codebook()
 
     def _load_codebook(self):
+        """
+        Load the codebook CSV files (metadata, table, project) as Pandas dataframes
+        from the paths specified in the YAML configuration file.
+        """
         # Load the YAML configuration file
         config = self._config
 
@@ -57,14 +60,78 @@ class YamlParser(object):
 
         return None
 
+    def return_credential_filename(self):
+        """
+        Retrieve the credential filename from the YAML configuration.
+
+        Returns:
+            str: Path to the MinIO environment credential file.
+        """
+        config = self._config
+        env_minio = config.get('inputs', {}).get('env_minio')
+        return env_minio
+
+    def return_sample_list_filename(self):
+        """
+        Retrieve the sample list filename from the YAML configuration.
+
+        Returns:
+            str: Path to the sample ID file.
+        """
+        config = self._config
+        fname_cbio_sid = config.get('inputs', {}).get('fname_cbio_sid')
+        return fname_cbio_sid
+
+    def return_sample_exclude_list(self):
+        """
+        Retrieve the filename of the sample exclusion list from the YAML configuration.
+
+        Returns:
+            str: Path to the sample exclusion file.
+        """
+        config = self._config
+        fname_sample_remove = config.get('inputs', {}).get('fname_sample_remove')
+        return fname_sample_remove
+
+    def return_manifest_filename_patient(self):
+        """
+        Retrieve the patient manifest filename from the YAML configuration.
+
+        Returns:
+            str: Path to the patient manifest file.
+        """
+        config = self._config
+        fname_manifest_patient = config.get('inputs', {}).get('fname_manifest_patient')
+        return fname_manifest_patient
+
+    def return_manifest_filename_sample(self):
+        """
+        Retrieve the sample manifest filename from the YAML configuration.
+
+        Returns:
+            str: Path to the sample manifest file.
+        """
+        config = self._config
+        fname_manifest_sample = config.get('inputs', {}).get('fname_manifest_sample')
+        return fname_manifest_sample
+
+    def return_intermediate_folder_path(self):
+        """
+        Retrieve the intermediate folder path for CBio summary files from the YAML configuration.
+
+        Returns:
+            str: Path to the intermediate summary folder on MinIO.
+        """
+        config = self._config
+        path_minio_cbio_summary_intermediate = config.get('inputs', {}).get('path_minio_cbio_summary_intermediate')
+        return path_minio_cbio_summary_intermediate
 
     def return_template_info(self) -> dict:
         """
-        Load filenames from a YAML configuration and map them to corresponding
-        filenames from a JSON mapping file.
+        Retrieve the template file paths for CBio summary files from the YAML configuration.
 
         Returns:
-            dict: A dictionary with the template paths and filenames.
+            dict: A dictionary with the template file paths.
         """
         # Load the YAML configuration file
         config = self._config
@@ -75,6 +142,13 @@ class YamlParser(object):
         return template_files
 
     def return_filenames_deid_datahub(self) -> dict:
+        """
+        Map filenames from the 'deid_filenames' section of the YAML file to full paths
+        using the 'path_datahub' specified in the inputs section.
+
+        Returns:
+            dict: A dictionary mapping keys to their full paths in DataHub.
+        """
         config = self._config
 
         # Access the filenames in the YAML file
@@ -90,6 +164,13 @@ class YamlParser(object):
         return dict_deid_filenames_datahub
 
     def return_filenames_deid_minio(self) -> dict:
+        """
+        Map filenames from the 'deid_filenames' section of the YAML file to full paths
+        using the 'path_minio_cbio' specified in the inputs section.
+
+        Returns:
+            dict: A dictionary mapping keys to their full paths on MinIO.
+        """
         config = self._config
 
         # Access the filenames in the YAML file
@@ -105,6 +186,12 @@ class YamlParser(object):
         return dict_deid_filenames_minio
 
     def return_dict_copy_to_minio(self):
+        """
+        Map DataHub and MinIO filenames and return a dictionary of the mapped paths.
+
+        Returns:
+            dict: A dictionary with DataHub paths as keys and corresponding MinIO paths as values.
+        """
         dict_deid_filenames_minio = self.return_filenames_deid_minio()
         dict_deid_filenames_deid_datahub = self.return_filenames_deid_datahub()
 
@@ -118,6 +205,13 @@ class YamlParser(object):
         return combined_dict
 
     def return_mapped_filenames(self) -> dict:
+        """
+        Map template files to actual filenames using the 'template_files' section
+        of the YAML file and the mapping from the loaded codebook table.
+
+        Returns:
+            dict: A dictionary mapping template keys to actual filenames from the codebook.
+        """
         """
         Load filenames from a YAML configuration and map them to corresponding
         filenames from a JSON mapping file.
