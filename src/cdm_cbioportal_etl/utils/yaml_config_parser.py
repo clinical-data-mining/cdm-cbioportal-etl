@@ -110,8 +110,8 @@ class YamlParser(object):
 
         # Combine the values from both dictionaries using the same keys
         combined_dict = {
-            dict_deid_filenames_datahub[key]: dict_deid_filenames_minio[key]
-            for key in dict_deid_filenames_datahub
+            dict_deid_filenames_deid_datahub[key]: dict_deid_filenames_minio[key]
+            for key in dict_deid_filenames_deid_datahub
             if key in dict_deid_filenames_minio
         }
 
