@@ -134,9 +134,19 @@ def main():
     obj_yaml = yaml_config_parser(fname_yaml_config=args.config_yaml)
     fname_minio_env = obj_yaml.return_credential_filename()
     path_minio_summary_intermediate = obj_yaml.return_intermediate_folder_path()
-    fname_meta_data = FNAME_METADATA
-    fname_meta_project = FNAME_PROJECT
-    fname_meta_table = FNAME_TABLES
+    fname_meta_data = obj_yaml.return_filename_codebook_metadata()
+    fname_meta_project = obj_yaml.return_filename_codebook_projects()
+    fname_meta_table = obj_yaml.return_filename_codebook_tables()
+    production_or_test = obj_yaml.return_production_or_test()
+
+    fname_manifest_patient = obj_yaml.return_manifest_filename_patient()
+    fname_summary_template_patient = obj_yaml.return_summary_template()['fname_cbio_header_template_p']
+    fname_summary_patient = obj_yaml.return_filenames_deid_datahub()['summary_patient']
+
+    fname_manifest_sample = obj_yaml.return_manifest_filename_sample()
+    fname_summary_template_sample = obj_yaml.return_summary_template()['fname_cbio_header_template_s']
+    fname_summary_sample = obj_yaml.return_filenames_deid_datahub()['summary_sample']
+
 
     # fname_minio_env = ENV_MINIO
     # path_minio_summary_intermediate = PATH_MINIO_CBIO_SUMMARY_INTERMEDIATE
@@ -150,10 +160,10 @@ def main():
     create_cbioportal_summary(
         fname_minio_env = fname_minio_env,
         patient_or_sample=patient_or_sample,
-        fname_manifest=args.fname_manifest_patient, 
-        fname_summary_template=args.fname_summary_template_patient,
-        fname_summary_save=args.fname_summary_patient,
-        production_or_test=args.production_or_test,
+        fname_manifest=fname_manifest_patient,
+        fname_summary_template=fname_summary_template_patient,
+        fname_summary_save=fname_summary_patient,
+        production_or_test=production_or_test,
         path_minio_summary_intermediate=path_minio_summary_intermediate,
         fname_meta_data = fname_meta_data,
         fname_meta_table = fname_meta_table,
@@ -166,10 +176,10 @@ def main():
     create_cbioportal_summary(
         fname_minio_env = fname_minio_env,
         patient_or_sample=patient_or_sample,
-        fname_manifest=args.fname_manifest_sample, 
-        fname_summary_template=args.fname_summary_template_sample,
-        fname_summary_save=args.fname_summary_sample,
-        production_or_test=args.production_or_test,
+        fname_manifest=fname_manifest_sample,
+        fname_summary_template=fname_summary_template_sample,
+        fname_summary_save=fname_summary_sample,
+        production_or_test=production_or_test,
         path_minio_summary_intermediate=path_minio_summary_intermediate,
         fname_meta_data = fname_meta_data,
         fname_meta_table = fname_meta_table,
