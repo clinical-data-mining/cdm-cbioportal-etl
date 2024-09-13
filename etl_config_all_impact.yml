@@ -3,9 +3,9 @@ creds:
 
 codebook:
   path: "/gpfs/mindphidata/cdm_repos/github/docs/docs/tables/"
-  fname_metadata: "${path}/CDM-Codebook - metadata.csv"
-  fname_tables: "${path}/CDM-Codebook - tables.csv"
-  fname_project: "${path}/CDM-Codebook - project.csv"
+  fname_metadata: "CDM-Codebook - metadata.csv"
+  fname_tables: "CDM-Codebook - tables.csv"
+  fname_project: "CDM-Codebook - project.csv"
 
 inputs:
   # Input file of all sample and patient IDs that should be included in the portal
