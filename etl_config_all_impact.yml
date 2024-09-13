@@ -1,6 +1,3 @@
-creds:
-  env_minio: "/gpfs/mindphidata/fongc2/minio_env.txt"
-
 codebook:
   path: "/gpfs/mindphidata/cdm_repos/github/docs/docs/tables/"
   fname_metadata: "CDM-Codebook - metadata.csv"
@@ -8,6 +5,8 @@ codebook:
   fname_project: "CDM-Codebook - project.csv"
 
 inputs:
+  # Credential file
+  env_minio: "/gpfs/mindphidata/fongc2/minio_env.txt"
   # Input file of all sample and patient IDs that should be included in the portal
   fname_cbio_sid: "/gpfs/mindphidata/cdm_repos/datahub/impact-data/data_clinical_sample.txt"
   # Exclusion list (TODO: Consider deprecating since have a to USE list above)
