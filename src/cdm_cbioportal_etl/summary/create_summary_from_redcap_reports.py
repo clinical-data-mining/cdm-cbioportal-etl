@@ -256,9 +256,9 @@ class RedcapToCbioportalFormat(object):
             sep='\t',
             dtype=str
         )
-        # print('TEMPLATE------------------------------------------------')
+        print('TEMPLATE------------------------------------------------')
         # print(df_template)
-        # print(df_template.shape)
+        print(df_template.shape)
         # print(list_fname_minio)
 
         print('CYCLE THROUGH CDM DATA SUMMARIES')
@@ -339,13 +339,13 @@ class RedcapToCbioportalFormat(object):
             cols_summary_order = list(df_header['heading'])
             df_select = df_select[cols_summary_order]
             
-            print('df_header--------------------')
-            print(df_header.head())
-            print(df_header.shape)
-            
-            print('df_select--------------------')
-            print(df_select.head())
-            print(df_select.shape)
+            # print('df_header--------------------')
+            # print(df_header.head())
+            # print(df_header.shape)
+            #
+            # print('df_select--------------------')
+            # print(df_select.head())
+            # print(df_select.shape)
             
             # Merge with template cases and reformat according to heading
             print('Merging with template')
@@ -396,6 +396,7 @@ class RedcapToCbioportalFormat(object):
             ## Save data and header files --------------------------------------------------
             ### Save cbioportal formatted patient level dx data and header files
             print('Saving header and summary data')
+            print('df_select_f------------------------------------------------------------')
             print('Saving %s' % fname_save_data)
             print(df_select_f.head())
             self._obj_minio.save_obj(
@@ -403,6 +404,7 @@ class RedcapToCbioportalFormat(object):
                 path_object=fname_save_data, 
                 sep=','
             )
+            print('df_header------------------------------------------------------------')
             print('Saving %s' % fname_save_header)
             print(df_header.head())
             self._obj_minio.save_obj(
