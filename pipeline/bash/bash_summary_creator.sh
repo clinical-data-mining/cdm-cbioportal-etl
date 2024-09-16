@@ -6,7 +6,7 @@ set -e
 
 # Activate virtual env
 source /gpfs/mindphidata/fongc2/miniconda3/etc/profile.d/conda.sh
-conda activate conda-env-cdm
+conda activate conda-env-cdm-fongc2
 
 # Get variables
 #SCRIPT=$(python -c "from msk_cdm.data_classes.legacy import CDMProcessingVariablesCbioportal as config_cbio_etl; print (${VAR_SCRIPT})")
