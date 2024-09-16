@@ -256,10 +256,6 @@ class RedcapToCbioportalFormat(object):
             sep='\t',
             dtype=str
         )
-        print('TEMPLATE------------------------------------------------')
-        # print(df_template)
-        print(df_template.shape)
-        # print(list_fname_minio)
 
         print('CYCLE THROUGH CDM DATA SUMMARIES')
         # Cycle through the list of CDM dataset to be loaded
@@ -349,6 +345,10 @@ class RedcapToCbioportalFormat(object):
             
             # Merge with template cases and reformat according to heading
             print('Merging with template')
+            print('Template length: %s' % str(df_template.shape))
+            print(df_template.head())
+            print('File length: %s' % str(df_select.shape))
+            print(df_select.head())
             df_select_f = df_template.merge(
                 right=df_select, 
                 how='left', 
