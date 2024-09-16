@@ -140,11 +140,11 @@ def main():
     production_or_test = obj_yaml.return_production_or_test_indicator()
 
     fname_manifest_patient = obj_yaml.return_manifest_filename_patient()
-    fname_summary_template_patient = obj_yaml.return_summary_template()['fname_cbio_header_template_p']
+    fname_summary_template_patient = obj_yaml.return_template_info()['fname_cbio_header_template_p']
     fname_summary_patient = obj_yaml.return_filenames_deid_datahub()['summary_patient']
 
     fname_manifest_sample = obj_yaml.return_manifest_filename_sample()
-    fname_summary_template_sample = obj_yaml.return_summary_template()['fname_cbio_header_template_s']
+    fname_summary_template_sample = obj_yaml.return_template_info()['fname_cbio_header_template_s']
     fname_summary_sample = obj_yaml.return_filenames_deid_datahub()['summary_sample']
 
 
