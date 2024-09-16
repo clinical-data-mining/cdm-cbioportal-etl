@@ -31,6 +31,7 @@ def cbioportal_timeline_follow_up(
         fname_demo,
         fname_save
 ):
+    print('Parsing config file %s' % yaml_config)
     obj_yaml = yaml_config_parser(fname_yaml_config=yaml_config)
     fname_minio_env = obj_yaml.return_credential_filename()
 
