@@ -42,7 +42,10 @@ Your timeline files have the following column names (All caps required):
 - STYLE_SHAPE: when this column has a valid value, this event will be rendered using that shape. The valid shapes are circle, square, triangle, diamond, star, and camera.
 - STYLE_COLOR: when this column has a hexadecimal color value (e.g. #ffffff), it will be used as the color for rendering this event.
 
-
+## Example Code
+Here are code representations for processing data into the format above:
+- [Timeline File Formatting](https://github.com/clinical-data-mining/radiology_met_prediction/blob/dev_xval/pipeline/cbioportal/timeline_cbio_tumor_sites.py)
+- [Summary File Formatting](https://github.com/clinical-data-mining/radiology_met_prediction/blob/dev_xval/pipeline/cbioportal/tumor_site_prediction_summary.py)
 
 
 

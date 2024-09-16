@@ -57,7 +57,12 @@ def create_cbioportal_summary(
         fname_template=fname_summary_template,
         production_or_test=production_or_test
     )
-    
+
+    print(fname_minio_env)
+    print(fname_manifest)
+    print(fname_summary_template)
+    print(patient_or_sample)
+    print(production_or_test)
     ## Merge summaries and headers
     obj_p_combiner = cbioportalSummaryFileCombiner(
         fname_minio_env=fname_minio_env,
