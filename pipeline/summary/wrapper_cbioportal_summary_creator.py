@@ -137,7 +137,7 @@ def main():
     fname_meta_data = obj_yaml.return_filename_codebook_metadata()
     fname_meta_project = obj_yaml.return_filename_codebook_projects()
     fname_meta_table = obj_yaml.return_filename_codebook_tables()
-    production_or_test = obj_yaml.return_production_or_test()
+    production_or_test = obj_yaml.return_production_or_test_indicator()
 
     fname_manifest_patient = obj_yaml.return_manifest_filename_patient()
     fname_summary_template_patient = obj_yaml.return_summary_template()['fname_cbio_header_template_p']
