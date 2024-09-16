@@ -42,10 +42,10 @@ Timeline file generation is a much simpler, one-in-one-out process where each be
 
 ## Processes
 ### Setup
-1) [Data files](docs/data_file_formatting.md)
+1) [Data File Formatting](docs/data_file_formatting.md)
     - Data files formatted one patient or sample per row 
     - "Timeline" files formatted one event per row  
-2) A codebook
+2) [Updating the Codebook](docs/modifying_the_codebook.md)
    - CDM uses [this codebook](https://docs.google.com/spreadsheets/d/1po0GdSwqmmXibz4e-7YvTPUbXpi0WYv3c2ImdHXxyuc/edit?usp=sharing) to determine data files to be used for the cBioPortal ETL, including relevant metadata
 
 ### Generation of cBioPortal formatted files
