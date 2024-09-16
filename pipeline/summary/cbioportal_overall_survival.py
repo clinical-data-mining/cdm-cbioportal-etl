@@ -1,16 +1,19 @@
-import os
-import sys
+# import os
+# import sys
+import argparse
 
 import pandas as pd
 
-sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..')))
+# sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..')))
 from msk_cdm.minio import MinioAPI
-from variables import (
-    FNAME_DEMO,
-    FNAME_CBIO_SID,
-    FNAME_OS,
-    ENV_MINIO
-)
+from msk_cdm.data_classes.legacy import CDMProcessingVariables as cdm_files
+from cdm_cbioportal_etl.utils import yaml_config_parser
+# from variables import (
+#     FNAME_DEMO,
+#     FNAME_CBIO_SID,
+#     FNAME_OS,
+#     ENV_MINIO
+# )
 from msk_cdm.data_processing import (
     mrn_zero_pad,
     convert_col_to_datetime
@@ -125,10 +128,21 @@ def _process_data(
 
 
 def main():
-    fname_save = FNAME_OS
-    fname_demo = FNAME_DEMO
-    fname_sid = FNAME_CBIO_SID
-    fname_minio_env = ENV_MINIO
+    parser = argparse.ArgumentParser(description="Script for creating data for OS")
+    parser.add_argument(
+        "--config_yaml",
+        action="store",
+        dest="config_yaml",
+        help="Yaml file containing run parameters and necessary file locations.",
+    )
+    args = parser.parse_args()
+
+    obj_yaml = yaml_config_parser(fname_yaml_config=args.config_yaml)
+    fname_minio_env = obj_yaml.return_credential_filename()
+
+    fname_save = cdm_files.fname_overall_survival
+    fname_demo = cdm_files.fname_demo
+    fname_sid = obj_yaml.return_sample_list_filename()
     
     df_os_f = _process_data(
         fname_minio_env=fname_minio_env,
