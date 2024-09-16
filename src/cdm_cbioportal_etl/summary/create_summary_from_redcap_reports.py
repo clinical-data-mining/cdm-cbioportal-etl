@@ -462,4 +462,5 @@ class RedcapToCbioportalFormat(object):
         )
         
         return None
+
     

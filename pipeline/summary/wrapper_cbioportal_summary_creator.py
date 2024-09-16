@@ -85,55 +85,6 @@ def main():
         dest="config_yaml",
         help="Yaml file containing run parameters and necessary file locations.",
     )
-    # parser.add_argument(
-    #     "--fname_manifest_patient",
-    #     action="store",
-    #     dest="fname_manifest_patient",
-    #     default=FNAME_MANIFEST_PATIENT,
-    #     help="CSV file containing list of patient level summary files.",
-    # )
-    # parser.add_argument(
-    #     "--fname_manifest_sample",
-    #     action="store",
-    #     dest="fname_manifest_sample",
-    #     default=FNAME_MANIFEST_SAMPLE,
-    #     help="CSV file containing list of sample level summary files.",
-    # )
-    # parser.add_argument(
-    #     "--fname_summary_template_patient",
-    #     action="store",
-    #     dest="fname_summary_template_patient",
-    #     default=FNAME_SUMMARY_TEMPLATE_P,
-    #     help="TSV template file containing list of patient IDs.",
-    # )
-    # parser.add_argument(
-    #     "--fname_summary_template_sample",
-    #     action="store",
-    #     dest="fname_summary_template_sample",
-    #     default=FNAME_SUMMARY_TEMPLATE_S,
-    #     help="TSV template file containing list of sample IDs.",
-    # )
-    # parser.add_argument(
-    #     "--fname_summary_patient",
-    #     action="store",
-    #     dest="fname_summary_patient",
-    #     default=FNAME_SUMMARY_P,
-    #     help="Output file for the patient level summary to be pushed to cBioPortal.",
-    # )
-    # parser.add_argument(
-    #     "--fname_summary_sample",
-    #     action="store",
-    #     dest="fname_summary_sample",
-    #     default=FNAME_SUMMARY_S,
-    #     help="Output file for the sample level summary to be pushed to cBioPortal.",
-    # )
-    # parser.add_argument(
-    #     "--production_or_test",
-    #     action="store",
-    #     dest="production_or_test",
-    #     default='production',
-    #     help="For logic to decide if production portal or testing portal will be updated.",
-    # )
     args = parser.parse_args()
 
     obj_yaml = yaml_config_parser(fname_yaml_config=args.config_yaml)
@@ -145,20 +96,13 @@ def main():
     production_or_test = obj_yaml.return_production_or_test_indicator()
 
     fname_manifest_patient = obj_yaml.return_manifest_filename_patient()
-    fname_summary_template_patient = obj_yaml.return_template_info()['fname_cbio_header_template_p']
+    fname_summary_template_patient = obj_yaml.return_template_info()['fname_p_sum_template_cdsi']
     fname_summary_patient = obj_yaml.return_filenames_deid_datahub()['summary_patient']
 
     fname_manifest_sample = obj_yaml.return_manifest_filename_sample()
-    fname_summary_template_sample = obj_yaml.return_template_info()['fname_cbio_header_template_s']
+    fname_summary_template_sample = obj_yaml.return_template_info()['fname_s_sum_template_cdsi']
     fname_summary_sample = obj_yaml.return_filenames_deid_datahub()['summary_sample']
 
-
-    # fname_minio_env = ENV_MINIO
-    # path_minio_summary_intermediate = PATH_MINIO_CBIO_SUMMARY_INTERMEDIATE
-    # fname_meta_data = FNAME_METADATA
-    # fname_meta_project = FNAME_PROJECT
-    # fname_meta_table = FNAME_TABLES
-    #
 
     # Create patient summary
     patient_or_sample = 'patient'
