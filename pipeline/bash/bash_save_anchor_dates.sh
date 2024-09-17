@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
-set -e
+REPO_LOCATION="/gpfs/mindphidata/cdm_repos/github/"
 
-REPO_LOCATION="/gpfs/mindphidata/fongc2/github/"
+set -e
 
 # Activate virtual env
 source /gpfs/mindphidata/fongc2/miniconda3/etc/profile.d/conda.sh
-conda activate conda-env-cdm-fongc2
+conda activate conda-env-cdm
 
 # Get variables
 SCRIPT="${REPO_LOCATION}cdm-cbioportal-etl/pipeline/utils/save_anchor_dates.py"
