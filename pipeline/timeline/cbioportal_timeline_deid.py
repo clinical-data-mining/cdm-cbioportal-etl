@@ -32,7 +32,7 @@ def main():
 
     if production_or_test == 'production':
         dict_files_timeline = DICT_FILES_TIMELINE
-    elif args.production_or_test == 'test':
+    elif production_or_test == 'test':
         dict_files_timeline = DICT_FILES_TIMELINE_TESTING
     else:
         dict_files_timeline = DICT_FILES_TIMELINE_TESTING
