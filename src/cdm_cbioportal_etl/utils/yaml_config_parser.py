@@ -241,3 +241,12 @@ class YamlParser(object):
         dict_phi_to_deid_timeline = dict(zip(list(df_timeline_files['cdm_source_table']), list(df_timeline_files['cbio_deid_filename'])))
 
         return dict_phi_to_deid_timeline
+
+    def return_filenames_deid_datahub(self) -> dict:
+        config = self._config
+
+        path_datahub = config.get('deid_filenames', {})
+
+        return path_datahub
+
+
