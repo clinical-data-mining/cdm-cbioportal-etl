@@ -211,7 +211,7 @@ class YamlParser(object):
         df_timeline_files = df_codebook_timeline_prod[['cdm_source_table', 'cbio_deid_filename']].dropna()
         df_timeline_files['cbio_deid_filename'] = df_timeline_files['cbio_deid_filename'].apply(lambda x: os.path.join(path_datahub, x) )
 
-        dict_phi_to_deid_timeline = (zip(list(df_timeline_files['cdm_source_table']), list(df_timeline_files['cbio_deid_filename'])))
+        dict_phi_to_deid_timeline = dict(zip(list(df_timeline_files['cdm_source_table']), list(df_timeline_files['cbio_deid_filename'])))
 
         return dict_phi_to_deid_timeline
 
@@ -238,6 +238,6 @@ class YamlParser(object):
         df_timeline_files = df_codebook_timeline_prod[['cdm_source_table', 'cbio_deid_filename']].dropna()
         df_timeline_files['cbio_deid_filename'] = df_timeline_files['cbio_deid_filename'].apply(lambda x: os.path.join(path_datahub, x) )
 
-        dict_phi_to_deid_timeline = (zip(list(df_timeline_files['cdm_source_table']), list(df_timeline_files['cbio_deid_filename'])))
+        dict_phi_to_deid_timeline = dict(zip(list(df_timeline_files['cdm_source_table']), list(df_timeline_files['cbio_deid_filename'])))
 
         return dict_phi_to_deid_timeline
