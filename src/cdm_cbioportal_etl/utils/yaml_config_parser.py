@@ -166,70 +166,29 @@ class YamlParser(object):
 
         return template_files
 
-    def return_filenames_deid_datahub(self) -> dict:
-        """
-        Map filenames from the 'deid_filenames' section of the YAML file to full paths
-        using the 'path_datahub' specified in the inputs section.
-
-        Returns:
-            dict: A dictionary mapping keys to their full paths in DataHub.
-        """
-        config = self._config
-
-        # Access the filenames in the YAML file
-        deid_filenames = config.get('deid_filenames', {})
-        path_datahub = config.get('inputs', {}).get('path_datahub')
-        print(path_datahub)
-
-        # Map the YAML keys to their corresponding actual filenames
-        dict_deid_filenames_datahub = {}
-        for key, deid_filename in deid_filenames.items():
-            dict_deid_filenames_datahub[key] = os.path.join(path_datahub, deid_filename)
-
-        return dict_deid_filenames_datahub
-
-    def return_filenames_deid_minio(self) -> dict:
-        """
-        Map filenames from the 'deid_filenames' section of the YAML file to full paths
-        using the 'path_minio_cbio' specified in the inputs section.
-
-        Returns:
-            dict: A dictionary mapping keys to their full paths on MinIO.
-        """
-        config = self._config
-
-        # Access the filenames in the YAML file
-        deid_filenames = config.get('deid_filenames', {})
-        path_minio = config.get('inputs', {}).get('path_minio_cbio')
-        print(path_minio)
-
-        # Map the YAML keys to their corresponding actual filenames
-        dict_deid_filenames_minio = {}
-        for key, deid_filename in deid_filenames.items():
-            dict_deid_filenames_minio[key] = os.path.join(path_minio, deid_filename)
-
-        return dict_deid_filenames_minio
-
-    def return_dict_copy_to_minio(self):
+    def return_dict_datahub_to_minio(self):
         """
         Map DataHub and MinIO filenames and return a dictionary of the mapped paths.
 
         Returns:
             dict: A dictionary with DataHub paths as keys and corresponding MinIO paths as values.
         """
-        dict_deid_filenames_minio = self.return_filenames_deid_minio()
-        dict_deid_filenames_deid_datahub = self.return_filenames_deid_datahub()
+        config = self._config
+        list_timeline_files = list(self._df_codebook_table['cbio_deid_filename'].dropna())
+        deid_filenames = list(config.get('deid_filenames', {}).values())
+        list_deid_files = deid_filenames + list_timeline_files
 
-        # Combine the values from both dictionaries using the same keys
-        combined_dict = {
-            dict_deid_filenames_deid_datahub[key]: dict_deid_filenames_minio[key]
-            for key in dict_deid_filenames_deid_datahub
-            if key in dict_deid_filenames_minio
-        }
+        path_datahub = config.get('inputs', {}).get('path_datahub')
+        path_minio = config.get('inputs', {}).get('path_minio_cbio')
 
-        return combined_dict
+        list_deid_files_datahub = [os.path.join(path_datahub,x) for x in list_deid_files]
+        list_deid_files_minio = [os.path.join(path_minio,x) for x in list_deid_files]
 
-    def return_mapped_filenames(self) -> dict:
+        dict_datahub_to_minio = dict(zip(list_deid_files_datahub, list_deid_files_minio))
+
+        return dict_datahub_to_minio
+
+    def return_dict_phi_to_deid_timeline(self) -> dict:
         """
         Map template files to actual filenames using the 'template_files' section
         of the YAML file and the mapping from the loaded codebook table.
@@ -241,26 +200,15 @@ class YamlParser(object):
         Load filenames from a YAML configuration and map them to corresponding
         filenames from a JSON mapping file.
 
-        Args:
-            config_path (str): Path to the YAML configuration file.
-            mapping_path (str): Path to the JSON mapping file.
-
         Returns:
             dict: A dictionary with the mapped filenames.
         """
         config = self._config
-        mapping = self._df_codebook_table
 
-        # Access the filenames in the YAML file
-        template_files = config.get('template_files', {})
+        path_datahub = config.get('inputs', {}).get('path_datahub')
+        df_timeline_files = self._df_codebook_table[['cdm_source_table', 'cbio_deid_filename']].dropna()
+        df_timeline_files['cbio_deid_filename'] = df_timeline_files['cbio_deid_filename'].apply(lambda x: os.path.join(path_datahub, x) )
 
-        # Map the YAML keys to their corresponding actual filenames
-        mapped_filenames = {}
-        for key, yaml_filename in template_files.items():
-            actual_filename = mapping.get(key)
-            if actual_filename:
-                mapped_filenames[key] = actual_filename
-            else:
-                mapped_filenames[key] = yaml_filename  # If no mapping found, use the original
+        dict_phi_to_deid_timeline = (zip(list(df_timeline_files['cdm_source_table']), list(df_timeline_files['cbio_deid_filename'])))
 
-        return mapped_filenames
+        return dict_phi_to_deid_timeline
