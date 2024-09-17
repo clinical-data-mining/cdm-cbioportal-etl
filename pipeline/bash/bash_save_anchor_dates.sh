@@ -9,7 +9,7 @@ source /gpfs/mindphidata/fongc2/miniconda3/etc/profile.d/conda.sh
 conda activate conda-env-cdm-fongc2
 
 # Get variables
-SCRIPT="/gpfs/mindphidata/cdm_repos/github/cdm-cbioportal-etl/pipeline/utils/save_anchor_dates.py"
+SCRIPT="${REPO_LOCATION}cdm-cbioportal-etl/pipeline/utils/save_anchor_dates.py"
 YAML_CONFIG="${REPO_LOCATION}cdm-cbioportal-etl/config/etl_config_all_impact.yml"
 
 # Run script
