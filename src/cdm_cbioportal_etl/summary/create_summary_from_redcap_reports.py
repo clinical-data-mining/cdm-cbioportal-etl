@@ -247,7 +247,7 @@ class RedcapToCbioportalFormat(object):
         active_tables = df_tables.loc[f1&f2]
         list_fname_minio = active_tables['cdm_source_table']
         
-        print('Loading %s' % fname_template)
+        print('Loading template %s' % fname_template)
         obj = self._obj_minio.load_obj(path_object=fname_template)
         df_template = pd.read_csv(
             obj, 
