@@ -1,0 +1,39 @@
+codebook:
+  path: "/gpfs/mindphidata/cdm_repos/github/docs/docs/tables/"
+  fname_metadata: "CDM-Codebook - metadata.csv"
+  fname_tables: "CDM-Codebook - tables.csv"
+  fname_project: "CDM-Codebook - project.csv"
+
+inputs:
+  # Credential file
+  env_minio: "/gpfs/mindphidata/fongc2/minio_env.txt"
+  # Input file of all sample and patient IDs that should be included in the portal
+  fname_cbio_sid: "/gpfs/mindphidata/fongc2/datahubs/impact/data_clinical_sample_id_list.txt"
+  # Exclusion list (TODO: Consider deprecating since have a to USE list above)
+  fname_sample_remove: "/gpfs/mindphidata/cdm_repos/github/cdm-cbioportal-etl/pipeline/mskimpact_clinical_data_remove.tsv"
+  # Data manifest files (MinIO)
+  fname_manifest_patient: "cbioportal/summary_manifests/summary_manifest_patient_testing_study.csv"
+  fname_manifest_sample: "cbioportal/summary_manifests/summary_manifest_sample_testing_study.csv"
+  # Intermediate summary file and header location on minio
+  path_minio_cbio_summary_intermediate: "cbioportal/intermediate_files_testing_study"
+  # folder path for final deid files
+  path_datahub: "/gpfs/mindphidata/fongc2/datahubs/impact/mskimpact_cdm_cdsi/"
+  path_minio_cbio: "cbioportal/testing_study/"
+  # Variable for cBioPortal production or test portal study use
+  production_or_test: "test"
+
+template_files:
+  # Header template for patient summary file
+  fname_cbio_header_template_p: "cbioportal/cbioportal_summary_header_patient.tsv"
+  # Header template for sample summary file
+  fname_cbio_header_template_s: "cbioportal/cbioportal_summary_header_sample.tsv"
+  # Patient ID list in the cbioportal format. Additional patient summary information is appended to this. Derived from `inputs.fname_cbio_sid`
+  fname_p_sum_template_cdsi: "cbioportal/intermediate_files_testing_study/data_clinical_patient_template_cdsi.txt"
+  # Sample ID list in the cbioportal format. Additional patient summary information is appended to this. Derived from `inputs.fname_cbio_sid`
+  fname_s_sum_template_cdsi: "cbioportal/intermediate_files_testing_study/data_clinical_sample_template_cdsi.txt"
+
+# File names
+deid_filenames:
+  summary_patient: "data_clinical_supp_cdmpatient.txt"
+  summary_sample: "data_clinical_supp_cdmsample.txt"
+
