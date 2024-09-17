@@ -24,9 +24,9 @@ inputs:
 
 template_files:
   # Header template for patient summary file
-  fname_cbio_header_template_p: "cbioportal/cbioportal_summary_header_patient.tsv"
+  fname_cbio_header_template_p: "cbioportal/intermediate_files_testing_study/cbioportal_summary_header_testing_study_patient.tsv"
   # Header template for sample summary file
-  fname_cbio_header_template_s: "cbioportal/cbioportal_summary_header_sample.tsv"
+  fname_cbio_header_template_s: "cbioportal/intermediate_files_testing_study/cbioportal_summary_header_testing_study_sample.tsv"
   # Patient ID list in the cbioportal format. Additional patient summary information is appended to this. Derived from `inputs.fname_cbio_sid`
   fname_p_sum_template_cdsi: "cbioportal/intermediate_files_testing_study/data_clinical_patient_template_cdsi.txt"
   # Sample ID list in the cbioportal format. Additional patient summary information is appended to this. Derived from `inputs.fname_cbio_sid`
