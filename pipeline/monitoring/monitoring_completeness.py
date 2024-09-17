@@ -77,7 +77,6 @@ if __name__ == "__main__":
         dest="fname_log",
         help="Log to indicate data is complete and can be pushed to datahub."
     )
-    parser = argparse.ArgumentParser(description="Anchor dates used in the cBioPortal timeline files to deidentify")
     parser.add_argument(
         "--config_yaml",
         action="store",
