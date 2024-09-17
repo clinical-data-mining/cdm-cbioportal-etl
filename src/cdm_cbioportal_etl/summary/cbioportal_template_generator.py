@@ -21,7 +21,7 @@ def _remove_cases(df, fname_sample_rmv):
     
     return df_path_all_assays
     
-def generate_cbioportal_template(
+def cbioportal_template_generator(
         env_minio,
         path_header_sample,
         path_header_patient,

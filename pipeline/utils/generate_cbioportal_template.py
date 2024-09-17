@@ -2,7 +2,7 @@ import argparse
 # import sys
 # import os
 
-from cdm_cbioportal_etl.summary import generate_cbioportal_template
+from cdm_cbioportal_etl.summary import cbioportal_template_generator
 from cdm_cbioportal_etl.utils import yaml_config_parser
 # sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..')))
 # from variables import (
@@ -40,7 +40,7 @@ if __name__ == "__main__":
 
 
 
-    generate_cbioportal_template(
+    cbioportal_template_generator(
         env_minio=fname_minio_env,
         path_header_sample=fname_summary_header_template_sample,
         path_header_patient=fname_summary_header_template_patient,
