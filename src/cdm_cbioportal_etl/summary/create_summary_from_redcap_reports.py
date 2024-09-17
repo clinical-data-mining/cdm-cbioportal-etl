@@ -255,6 +255,9 @@ class RedcapToCbioportalFormat(object):
             sep='\t',
             dtype=str
         )
+        print(df_template_display.head(10))
+
+        obj = self._obj_minio.load_obj(path_object=fname_template)
         df_template = pd.read_csv(
             obj, 
             header=header_len, 
@@ -262,7 +265,7 @@ class RedcapToCbioportalFormat(object):
             sep='\t',
             dtype=str
         )
-        print(df_template_display.head(10))
+
 
         print('CYCLE THROUGH CDM DATA SUMMARIES')
         # Cycle through the list of CDM dataset to be loaded
