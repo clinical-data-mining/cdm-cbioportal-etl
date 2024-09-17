@@ -6,7 +6,7 @@ For `cdm-cbioportal-etl` purposes, the codebook is used for code to process info
 ## Codebook Description
 ### Metadata Tab
 
-| COLUMN                             | USED_FOR_CDM_CBIOPORTAL_ETL_CODE | USED_FOR_CDSI_CODEBOOK | DESCRIPTION                                                                                                      |
+| COLUMN                             | COLUMN_USED_FOR_CDM_CBIOPORTAL_ETL_CODE | COLUMN_USED_FOR_CDSI_CODEBOOK | DESCRIPTION                                                                                                      |
 |------------------------------------|----------------------------------------|-------------------------------|------------------------------------------------------------------------------------------------------------------|
 | record_id                          |                                        |                               | Redcap annotation. Denotes project number                                                                        |
 | redcap_repeat_instrument           |                                        |                               | Redcap annotation.                                                                                               |
@@ -38,7 +38,7 @@ For `cdm-cbioportal-etl` purposes, the codebook is used for code to process info
 
 ### Table Tab
 
-| COLUMN                             | USED_FOR_CDM_CBIOPORTAL_ETL_CODE | USED_FOR_CDSI_CODEBOOK | DESCRIPTION                                                                                                      |
+| COLUMN                             | COLUMN_USED_FOR_CDM_CBIOPORTAL_ETL_CODE | COLUMN_USED_FOR_CDSI_CODEBOOK | DESCRIPTION                                                                                                      |
 |------------------------------------|----------------------------------------|-------------------------------|------------------------------------------------------------------------------------------------------------------|
 | record_id                          |                                        |                               | Redcap annotation. Denotes project number                                                                        |
 | redcap_repeat_instrument           |                                        |                               | Redcap annotation.                                                                                               |
@@ -50,7 +50,8 @@ For `cdm-cbioportal-etl` purposes, the codebook is used for code to process info
 | Dremio role that has access        |                                        |                               |                                                                                                                  |
 | script_that_generates              |                                        |                               | Link to code on github that creates this table                                                                   |
 | cdm_sql_query_pathname             |                                        |                               | SQL query pathname used to capture this data. Only exists if this table is directly from IDB.                    |
-| cbio_timeline_file                 | x                                      | x                             | Denote with an 'x' that file is to be used for cbioportal importing                                               |
+| cbio_timeline_file_production       | x                                      | x                             | Denote with an 'x' that file is to be used for cbioportal importing (Production study)                            |
+| cbio_timeline_file_testing          | x                                      | x                             | Denote with an 'x' that file is to be used for cbioportal importing (Testing study)                               |
 | yaml_timeline_variable_map         | x                                      | x                             | Python variable name used in the msk_cdm package for data files on Minio                                         |
 | cbio_deid_filename                 | x                                      | x                             | Filename of de-identified timeline data pushed to cBioPortal                                                     |
 | cbio_timeline_reason_for_missing_data | x                                    | x                             | Description why an entry would be missing for a patient                                                          |
@@ -65,7 +66,7 @@ For `cdm-cbioportal-etl` purposes, the codebook is used for code to process info
 
 ### Project Tab
 
-| COLUMN                             | USED_FOR_CDM_CBIOPORTAL_ETL_CODE | USED_FOR_CDSI_CODEBOOK | DESCRIPTION                                                                                                      |
+| COLUMN                             | COLUMN_USED_FOR_CDM_CBIOPORTAL_ETL_CODE | COLUMN_USED_FOR_CDSI_CODEBOOK | DESCRIPTION                                                                                                      |
 |------------------------------------|----------------------------------------|-------------------------------|------------------------------------------------------------------------------------------------------------------|
 | record_id                          |                                        |                               | Redcap annotation. Denotes project number                                                                        |
 | redcap_repeat_instrument           |                                        |                               | Redcap annotation.                                                                                               |

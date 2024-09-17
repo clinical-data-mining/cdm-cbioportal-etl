@@ -188,7 +188,7 @@ class YamlParser(object):
 
         return dict_datahub_to_minio
 
-    def return_dict_phi_to_deid_timeline(self) -> dict:
+    def return_dict_phi_to_deid_timeline_production(self) -> dict:
         """
         Map template files to actual filenames using the 'template_files' section
         of the YAML file and the mapping from the loaded codebook table.
@@ -206,7 +206,36 @@ class YamlParser(object):
         config = self._config
 
         path_datahub = config.get('inputs', {}).get('path_datahub')
-        df_timeline_files = self._df_codebook_table[['cdm_source_table', 'cbio_deid_filename']].dropna()
+        codebook_table = self._df_codebook_table
+        df_codebook_timeline_prod = codebook_table[codebook_table['cbio_timeline_file_production'] == 'x'].copy()
+        df_timeline_files = df_codebook_timeline_prod[['cdm_source_table', 'cbio_deid_filename']].dropna()
+        df_timeline_files['cbio_deid_filename'] = df_timeline_files['cbio_deid_filename'].apply(lambda x: os.path.join(path_datahub, x) )
+
+        dict_phi_to_deid_timeline = (zip(list(df_timeline_files['cdm_source_table']), list(df_timeline_files['cbio_deid_filename'])))
+
+        return dict_phi_to_deid_timeline
+
+    def return_dict_phi_to_deid_timeline_testing(self) -> dict:
+        """
+        Map template files to actual filenames using the 'template_files' section
+        of the YAML file and the mapping from the loaded codebook table. (Testing study)
+
+        Returns:
+            dict: A dictionary mapping template keys to actual filenames from the codebook.
+        """
+        """
+        Load filenames from a YAML configuration and map them to corresponding
+        filenames from a JSON mapping file.
+
+        Returns:
+            dict: A dictionary with the mapped filenames.
+        """
+        config = self._config
+
+        path_datahub = config.get('inputs', {}).get('path_datahub')
+        codebook_table = self._df_codebook_table
+        df_codebook_timeline_prod = codebook_table[codebook_table['cbio_timeline_file_testing'] == 'x'].copy()
+        df_timeline_files = df_codebook_timeline_prod[['cdm_source_table', 'cbio_deid_filename']].dropna()
         df_timeline_files['cbio_deid_filename'] = df_timeline_files['cbio_deid_filename'].apply(lambda x: os.path.join(path_datahub, x) )
 
         dict_phi_to_deid_timeline = (zip(list(df_timeline_files['cdm_source_table']), list(df_timeline_files['cbio_deid_filename'])))
