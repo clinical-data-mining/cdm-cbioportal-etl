@@ -24,8 +24,8 @@ inputs:
 
 inputs_databricks:
   overwrite: True
-  fname_databricks_config: "/gpfs/mindphidata/cdm_repos/databricks_env_test_group.txt"
-  catalog: "cbioportal_test"
+  fname_databricks_config: "/gpfs/mindphidata/cdm_repos/databricks_env_prod_group.txt"
+  catalog: "cdsi_prod"
   schema: "cdsi_data_deid"
   volume: "cdsi_data_deid_volume"
   sep: "\t"
