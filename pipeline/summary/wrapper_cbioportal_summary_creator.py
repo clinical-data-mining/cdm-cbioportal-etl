@@ -109,7 +109,7 @@ def main():
     production_or_test = obj_yaml.return_production_or_test_indicator()
 
     # Databricks configs
-    dict_databricks = obj_yaml.return_credential_filename_databricks()
+    dict_databricks = obj_yaml.return_databricks_configs()
 
     fname_manifest_patient = obj_yaml.return_manifest_filename_patient()
     fname_summary_template_patient = obj_yaml.return_template_info()['fname_p_sum_template_cdsi']
