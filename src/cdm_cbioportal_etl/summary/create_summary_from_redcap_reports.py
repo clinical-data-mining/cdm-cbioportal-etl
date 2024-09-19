@@ -33,7 +33,6 @@ from cdm_cbioportal_etl.utils import constants
 COL_SUMMARY_FNAME_SAVE = constants.COL_SUMMARY_FNAME_SAVE
 COL_SUMMARY_HEADER_FNAME_SAVE = constants.COL_SUMMARY_HEADER_FNAME_SAVE
 COL_RPT_NAME = constants.COL_RPT_NAME
-
 COL_PID = constants.COL_PID
 COL_PID_CBIO = constants.COL_PID_CBIO
 
@@ -136,7 +135,7 @@ class RedcapToCbioportalFormat(object):
         # For checkboxes, create new rows with actual names
         df_tmp = df.copy()
         df_checkbox = df_tmp[df_tmp['field_type'] == 'checkbox']
-        print(df_checkbox.head())
+        # print(df_checkbox.head())
         for i in df_checkbox.index:
             row_checkbox = df_checkbox.loc[i].copy()
             checkbox_cat = row_checkbox['select_choices_or_calculations']
@@ -176,8 +175,8 @@ class RedcapToCbioportalFormat(object):
         # Fill comment section with header if section is NA
         df_header['comment'] = df_header['comment'].fillna(df_header['label'])
 
-        print('Sample of final header')
-        print(df_header)
+        # print('Sample of final header')
+        # print(df_header)
 
         return df_header
 
@@ -248,7 +247,16 @@ class RedcapToCbioportalFormat(object):
         active_tables = df_tables.loc[f1&f2]
         list_fname_minio = active_tables['cdm_source_table']
         
-        print('Loading %s' % fname_template)
+        print('Loading template %s' % fname_template)
+        obj = self._obj_minio.load_obj(path_object=fname_template)
+        df_template_display = pd.read_csv(
+            obj,
+            low_memory=False,
+            sep='\t',
+            dtype=str
+        )
+        print(df_template_display.head(10))
+
         obj = self._obj_minio.load_obj(path_object=fname_template)
         df_template = pd.read_csv(
             obj, 
@@ -257,10 +265,7 @@ class RedcapToCbioportalFormat(object):
             sep='\t',
             dtype=str
         )
-        print('TEMPLATE------------------------------------------------')
-        print(df_template)
-        print(df_template.shape)
-        print(list_fname_minio)
+
 
         print('CYCLE THROUGH CDM DATA SUMMARIES')
         # Cycle through the list of CDM dataset to be loaded
@@ -340,16 +345,20 @@ class RedcapToCbioportalFormat(object):
             cols_summary_order = list(df_header['heading'])
             df_select = df_select[cols_summary_order]
             
-            print('df_header--------------------')
-            print(df_header.head())
-            print(df_header.shape)
-            
-            print('df_select--------------------')
-            print(df_select.head())
-            print(df_select.shape)
+            # print('df_header--------------------')
+            # print(df_header.head())
+            # print(df_header.shape)
+            #
+            # print('df_select--------------------')
+            # print(df_select.head())
+            # print(df_select.shape)
             
             # Merge with template cases and reformat according to heading
             print('Merging with template')
+            print('Template length: %s' % str(df_template.shape))
+            print(df_template.head())
+            print('File length: %s' % str(df_select.shape))
+            print(df_select.head())
             df_select_f = df_template.merge(
                 right=df_select, 
                 how='left', 
@@ -360,20 +369,20 @@ class RedcapToCbioportalFormat(object):
             print('Imputing fill values')
             for current_col in cols_summary_order:
                 fill_value = df_header.loc[df_header['heading'] == current_col, 'fill_value'].iloc[0]
-                print('fill_value--------------------')
-                print(fill_value)
+                # print('fill_value--------------------')
+                # print(fill_value)
                 # if fill_value == 'NA':
                 #     fill_value = np.NaN
                 data_type = df_header.loc[df_header['heading'] == current_col, 'data_type'].iloc[0]
-                print('data_type--------------------')
-                print(data_type)
+                # print('data_type--------------------')
+                # print(data_type)
                 
                 df_select_f[current_col] = df_select_f[current_col].fillna(fill_value)
 
-            print('Sample of final result')
-            print('df_select_f--------------------')
-            print(df_select_f.head())
-            print(df_select_f.shape)
+            # print('Sample of final result')
+            # print('df_select_f--------------------')
+            # print(df_select_f.head())
+            # print(df_select_f.shape)
 
             # Remove columns not needed in header file
             df_header.drop(columns=['Rank', 'is_date', 'fill_value'], axis=1, inplace = True)
@@ -386,7 +395,7 @@ class RedcapToCbioportalFormat(object):
             fname_save_data = self._path_minio_summary_intermediate + form.lower().replace(' ','_') + '_data.csv'
             fname_save_header = self._path_minio_summary_intermediate + form.lower().replace(' ','_') + '_header.csv'
 
-            print(form)
+            # print(form)
             ##### This file will be used for merging data    
             self.summary_manifest_append(
                 instr_name=form,
@@ -397,6 +406,7 @@ class RedcapToCbioportalFormat(object):
             ## Save data and header files --------------------------------------------------
             ### Save cbioportal formatted patient level dx data and header files
             print('Saving header and summary data')
+            print('df_select_f------------------------------------------------------------')
             print('Saving %s' % fname_save_data)
             print(df_select_f.head())
             self._obj_minio.save_obj(
@@ -404,6 +414,7 @@ class RedcapToCbioportalFormat(object):
                 path_object=fname_save_data, 
                 sep=','
             )
+            print('df_header------------------------------------------------------------')
             print('Saving %s' % fname_save_header)
             print(df_header.head())
             self._obj_minio.save_obj(
@@ -443,8 +454,8 @@ class RedcapToCbioportalFormat(object):
         dict_append = {COL_RPT_NAME:instr_name, 
                        COL_SUMMARY_FNAME_SAVE:fname_df_save, 
                        COL_SUMMARY_HEADER_FNAME_SAVE:fname_header_save}
-        print(df_manifest.head())
-        print(dict_append)
+        # print(df_manifest.head())
+        # print(dict_append)
 
         new_row_df = pd.DataFrame.from_dict(dict_append, orient='index').T
         df_manifest = pd.concat([df_manifest, new_row_df], ignore_index=True)
@@ -461,4 +472,5 @@ class RedcapToCbioportalFormat(object):
         )
         
         return None
+
     

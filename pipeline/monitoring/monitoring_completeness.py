@@ -1,20 +1,25 @@
-import os
-import sys
 import argparse
 from datetime import date
 
 import pandas as pd
 
-sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..')))
-from variables import DICT_FILES_TO_COPY
+from cdm_cbioportal_etl.utils import cbioportal_update_config
 
 
-cols_fixed = ['SAMPLE_ID', 'PATIENT_ID', 'STOP_DATE', 'SUBTYPE']
+cols_fixed = [
+    'SAMPLE_ID',
+    'PATIENT_ID',
+    'STOP_DATE',
+    'SUBTYPE'
+]
 today = date.today()
 
 
-def monitor_completeness(fname_log):
-    list_files = list(DICT_FILES_TO_COPY.keys())
+def monitor_completeness(
+        dict_files_to_copy,
+        fname_log
+):
+    list_files = list(dict_files_to_copy.keys())
     list_files_timeline = [x for x in list_files if 'timeline' in x]
     list_files_summary = list(set.difference(set(list_files), set(list_files_timeline)))
     
@@ -60,14 +65,27 @@ def monitor_completeness(fname_log):
 
     
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="cBioPortal timeline file for cancer progression predictions")
+    parser = argparse.ArgumentParser(description="Script for monitoring completeness of data elements")
     parser.add_argument(
-        "--fname_log",
+        "--incomplete_fields_csv",
         action="store",
-        dest="fname_log",
+        dest="incomplete_fields_csv",
+        required=True,
         help="Log to indicate data is complete and can be pushed to datahub."
+    )
+    parser.add_argument(
+        "--config_yaml",
+        action="store",
+        dest="config_yaml",
+        help="Yaml file containing run parameters and necessary file locations.",
     )
     args = parser.parse_args()
 
-    test = monitor_completeness(fname_log=args.fname_log)
+    obj_yaml = cbioportal_update_config(fname_yaml_config=args.config_yaml)
+    dict_files_to_copy = obj_yaml.return_dict_datahub_to_minio()
+
+    test = monitor_completeness(
+        fname_log=args.fname_log,
+        dict_files_to_copy=dict_files_to_copy
+    )
     

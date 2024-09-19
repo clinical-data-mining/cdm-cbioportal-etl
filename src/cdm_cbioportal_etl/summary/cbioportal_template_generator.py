@@ -1,9 +1,11 @@
 import pandas as pd
 
 from msk_cdm.minio import MinioAPI
+from cdm_cbioportal_etl.utils import constants
 
-COL_P_ID = 'PATIENT_ID'
-COL_S_ID = 'SAMPLE_ID'
+#Constants defined in python package for manifest file column names
+COL_P_ID = constants.COL_P_ID_CBIO
+COL_S_ID = constants.COL_S_ID_CBIO
 
 
 def _remove_cases(df, fname_sample_rmv):
@@ -19,7 +21,7 @@ def _remove_cases(df, fname_sample_rmv):
     
     return df_path_all_assays
     
-def generate_cbioportal_template(
+def cbioportal_template_generator(
         env_minio,
         path_header_sample,
         path_header_patient,

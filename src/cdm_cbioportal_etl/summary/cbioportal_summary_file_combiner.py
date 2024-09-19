@@ -11,6 +11,11 @@ import pandas as pd
 
 from msk_cdm.minio import MinioAPI
 from cdm_cbioportal_etl.summary import cBioPortalSummaryMergeTool
+from cdm_cbioportal_etl.utils import constants
+
+#Constants defined in python package for manifest file column names
+COL_SUMMARY_FNAME_SAVE = constants.COL_SUMMARY_FNAME_SAVE
+COL_SUMMARY_HEADER_FNAME_SAVE = constants.COL_SUMMARY_HEADER_FNAME_SAVE
 
 
 class cbioportalSummaryFileCombiner(object):
@@ -21,9 +26,7 @@ class cbioportalSummaryFileCombiner(object):
         fname_manifest, 
         fname_current_summary, 
         patient_or_sample,
-        production_or_test,
-        fname_save_var_summary,
-        fname_save_header_summary
+        production_or_test
     ):
         # Input filenames
         self._fname_minio_env = fname_minio_env
@@ -32,8 +35,8 @@ class cbioportalSummaryFileCombiner(object):
         self._patient_or_sample = patient_or_sample
         self._production_or_test = production_or_test
         
-        self._var_summary_fname = fname_save_var_summary
-        self._var_header_fname = fname_save_header_summary
+        self._col_manifest_summary_data_fname = COL_SUMMARY_FNAME_SAVE
+        self._col_manifest_header_fname = COL_SUMMARY_HEADER_FNAME_SAVE
         
         # DataFrame variables
         self._obj_patient_merge = None      
@@ -83,8 +86,8 @@ class cbioportalSummaryFileCombiner(object):
         # Combines all headers and corresponding data files into a portal summary table
         print('COMBINE REPORTS ------------------------------------')
         for ind, (i, row) in enumerate(df_manifest.iterrows()):
-            fname_summary = df_manifest.loc[i, self._var_summary_fname]
-            fname_header = df_manifest.loc[i, self._var_header_fname]
+            fname_summary = df_manifest.loc[i, self._col_manifest_summary_data_fname]
+            fname_header = df_manifest.loc[i, self._col_manifest_header_fname]
             print('Combining header %s and data %s into summary.' % (fname_header, fname_summary))
             
             self._obj_patient_merge.add_annotation_loader(

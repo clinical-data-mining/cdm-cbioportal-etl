@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
-# Define which variables to use from msk_cdm.data_classes.<class> library
-#VAR_SCRIPT="config_cbio_etl.script_create_summary_templates"
-
+REPO_LOCATION="/gpfs/mindphidata/cdm_repos/github/"
 
 set -e
 
@@ -12,8 +10,9 @@ conda activate conda-env-cdm
 
 # Get variables
 #SCRIPT=$(python -c "from msk_cdm.data_classes.legacy import CDMProcessingVariablesCbioportal as config_cbio_etl; print (${VAR_SCRIPT})")
-SCRIPT="/gpfs/mindphidata/cdm_repos/github/cdm-cbioportal-etl/pipeline/summary/wrapper_cbioportal_summary_creator.py"
+SCRIPT="${REPO_LOCATION}cdm-cbioportal-etl/pipeline/summary/wrapper_cbioportal_summary_creator.py"
+YAML_CONFIG="${REPO_LOCATION}cdm-cbioportal-etl/config/etl_config_all_impact.yml"
 
 # Run script
-python $SCRIPT
+python $SCRIPT --config_yaml=$YAML_CONFIG
 
