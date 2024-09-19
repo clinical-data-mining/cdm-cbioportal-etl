@@ -91,6 +91,17 @@ class CbioportalUpdateConfig(object):
         env_minio = config.get('inputs', {}).get('env_minio')
         return env_minio
 
+    def return_credential_filename_databricks(self):
+        """
+        Retrieve the credential filename from the YAML configuration.
+
+        Returns:
+            str: Path to the MinIO environment credential file.
+        """
+        config = self._config
+        env_minio = config.get('inputs_databricks', {}).get('fname_databricks_config')
+        return env_minio
+
     def return_sample_list_filename(self):
         """
         Retrieve the sample list filename from the YAML configuration.
