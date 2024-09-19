@@ -15,5 +15,5 @@ YAML_CONFIG="${REPO_LOCATION}cdm-cbioportal-etl/config/etl_config_all_impact.yml
 # Run script
 python $SCRIPT \
   --config_yaml=$YAML_CONFIG \
-  --fname_log="$FNAME_LOG"
+  --incomplete_fields_csv="$FNAME_LOG"
 

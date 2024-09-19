@@ -4,7 +4,7 @@ import os
 import pandas as pd
 
 
-class YamlParser(object):
+class CbioportalUpdateConfig(object):
     def __init__(
             self,
             fname_yaml_config: str

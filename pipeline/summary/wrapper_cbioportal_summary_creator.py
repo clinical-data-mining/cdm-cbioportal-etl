@@ -5,28 +5,11 @@ Create summary files and corresponding headers from CDM data,
 then combine into a single file to be pushed to cbioportal
 
 """
-import sys
-import os
 import argparse
 
 from cdm_cbioportal_etl.summary import cbioportalSummaryFileCombiner
 from cdm_cbioportal_etl.summary import RedcapToCbioportalFormat
-from cdm_cbioportal_etl.utils import yaml_config_parser
-# sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..')))
-# # User defined variables
-# from variables import (
-#     FNAME_MANIFEST_PATIENT,
-#     FNAME_MANIFEST_SAMPLE,
-#     FNAME_SUMMARY_TEMPLATE_P,
-#     FNAME_SUMMARY_TEMPLATE_S,
-#     FNAME_SUMMARY_P,
-#     FNAME_SUMMARY_S,
-#     ENV_MINIO,
-#     FNAME_METADATA,
-#     FNAME_PROJECT,
-#     FNAME_TABLES,
-#     PATH_MINIO_CBIO_SUMMARY_INTERMEDIATE
-# )
+from cdm_cbioportal_etl.utils import cbioportal_update_config
 
 
 def create_cbioportal_summary(
@@ -58,11 +41,6 @@ def create_cbioportal_summary(
         production_or_test=production_or_test
     )
 
-    print(fname_minio_env)
-    print(fname_manifest)
-    print(fname_summary_template)
-    print(patient_or_sample)
-    print(production_or_test)
     ## Merge summaries and headers
     obj_p_combiner = cbioportalSummaryFileCombiner(
         fname_minio_env=fname_minio_env,
@@ -87,7 +65,7 @@ def main():
     )
     args = parser.parse_args()
 
-    obj_yaml = yaml_config_parser(fname_yaml_config=args.config_yaml)
+    obj_yaml = cbioportal_update_config(fname_yaml_config=args.config_yaml)
     fname_minio_env = obj_yaml.return_credential_filename()
     path_minio_summary_intermediate = obj_yaml.return_intermediate_folder_path()
     fname_meta_data = obj_yaml.return_filename_codebook_metadata()

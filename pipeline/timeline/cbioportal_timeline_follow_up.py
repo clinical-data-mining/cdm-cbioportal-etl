@@ -10,7 +10,7 @@ import pandas as pd
 #     FNAME_DEMO,
 #     FNAME_TIMELINE_FU
 # )
-from cdm_cbioportal_etl.utils import yaml_config_parser
+from cdm_cbioportal_etl.utils import cbioportal_update_config
 from msk_cdm.minio import MinioAPI
 from msk_cdm.data_classes.legacy import CDMProcessingVariables as cdm_files
 
@@ -32,7 +32,7 @@ def cbioportal_timeline_follow_up(
         fname_save
 ):
     print('Parsing config file %s' % yaml_config)
-    obj_yaml = yaml_config_parser(fname_yaml_config=yaml_config)
+    obj_yaml = cbioportal_update_config(fname_yaml_config=yaml_config)
     fname_minio_env = obj_yaml.return_credential_filename()
 
 

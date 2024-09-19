@@ -1,14 +1,9 @@
-# import os
-# import sys
 import argparse
 from datetime import date
 
 import pandas as pd
 
-from cdm_cbioportal_etl.utils import yaml_config_parser
-
-# sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..')))
-# from variables import DICT_FILES_TO_COPY
+from cdm_cbioportal_etl.utils import cbioportal_update_config
 
 
 cols_fixed = [
@@ -72,9 +67,10 @@ def monitor_completeness(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Script for monitoring completeness of data elements")
     parser.add_argument(
-        "--fname_log",
+        "--incomplete_fields_csv",
         action="store",
-        dest="fname_log",
+        dest="incomplete_fields_csv",
+        required=True,
         help="Log to indicate data is complete and can be pushed to datahub."
     )
     parser.add_argument(
@@ -85,7 +81,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    obj_yaml = yaml_config_parser(fname_yaml_config=args.config_yaml)
+    obj_yaml = cbioportal_update_config(fname_yaml_config=args.config_yaml)
     dict_files_to_copy = obj_yaml.return_dict_datahub_to_minio()
 
     test = monitor_completeness(

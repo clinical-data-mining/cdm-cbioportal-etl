@@ -1,19 +1,10 @@
-# import os
-# import sys
 import argparse
 
 import pandas as pd
 
-# sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..')))
 from msk_cdm.minio import MinioAPI
 from msk_cdm.data_classes.legacy import CDMProcessingVariables as cdm_files
-from cdm_cbioportal_etl.utils import yaml_config_parser
-# from variables import (
-#     FNAME_DEMO,
-#     FNAME_CBIO_SID,
-#     FNAME_OS,
-#     ENV_MINIO
-# )
+from cdm_cbioportal_etl.utils import cbioportal_update_config
 from msk_cdm.data_processing import (
     mrn_zero_pad,
     convert_col_to_datetime
@@ -137,7 +128,7 @@ def main():
     )
     args = parser.parse_args()
 
-    obj_yaml = yaml_config_parser(fname_yaml_config=args.config_yaml)
+    obj_yaml = cbioportal_update_config(fname_yaml_config=args.config_yaml)
     fname_minio_env = obj_yaml.return_credential_filename()
 
     fname_save = cdm_files.fname_overall_survival

@@ -3,7 +3,7 @@ import argparse
 # import os
 
 from cdm_cbioportal_etl.summary import cbioportal_template_generator
-from cdm_cbioportal_etl.utils import yaml_config_parser
+from cdm_cbioportal_etl.utils import cbioportal_update_config
 # sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..')))
 # from variables import (
 #     ENV_MINIO,
@@ -26,7 +26,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    obj_yaml = yaml_config_parser(fname_yaml_config=args.config_yaml)
+    obj_yaml = cbioportal_update_config(fname_yaml_config=args.config_yaml)
     fname_minio_env = obj_yaml.return_credential_filename()
 
     fname_summary_header_template_patient = obj_yaml.return_template_info()['fname_cbio_header_template_p']
