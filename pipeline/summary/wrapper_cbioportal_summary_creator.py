@@ -5,15 +5,19 @@ Create summary files and corresponding headers from CDM data,
 then combine into a single file to be pushed to cbioportal
 
 """
+import os
 import argparse
+from pathlib import Path
 
 from cdm_cbioportal_etl.summary import cbioportalSummaryFileCombiner
 from cdm_cbioportal_etl.summary import RedcapToCbioportalFormat
 from cdm_cbioportal_etl.utils import cbioportal_update_config
+from msk_cdm.databricks import DatabricksAPI
 
 
 def create_cbioportal_summary(
     fname_minio_env,
+    dict_databricks,
     patient_or_sample,
     fname_manifest, 
     fname_summary_template,
@@ -54,6 +58,37 @@ def create_cbioportal_summary(
     obj_p_combiner.save_update(fname=fname_summary_save)
     df_cbio_summary = obj_p_combiner.return_final()
 
+    # Databricks processing for saving data
+    fname_databricks_env = dict_databricks['fname_databricks_config']
+    catalog = dict_databricks['catalog']
+    schema = dict_databricks['schema']
+    volume = dict_databricks['volume']
+    sep = dict_databricks['sep']
+    overwrite = dict_databricks['overwrite']
+
+    dir_volume = os.path.join('/Volumes',catalog,schema,volume)
+    fname_save_databricks = os.path.join(dir_volume, fname_summary_save)
+    table = Path(fname_summary_save).stem
+
+    dict_database_table_info = {
+        'catalog': catalog,
+        'schema': schema,
+        'volume_path': fname_save_databricks,
+        'table': table,
+        'sep': sep
+    }
+
+    obj_db = DatabricksAPI(fname_databricks_env=fname_databricks_env)
+    obj_db.write_db_obj(
+        df=df_cbio_summary,
+        volume_path=fname_save_databricks,
+        sep=sep,
+        overwrite=overwrite,
+        dict_database_table_info=dict_database_table_info
+    )
+
+
+
 
 def main():
     parser = argparse.ArgumentParser(description="Wrapper for creating patient and sample summary files for cBioPortal.")
@@ -73,6 +108,9 @@ def main():
     fname_meta_table = obj_yaml.return_filename_codebook_tables()
     production_or_test = obj_yaml.return_production_or_test_indicator()
 
+    # Databricks configs
+    dict_databricks = obj_yaml.return_credential_filename_databricks()
+
     fname_manifest_patient = obj_yaml.return_manifest_filename_patient()
     fname_summary_template_patient = obj_yaml.return_template_info()['fname_p_sum_template_cdsi']
     fname_summary_patient = obj_yaml.return_filenames_deid_datahub()['summary_patient']
@@ -85,7 +123,8 @@ def main():
     # Create patient summary
     patient_or_sample = 'patient'
     create_cbioportal_summary(
-        fname_minio_env = fname_minio_env,
+        fname_minio_env=fname_minio_env,
+        dict_databricks=dict_databricks,
         patient_or_sample=patient_or_sample,
         fname_manifest=fname_manifest_patient,
         fname_summary_template=fname_summary_template_patient,
@@ -102,6 +141,7 @@ def main():
     patient_or_sample = 'sample'
     create_cbioportal_summary(
         fname_minio_env = fname_minio_env,
+        dict_databricks=dict_databricks,
         patient_or_sample=patient_or_sample,
         fname_manifest=fname_manifest_sample,
         fname_summary_template=fname_summary_template_sample,

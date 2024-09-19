@@ -113,6 +113,11 @@ class CbioportalUpdateConfig(object):
         fname_sample_remove = config.get('inputs', {}).get('fname_sample_remove')
         return fname_sample_remove
 
+    def return_databricks_configs(self):
+        config = self._config
+        dict_databricks_configs = config.get('inputs_databricks', {})
+        return dict_databricks_configs
+
     def return_manifest_filename_patient(self):
         """
         Retrieve the patient manifest filename from the YAML configuration.

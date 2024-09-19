@@ -22,6 +22,14 @@ inputs:
   # Variable for cBioPortal production or test portal study use
   production_or_test: "test"
 
+inputs_databricks:
+  overwrite: True
+  fname_databricks_config: "/gpfs/mindphidata/cdm_repos/databricks_env_test_group.txt"
+  catalog: "cbioportal_test"
+  schema: "cdsi_data_deid"
+  volume: "cdsi_data_deid_volume"
+  sep: "\t"
+
 template_files:
   # Header template for patient summary file
   fname_cbio_header_template_p: "cbioportal/intermediate_files_testing_study/cbioportal_summary_header_testing_study_patient.tsv"
