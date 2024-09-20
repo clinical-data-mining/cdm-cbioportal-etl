@@ -83,8 +83,8 @@ def create_cbioportal_summary(
         df=df_cbio_summary,
         volume_path=fname_save_databricks,
         sep=sep,
-        overwrite=overwrite,
-        dict_database_table_info=dict_database_table_info
+        overwrite=overwrite  #,
+        # dict_database_table_info=dict_database_table_info
     )
 
 
