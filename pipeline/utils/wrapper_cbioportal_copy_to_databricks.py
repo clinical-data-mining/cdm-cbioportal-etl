@@ -26,7 +26,7 @@ def copy_files(obj_db, fname_source, dest_path_object, sep, overwrite):
     return None
 
 def transfer_to_databricks(config_yaml):
-
+    print('Using config file: %s:' % config_yaml)
     obj_yaml = cbioportal_update_config(fname_yaml_config=config_yaml)
     dict_files_to_copy = obj_yaml.return_dict_datahub_to_minio()
     # Databricks configs
