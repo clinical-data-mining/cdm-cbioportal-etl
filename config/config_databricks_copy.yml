@@ -1,0 +1,67 @@
+codebook:
+  path: "/gpfs/mindphidata/cdm_repos/github/docs/docs/tables/"
+  fname_metadata: "CDM-Codebook - metadata.csv"
+  fname_tables: "CDM-Codebook - tables.csv"
+  fname_project: "CDM-Codebook - project.csv"
+
+inputs:
+  # Credential file
+  env_minio: "/gpfs/mindphidata/fongc2/minio_env.txt"
+  # Input file of all sample and patient IDs that should be included in the portal
+  fname_cbio_sid: "/gpfs/mindphidata/cdm_repos/datahub/impact-data/data_clinical_sample.txt"
+  # Exclusion list (TODO: Consider deprecating since have a to USE list above)
+  fname_sample_remove: "/gpfs/mindphidata/cdm_repos/github/cdm-cbioportal-etl/pipeline/mskimpact_clinical_data_remove.tsv"
+  # Data manifest files (MinIO)
+  fname_manifest_patient: "cbioportal/summary_manifests/summary_manifest_patient.csv"
+  fname_manifest_sample: "cbioportal/summary_manifests/summary_manifest_sample.csv"
+  # Intermediate summary file and header location on minio
+  path_minio_cbio_summary_intermediate: "cbioportal/intermediate_files/"
+  # folder path for final deid files
+  path_datahub: "/gpfs/mindphidata/cdm_repos/datahub/cdm-data/"
+  path_minio_cbio: "cbioportal"
+  # Variable for cBioPortal production or test portal study use
+  production_or_test: "production"
+
+inputs_databricks:
+  overwrite: True
+  fname_databricks_config: "/gpfs/mindphidata/cdm_repos/databricks_env_prod_group.txt"
+  catalog: "cdsi_prod"
+  schema: "cdm_impact_pipeline_prod"
+  volume: "cdm_impact_pipeline"
+  sep: "\t"
+
+template_files:
+  # Header template for patient summary file
+  fname_cbio_header_template_p: "cbioportal/cbioportal_summary_header_patient.tsv"
+  # Header template for sample summary file
+  fname_cbio_header_template_s: "cbioportal/cbioportal_summary_header_sample.tsv"
+  # Patient ID list in the cbioportal format. Additional patient summary information is appended to this. Derived from `inputs.fname_cbio_sid`
+  fname_p_sum_template_cdsi: "cbioportal/intermediate_files/data_clinical_patient_template_cdsi.txt"
+  # Sample ID list in the cbioportal format. Additional patient summary information is appended to this. Derived from `inputs.fname_cbio_sid`
+  fname_s_sum_template_cdsi: "cbioportal/intermediate_files/data_clinical_sample_template_cdsi.txt"
+
+# TODO all tables on minio should be in codebook
+#phi_generated_files:
+#  fname_follow_up_table: "demographics/table_timeline_follow_up.tsv"
+
+# File names
+deid_filenames:
+  summary_patient: "data_clinical_patient.txt"
+  summary_sample: "data_clinical_sample.txt"
+#  timeline_surgery: "data_timeline_surgery.txt"
+#  timeline_radiation: "data_timeline_radiation.txt"
+#  timeline_treatment_meds: "data_timeline_treatment.txt"
+#  timeline_diagnosis_primary: "data_timeline_diagnosis.txt"
+#  timeline_specimen: "data_timeline_specimen.txt"
+#  timeline_specimen_surgery: "data_timeline_specimen_surgery.txt"
+#  timeline_gleason: "data_timeline_gleason.txt"
+#  timeline_pdl1: "data_timeline_pdl1.txt"
+#  timeline_pathology_mmr: "data_timeline_mmr.txt"
+#  timeline_prior_meds: "data_timeline_prior_meds.txt"
+#  timeline_tumor_sites: "data_timeline_tumor_sites.txt"
+#  timeline_follow_up: "data_timeline_timeline_follow_up.txt"
+#  timeline_progression: "data_timeline_progression.txt"
+#  timeline_cancer_presence: "data_timeline_cancer_presence.txt"
+#  timeline_ecog_kps: "data_timeline_ecog_kps.txt"
+
+# TODO create dict in python code to map phi files to deid files
