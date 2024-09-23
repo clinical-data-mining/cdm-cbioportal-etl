@@ -31,6 +31,7 @@ def transfer_to_databricks(config_yaml):
     dict_files_to_copy = obj_yaml.return_dict_datahub_to_minio()
     # Databricks configs
     dict_databricks = obj_yaml.return_databricks_configs()
+    print(dict_databricks)
     # Databricks processing for saving data
     fname_databricks_env = dict_databricks['fname_databricks_config']
     catalog = dict_databricks['catalog']
