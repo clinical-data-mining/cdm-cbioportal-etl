@@ -26,8 +26,8 @@ inputs_databricks:
   overwrite: True
   fname_databricks_config: "/gpfs/mindphidata/cdm_repos/databricks_env_prod_group.txt"
   catalog: "cdsi_prod"
-  schema: "cdsi_data_deid"
-  volume: "cdsi_data_deid_volume"
+  schema: "cdm_impact_pipeline_prod"
+  volume: "cdm_impact_pipeline"
   sep: "\t"
 
 template_files:
