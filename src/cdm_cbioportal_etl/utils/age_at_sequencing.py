@@ -117,25 +117,3 @@ def compute_age_at_sequencing(
 
     return df_f
 
-
-if __name__ == "__main__":
-    # parser = argparse.ArgumentParser(description="cBioPortal timeline file for cancer progression predictions")
-    # parser.add_argument(
-    #     "--fname_log",
-    #     action="store",
-    #     dest="fname_log",
-    #     help="Log to indicate data is complete and can be pushed to datahub."
-    # )
-    # args = parser.parse_args()
-
-    ENV_MINIO = config_cdm.minio_env
-    fname_demo = config_cdm.fname_demo
-    fname_samples = config_cdm.fname_path_clean
-    fname_save_age_at_seq = 'cbioportal/age_at_sequencing.tsv'
-
-    compute_age_at_sequencing(
-        minio_env=ENV_MINIO,
-        fname_demo=fname_demo,
-        fname_samples=fname_samples,
-        fname_save_age_at_seq=fname_save_age_at_seq
-    )
