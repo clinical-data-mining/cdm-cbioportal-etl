@@ -7,7 +7,7 @@ from msk_cdm.data_processing import set_debug_console, mrn_zero_pad
 
 FNAME_MINIO_ENV = config_rrpt.minio_env
 FNAME_PATHOLOGY = config_rrpt.fname_path_clean
-COLS_PATHOLOGY = ['MRN', 'DTE_PATH_PROCEDURE', 'SAMPLE_ID', 'DMP_ID']
+COLS_PATHOLOGY = ['MRN', 'DTE_TUMOR_SEQUENCING', 'SAMPLE_ID', 'DMP_ID']
 
 
 def get_anchor_dates():
@@ -19,8 +19,8 @@ def get_anchor_dates():
     df_path = pd.read_csv(obj, header=0, low_memory=False, sep='\t', usecols=COLS_PATHOLOGY)
     
     df_path = df_path.dropna().copy()
-    df_path['DTE_PATH_PROCEDURE'] = pd.to_datetime(
-        df_path['DTE_PATH_PROCEDURE'],
+    df_path['DTE_TUMOR_SEQUENCING'] = pd.to_datetime(
+        df_path['DTE_TUMOR_SEQUENCING'],
         errors='coerce'
     )
     
@@ -32,8 +32,8 @@ def get_anchor_dates():
     df_path_filt = df_path_filt[df_path_filt['DMP_ID_DERIVED'] == df_path_filt['DMP_ID']]
 
 
-    df_path_filt = df_path_filt.sort_values(by=['MRN', 'DTE_PATH_PROCEDURE'])
-    df_path_g = df_path_filt.groupby(['MRN', 'DMP_ID'])['DTE_PATH_PROCEDURE'].first().reset_index()
+    df_path_filt = df_path_filt.sort_values(by=['MRN', 'DTE_TUMOR_SEQUENCING'])
+    df_path_g = df_path_filt.groupby(['MRN', 'DMP_ID'])['DTE_TUMOR_SEQUENCING'].first().reset_index()
     
     df_path_g = mrn_zero_pad(df=df_path_g, col_mrn='MRN')
     

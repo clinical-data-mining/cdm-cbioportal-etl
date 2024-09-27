@@ -52,7 +52,7 @@ def compute_age_at_sequencing(
     df_demo['OS_DTE'] = df_demo['PT_DEATH_DTE'].fillna(df_demo['PLA_LAST_CONTACT_DTE'])
 
     ## Load pathology report table
-    col_keep = ['MRN', 'DTE_PATH_PROCEDURE', 'DMP_ID', 'SAMPLE_ID']
+    col_keep = ['MRN', 'DTE_TUMOR_SEQUENCING', 'DMP_ID', 'SAMPLE_ID']
     obj = obj_minio.load_obj(path_object=fname_samples)
     df_path = pd.read_csv(obj, sep='\t', usecols=col_keep, low_memory=False)
     df_path = mrn_zero_pad(df=df_path, col_mrn='MRN')
@@ -66,16 +66,16 @@ def compute_age_at_sequencing(
     df_path_clean = df_path_clean[df_path_clean['SAMPLE_ID'].str.contains('-T')].copy()
     df_path_clean['DMP_ID_DERIVED'] = df_path_clean['SAMPLE_ID'].apply(lambda x: x[:9])
     df_path_clean = df_path_clean[df_path_clean['DMP_ID_DERIVED'] == df_path_clean['DMP_ID']].copy()
-    df_path_clean['DTE_PATH_PROCEDURE'] = pd.to_datetime(df_path_clean['DTE_PATH_PROCEDURE'])
+    df_path_clean['DTE_TUMOR_SEQUENCING'] = pd.to_datetime(df_path_clean['DTE_TUMOR_SEQUENCING'])
 
     ## Merge dataframes
     df_f = df_path_clean.merge(right=df_demo, how='left', on=['MRN'])
 
     ## Compute age at sequencing
-    df_f['AGE_AT_SEQUENCING_DAYS_PHI'] = (df_f['DTE_PATH_PROCEDURE'] - df_f['PT_BIRTH_DTE']).dt.days
+    df_f['AGE_AT_SEQUENCING_DAYS_PHI'] = (df_f['DTE_TUMOR_SEQUENCING'] - df_f['PT_BIRTH_DTE']).dt.days
 
     ## Compute OS interval
-    df_f['OS_INT'] = (df_f['OS_DTE'] - df_f['DTE_PATH_PROCEDURE']).dt.days
+    df_f['OS_INT'] = (df_f['OS_DTE'] - df_f['DTE_TUMOR_SEQUENCING']).dt.days
 
     df_f['AGE_AT_SEQUENCING_YEARS_PHI'] = (df_f['AGE_AT_SEQUENCING_DAYS_PHI']/AGE_CONVERSION_FACTOR)
     df_f['AGE_AT_SEQUENCING_YEARS_WITH_OS_INT_PHI'] = ((df_f['AGE_AT_SEQUENCING_DAYS_PHI'] + df_f['OS_INT'])/AGE_CONVERSION_FACTOR)
