@@ -37,8 +37,6 @@ def cbioportal_deid_timeline_files(
 
         df_['START_DATE'] = pd.to_datetime(df_['START_DATE'], errors='coerce') 
         df_['STOP_DATE'] = pd.to_datetime(df_['STOP_DATE'], errors='coerce')
-        df_[COL_ANCHOR_DATE] = pd.to_datetime(df_[COL_ANCHOR_DATE], errors='coerce')
-
 
         # Merge deid date
         df_ = df_.merge(right=df_path_g, how='inner', on='MRN')
