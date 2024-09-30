@@ -9,6 +9,7 @@ from msk_cdm.data_processing import (
 )
 
 COLS_ORDER_GENERAL = constants.COLS_ORDER_GENERAL
+COL_ANCHOR_DATE = constants.COL_ANCHOR_DATE
 
 
 def cbioportal_deid_timeline_files(
@@ -35,7 +36,9 @@ def cbioportal_deid_timeline_files(
             df_['STOP_DATE'] = ''
 
         df_['START_DATE'] = pd.to_datetime(df_['START_DATE'], errors='coerce') 
-        df_['STOP_DATE'] = pd.to_datetime(df_['STOP_DATE'], errors='coerce') 
+        df_['STOP_DATE'] = pd.to_datetime(df_['STOP_DATE'], errors='coerce')
+        df_[COL_ANCHOR_DATE] = pd.to_datetime(df_[COL_ANCHOR_DATE], errors='coerce')
+
 
         # Merge deid date
         df_ = df_.merge(right=df_path_g, how='inner', on='MRN')
@@ -43,12 +46,12 @@ def cbioportal_deid_timeline_files(
         df_ = df_.rename(columns={'DMP_ID': 'PATIENT_ID'})
 
         # DeID dates
-        start_date = (df_['START_DATE'] - df_['DTE_PATH_PROCEDURE']).dt.days
-        stop_date = (df_['STOP_DATE'] - df_['DTE_PATH_PROCEDURE']).dt.days
+        start_date = (df_['START_DATE'] - df_[COL_ANCHOR_DATE]).dt.days
+        stop_date = (df_['STOP_DATE'] - df_[COL_ANCHOR_DATE]).dt.days
 
         df_['START_DATE'] = start_date
         df_['STOP_DATE'] = stop_date
-        df_ = df_.drop(columns=['DTE_PATH_PROCEDURE'])
+        df_ = df_.drop(columns=[COL_ANCHOR_DATE])
         df_ = df_[df_['START_DATE'].notnull()]
         df_ = convert_to_int(
             df=df_,
