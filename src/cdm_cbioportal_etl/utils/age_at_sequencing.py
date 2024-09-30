@@ -54,7 +54,8 @@ def compute_age_at_sequencing(
     ## Load pathology report table
     col_keep = ['MRN', 'DTE_TUMOR_SEQUENCING', 'DMP_ID', 'SAMPLE_ID']
     obj = obj_minio.load_obj(path_object=fname_samples)
-    df_path = pd.read_csv(obj, sep='\t', usecols=col_keep, low_memory=False)
+    df_path1 = pd.read_csv(obj, sep='\t', usecols=col_keep, low_memory=False)
+    df_path = df_path1.dropna()
     df_path = mrn_zero_pad(df=df_path, col_mrn='MRN')
 
     ## Load anchor dates
