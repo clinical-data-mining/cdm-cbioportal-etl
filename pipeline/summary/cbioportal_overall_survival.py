@@ -70,11 +70,11 @@ def _clean_and_merge(
 def _create_os_cols(df_os):
     # Create interval and event data
     df_os['OS_DATE'] = df_os['PT_DEATH_DTE'].fillna(df_os['PLA_LAST_CONTACT_DTE'])
-    df_os['OS_INT'] = (df_os['OS_DATE'] - df_os['DTE_PATH_PROCEDURE']).dt.days/30.417
+    df_os['OS_INT'] = (df_os['OS_DATE'] - df_os['DTE_TUMOR_SEQUENCING']).dt.days/30.417
     df_os['OS_MONTHS'] = df_os['OS_INT']
     df_os['OS_STATUS'] = df_os['PT_DEATH_DTE'].notnull().replace({True: '1:DECEASED', False:'0:LIVING'})
     OS_INT_ERROR = df_os['OS_INT'] > 150
-    OS_INT_ERROR2 = df_os['PLA_LAST_CONTACT_DTE'] < df_os['DTE_PATH_PROCEDURE']
+    OS_INT_ERROR2 = df_os['PLA_LAST_CONTACT_DTE'] < df_os['DTE_TUMOR_SEQUENCING']
     df_os['OS_MONTHS'] = df_os['OS_MONTHS'].astype(str)
     df_os.loc[OS_INT_ERROR | OS_INT_ERROR2, 'OS_MONTHS'] = 'NA'
     df_os_f = df_os[COLS_OS]
