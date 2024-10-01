@@ -35,6 +35,7 @@ COL_SUMMARY_HEADER_FNAME_SAVE = constants.COL_SUMMARY_HEADER_FNAME_SAVE
 COL_RPT_NAME = constants.COL_RPT_NAME
 COL_PID = constants.COL_PID
 COL_PID_CBIO = constants.COL_PID_CBIO
+COL_ANCHOR_DATE = constants.COL_ANCHOR_DATE
 
 
 class RedcapToCbioportalFormat(object):
@@ -316,8 +317,8 @@ class RedcapToCbioportalFormat(object):
             # Convert dates to intervals
             print('Converting dates to intervals')
             df_select[cols_dates] = df_select[cols_dates].apply(lambda x: pd.to_datetime(x, errors='coerce'))
-            df_select[cols_dates] = df_select[cols_dates].apply(lambda x: (x - df_select['DTE_PATH_PROCEDURE']).dt.days)
-            df_select = df_select.drop(columns=['DTE_PATH_PROCEDURE'])
+            df_select[cols_dates] = df_select[cols_dates].apply(lambda x: (x - df_select[COL_ANCHOR_DATE]).dt.days)
+            df_select = df_select.drop(columns=[COL_ANCHOR_DATE])
             df_select = df_select.rename(columns={'DMP_ID': COL_PID_CBIO})
             df_select.columns = [x.upper().replace(' ', '_') for x in df_select.columns]
 
