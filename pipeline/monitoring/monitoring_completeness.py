@@ -17,7 +17,7 @@ today = date.today()
 
 def monitor_completeness(
         dict_files_to_copy,
-        fname_log
+        incomplete_fields_csv
 ):
     list_files = list(dict_files_to_copy.keys())
     list_files_timeline = [x for x in list_files if 'timeline' in x]
@@ -58,8 +58,8 @@ def monitor_completeness(
         return True
     
     else:
-        print('Monitoring test passed. Writing results to log: %s' % fname_log)
-        test_for_empty_all.to_csv(fname_log, sep=',')
+        print('Monitoring test passed. Writing results to log: %s' % incomplete_fields_csv)
+        test_for_empty_all.to_csv(incomplete_fields_csv, sep=',')
         
         return False
 
@@ -85,7 +85,7 @@ if __name__ == "__main__":
     dict_files_to_copy = obj_yaml.return_dict_datahub_to_minio()
 
     test = monitor_completeness(
-        fname_log=args.fname_log,
+        incomplete_fields_csv=args.incomplete_fields_csv,
         dict_files_to_copy=dict_files_to_copy
     )
     
