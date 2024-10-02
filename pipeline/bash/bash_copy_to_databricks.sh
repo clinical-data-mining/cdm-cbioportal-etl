@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-REPO_LOCATION="/gpfs/mindphidata/cdm_repos/github/"
+#REPO_LOCATION="/gpfs/mindphidata/cdm_repos/github/"
 
 
 set -e
@@ -11,7 +11,7 @@ conda activate conda-env-cdm
 
 # Get variables
 SCRIPT="${REPO_LOCATION}cdm-cbioportal-etl/pipeline/utils/wrapper_cbioportal_copy_to_databricks.py"
-YAML_CONFIG="${REPO_LOCATION}cdm-cbioportal-etl/config/config_databricks_copy.yml"
+#YAML_CONFIG="${REPO_LOCATION}cdm-cbioportal-etl/config/config_databricks_copy.yml"
 
 # Run script
 python $SCRIPT --config_yaml=$YAML_CONFIG
