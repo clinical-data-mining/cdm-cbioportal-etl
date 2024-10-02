@@ -10,8 +10,9 @@ conda activate conda-env-cdm
 
 MY_PATH="$(dirname -- "${BASH_SOURCE[0]}")"
 echo "$MY_PATH"
+pwd
 
-cd ../utils
+
 
 # Get variables
 SCRIPT="generate_cbioportal_template.py"
