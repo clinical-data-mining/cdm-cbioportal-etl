@@ -10,7 +10,7 @@ conda activate conda-env-cdm
 
 MY_PATH="$(dirname -- "${BASH_SOURCE[0]}")"
 echo "$MY_PATH"
-cd MY_PATH
+cd $MY_PATH
 cd ../util
 
 
