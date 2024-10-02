@@ -9,15 +9,14 @@ source /gpfs/mindphidata/fongc2/miniconda3/etc/profile.d/conda.sh
 conda activate conda-env-cdm
 
 MY_PATH="$(dirname -- "${BASH_SOURCE[0]}")"
-echo "$MY_PATH"
 cd $MY_PATH
-pwd
 cd ../utils
 
 
 # Get variables
 SCRIPT="generate_cbioportal_template.py"
 #YAML_CONFIG="${REPO_LOCATION}cdm-cbioportal-etl/config/etl_config_all_impact.yml"
+echo $YAML_CONFIG
 
 # Run script
 python $SCRIPT --config_yaml=$YAML_CONFIG
