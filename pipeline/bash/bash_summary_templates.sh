@@ -12,8 +12,7 @@ MY_PATH="$(dirname -- "${BASH_SOURCE[0]}")"
 echo "$MY_PATH"
 cd $MY_PATH
 pwd
-cd ..
-cd util
+cd ../utils
 
 
 # Get variables
