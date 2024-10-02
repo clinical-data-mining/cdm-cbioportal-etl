@@ -8,6 +8,9 @@ set -e
 source /gpfs/mindphidata/fongc2/miniconda3/etc/profile.d/conda.sh
 conda activate conda-env-cdm
 
+MY_PATH="$(dirname -- "${BASH_SOURCE[0]}")"
+echo "$MY_PATH"
+
 cd ../utils
 
 # Get variables
