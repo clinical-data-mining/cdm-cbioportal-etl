@@ -80,14 +80,14 @@ def create_cbioportal_summary(
         'sep': sep
     }
 
-    obj_db = DatabricksAPI(fname_databricks_env=fname_databricks_env)
-    obj_db.write_db_obj(
-        df=df_cbio_summary,
-        volume_path=fname_save_databricks,
-        sep=sep,
-        overwrite=overwrite  #,
-        # dict_database_table_info=dict_database_table_info
-    )
+    # obj_db = DatabricksAPI(fname_databricks_env=fname_databricks_env)
+    # obj_db.write_db_obj(
+    #     df=df_cbio_summary,
+    #     volume_path=fname_save_databricks,
+    #     sep=sep,
+    #     overwrite=overwrite  #,
+    #     # dict_database_table_info=dict_database_table_info
+    # )
 
 
 
