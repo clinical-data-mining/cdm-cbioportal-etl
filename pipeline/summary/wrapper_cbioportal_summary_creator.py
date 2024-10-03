@@ -68,7 +68,8 @@ def create_cbioportal_summary(
     overwrite = dict_databricks['overwrite']
 
     dir_volume = os.path.join('/Volumes',catalog,schema,volume)
-    fname_save_databricks = os.path.join(dir_volume, fname_summary_save)
+    fname_summary_save_basename = os.path.basename(fname_summary_save)
+    fname_save_databricks = os.path.join(dir_volume, fname_summary_save_basename)
     table = Path(fname_summary_save).stem
 
     dict_database_table_info = {

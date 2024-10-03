@@ -250,8 +250,10 @@ class CbioportalUpdateConfig(object):
     def return_filenames_deid_datahub(self) -> dict:
         config = self._config
 
-        path_datahub = config.get('deid_filenames', {})
+        path_datahub_root = config.get('inputs', {}).get('path_datahub')
+        files = config.get('deid_filenames', {})
+        joined_paths_dict = {key: os.path.join(path_datahub_root, filename) for key, filename in files.items()}
 
-        return path_datahub
+        return joined_paths_dict
 
 
