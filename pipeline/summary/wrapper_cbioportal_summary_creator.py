@@ -55,6 +55,7 @@ def create_cbioportal_summary(
     )
     
     # Save the merged summaries to file
+    print('Saving summary file: %s' % fname_summary_save)
     obj_p_combiner.save_update(fname=fname_summary_save)
     df_cbio_summary = obj_p_combiner.return_final()
 
