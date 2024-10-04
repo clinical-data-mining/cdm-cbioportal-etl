@@ -39,7 +39,7 @@ def cbioportal_template_generator(
     obj = obj_minio.load_obj(path_object=path_header_sample)
     df_header_template_s = pd.read_csv(obj, sep='\t')
 
-    print('Sample header: %s' % path_header_patient)
+    print('Patient header: %s' % path_header_patient)
     obj = obj_minio.load_obj(path_object=path_header_patient)
     df_header_template_p = pd.read_csv(obj, sep='\t')
 
