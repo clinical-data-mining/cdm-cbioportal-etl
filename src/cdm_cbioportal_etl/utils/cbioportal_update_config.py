@@ -179,7 +179,8 @@ class CbioportalUpdateConfig(object):
             dict: A dictionary with DataHub paths as keys and corresponding MinIO paths as values.
         """
         config = self._config
-        list_timeline_files = list(self._df_codebook_table['cbio_deid_filename'].dropna())
+        codebook_table = self._df_codebook_table
+        list_timeline_files = list(codebook_table.loc[codebook_table['cbio_timeline_file_production'] == 'x', 'cbio_deid_filename'].dropna())
         deid_filenames = list(config.get('deid_filenames', {}).values())
         list_deid_files = deid_filenames + list_timeline_files
 
