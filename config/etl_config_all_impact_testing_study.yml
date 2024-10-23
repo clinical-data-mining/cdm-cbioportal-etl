@@ -18,7 +18,7 @@ inputs:
   path_minio_cbio_summary_intermediate: "cbioportal/intermediate_files_testing_study"
   # folder path for final deid files
   path_datahub: "/gpfs/mindphidata/fongc2/datahubs/impact/mskimpact_cdm_cdsi/"
-  path_minio_cbio: "cbioportal/testing_study/"
+  path_minio_cbio: "cbioportal/testing_study"
   # Variable for cBioPortal production or test portal study use
   production_or_test: "test"
 
