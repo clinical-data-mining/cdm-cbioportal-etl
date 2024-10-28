@@ -64,7 +64,10 @@ def cbioportal_deid_timeline_files(
 
         # Filter by list of patients, if a list exists
         if list_dmp_ids is not None:
+            print('Number of patients in timeline template: %s' % str(len(list_dmp_ids)))
             df_f = df_f[df_f['PATIENT_ID'].isin(list_dmp_ids)].copy()
+        else:
+            print('No patient list in timeline template')
 
 
         if df_f.shape[0] > 0:
