@@ -14,7 +14,8 @@ COL_ANCHOR_DATE = constants.COL_ANCHOR_DATE
 
 def cbioportal_deid_timeline_files(
     fname_minio_env,
-    dict_files_timeline
+    dict_files_timeline,
+    list_dmp_ids=None
 ):
     """ De-identifies timeline files listed in `dict_files_timeline` and saves to object storage. Dates are deidentified using `get_anchor_dates`
     :param fname_minio_env: Minio environment file for loading and saving data
@@ -59,13 +60,24 @@ def cbioportal_deid_timeline_files(
         cols_other = [x for x in list(df_.columns) if x not in COLS_ORDER_GENERAL]
         cols_order_f = COLS_ORDER_GENERAL + cols_other
 
-        df_ = df_[cols_order_f]
+        df_f = df_[cols_order_f].copy()
 
-        save_appended_df(
-            df=df_, 
-            filename=file_deid, 
-            sep='\t'
-        )
+        # Filter by list of patients, if a list exists
+        if list_dmp_ids is not None:
+            print('Number of patients in timeline template: %s' % str(len(list_dmp_ids)))
+            df_f = df_f[df_f['PATIENT_ID'].isin(list_dmp_ids)].copy()
+        else:
+            print('No patient list in timeline template')
+
+
+        if df_f.shape[0] > 0:
+            save_appended_df(
+                df=df_f,
+                filename=file_deid,
+                sep='\t'
+            )
+        else:
+            print('No data to save. Exiting.')
         
     return None
     
