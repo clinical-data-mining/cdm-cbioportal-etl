@@ -56,6 +56,9 @@ def cbioportal_deid_timeline_files(
             df=df_,
             list_cols=['START_DATE', 'STOP_DATE']
         )
+        df_['START_DATE'] = df_['START_DATE'].astype(str)
+        df_['STOP_DATE'] = df_['STOP_DATE'].astype(str)
+        df_['STOP_DATE'] = df_['STOP_DATE'].str.replace('<NA>','')
 
         cols_other = [x for x in list(df_.columns) if x not in COLS_ORDER_GENERAL]
         cols_order_f = COLS_ORDER_GENERAL + cols_other
