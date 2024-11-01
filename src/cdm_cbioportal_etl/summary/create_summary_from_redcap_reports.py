@@ -19,6 +19,8 @@ Load spec. sheet for converting report to cbioportal format
 Load function to do the custom transformations and aggregations
 
 """
+import os
+
 import pandas as pd
 import numpy as np
 
@@ -393,8 +395,10 @@ class RedcapToCbioportalFormat(object):
             # Create manifest file
             ## Modify/create manifest files --------------------------------------------------
             print('Adding table and info to manifest file')
-            fname_save_data = self._path_minio_summary_intermediate + form.lower().replace(' ','_') + '_data.csv'
-            fname_save_header = self._path_minio_summary_intermediate + form.lower().replace(' ','_') + '_header.csv'
+            fname_data = form.lower().replace(' ','_') + '_data.csv'
+            fname_header = form.lower().replace(' ','_') + '_header.csv'
+            fname_save_data = os.path.join(self._path_minio_summary_intermediate, fname_data)
+            fname_save_header = os.path.join(self._path_minio_summary_intermediate, fname_header)
 
             # print(form)
             ##### This file will be used for merging data    
