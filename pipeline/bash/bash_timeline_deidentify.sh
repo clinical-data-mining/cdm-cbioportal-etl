@@ -13,6 +13,8 @@ conda activate conda-env-cdm
 SCRIPT="${REPO_LOCATION}cdm-cbioportal-etl/pipeline/timeline/cbioportal_timeline_deid.py"
 #YAML_CONFIG="${REPO_LOCATION}cdm-cbioportal-etl/config/etl_config_all_impact.yml"
 
+echo $SCRIPT
+
 # Run script
 python $SCRIPT --config_yaml=$YAML_CONFIG
 
