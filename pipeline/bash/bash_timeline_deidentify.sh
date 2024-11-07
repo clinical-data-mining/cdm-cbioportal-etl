@@ -18,6 +18,7 @@ SCRIPT="cbioportal_timeline_deid.py"
 #YAML_CONFIG="${REPO_LOCATION}cdm-cbioportal-etl/config/etl_config_all_impact.yml"
 
 echo $SCRIPT
+echo $YAML_CONFIG
 
 # Run script
 python $SCRIPT --config_yaml=$YAML_CONFIG
