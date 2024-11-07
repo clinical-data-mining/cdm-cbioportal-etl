@@ -10,11 +10,15 @@ from msk_cdm.data_processing import (
 
 COLS_ORDER_GENERAL = constants.COLS_ORDER_GENERAL
 COL_ANCHOR_DATE = constants.COL_ANCHOR_DATE
+COL_OS_DATE = 'OS_DATE'
 
 
 def cbioportal_deid_timeline_files(
     fname_minio_env,
     dict_files_timeline,
+    df_patient_os_date,
+    col_os_date,
+    col_id,
     list_dmp_ids=None
 ):
     """ De-identifies timeline files listed in `dict_files_timeline` and saves to object storage. Dates are deidentified using `get_anchor_dates`
@@ -24,6 +28,9 @@ def cbioportal_deid_timeline_files(
     """
     df_path_g = get_anchor_dates()
     obj_minio = MinioAPI(fname_minio_env=fname_minio_env)
+
+    df_os = df_patient_os_date[[col_id, col_os_date]].copy()
+    df_os.columns = ['MRN', COL_OS_DATE]
     
     for fname in dict_files_timeline:
         print(fname)
@@ -41,7 +48,13 @@ def cbioportal_deid_timeline_files(
 
         # Merge deid date
         df_ = df_.merge(right=df_path_g, how='inner', on='MRN')
-        df_ = df_.drop(columns=['MRN'])
+        df_ = df_.merge(right=df_os, how='inner', on='MRN')
+        logic_error_1 =  df_['START_DATE'] > df_['OS_DATE']
+        logic_error_2 =  df_['STOP_DATE'] > df_['OS_DATE']
+        df_.loc[logic_error_1, 'START_DATE'] = pd.NaT
+        df_.loc[logic_error_2, 'STOP_DATE'] = pd.NaT
+
+        df_ = df_.drop(columns=['MRN', COL_OS_DATE])
         df_ = df_.rename(columns={'DMP_ID': 'PATIENT_ID'})
 
         # DeID dates
