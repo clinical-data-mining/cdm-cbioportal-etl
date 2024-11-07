@@ -1,4 +1,6 @@
 import argparse
+
+import numpy as np
 # import os
 # import sys
 
@@ -43,6 +45,11 @@ def cbioportal_timeline_follow_up(
     obj = obj_minio.load_obj(path_object=fname_demo)
     df_demo = pd.read_csv(obj, sep='\t', usecols=col_keep)
 
+    df_demo_f = df_demo.copy()
+    # Remove last contact date if patient is deceased
+    logic_deceased = df_demo_f['PT_DEATH_DTE'].notnull()
+    df_demo_f.loc[logic_deceased, 'PLA_LAST_CONTACT_DTE'] = pd.NA
+
     print('Creating timeline')
     df_os_ = pd.melt(
         frame=df_demo,
@@ -55,7 +62,6 @@ def cbioportal_timeline_follow_up(
         value_name='START_DATE',
         var_name='SOURCE'
     )
-
 
     df_os_ = df_os_.assign(STOP_DATE='')
     df_os_ = df_os_.assign(EVENT_TYPE='Diagnosis')
