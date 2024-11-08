@@ -44,7 +44,7 @@ def cbioportal_template_generator(
     df_header_template_p = pd.read_csv(obj, sep='\t')
 
     # Load most current IDs -- 2024/01/22 moved to getting sample/patient IDs from msk-impact datahub. Expect at least a one day lag.
-    print('Loading current IMPACT IDs')
+    print('Loading current IMPACT IDs %s' % fname_cbio_sid)
     usecols=[COL_S_ID, COL_P_ID]
     df_id_current = pd.read_csv(
         fname_cbio_sid,
