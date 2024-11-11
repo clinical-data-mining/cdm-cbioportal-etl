@@ -59,7 +59,6 @@ def create_cbioportal_summary(
     # Fill values in summary file
     obj_p_combiner.backfill_missing_data(fname_meta_data=fname_meta_data)
     df_cbio_summary = obj_p_combiner.return_final()
-    df_cbio_summary['Ethnicity'].value_counts()
 
     # Save the merged summaries to file
     print('Saving summary file: %s' % fname_summary_save)
