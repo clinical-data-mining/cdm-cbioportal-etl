@@ -223,4 +223,32 @@ class cBioPortalSummaryMergeTool(object):
             self._df_summary_final.to_csv(fname_save, index=False, sep='\t')
         else:
             print('No appended summary data to save.')
+
+    def backfill_missing_data(self, fname_meta_data):
+        # Create function that backfills missing summary data
+        df_cbio_summary = self.return_final()
+
+        df_metadata = pd.read_csv(fname_meta_data, sep=',', dtype=object)
+
+        df_metadata['fill_value'] = df_metadata['fill_value'].fillna('NA')
+        df_fill_value = df_metadata[['field_label', 'fill_value']].copy()
+
+        df_cbio_summary_copy = df_cbio_summary.copy()
+
+        cols_summary = list(df_cbio_summary_copy.columns)
+        for i,col in enumerate(cols_summary):
+            logic_fill = df_fill_value['field_label'] == col
+            if logic_fill.any():
+                df_cbio_summary_copy[col] = df_cbio_summary_copy[col].str.strip()
+                fill_value = df_fill_value.loc[logic_fill, 'fill_value'].iloc[0]
+                df_cbio_summary_copy[col] = df_cbio_summary_copy[col].fillna(fill_value)
+                df_cbio_summary_copy = df_cbio_summary_copy.replace({col: {'NA': fill_value, 'N/A': fill_value}})
+
+        self._df_summary_final = df_cbio_summary_copy
+
+        return True
+
+
+
+
             

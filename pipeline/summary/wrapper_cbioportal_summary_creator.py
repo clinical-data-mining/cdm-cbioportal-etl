@@ -9,6 +9,8 @@ import os
 import argparse
 from pathlib import Path
 
+import pandas as pd
+
 from cdm_cbioportal_etl.summary import cbioportalSummaryFileCombiner
 from cdm_cbioportal_etl.summary import RedcapToCbioportalFormat
 from cdm_cbioportal_etl.utils import cbioportal_update_config
@@ -53,42 +55,15 @@ def create_cbioportal_summary(
         patient_or_sample=patient_or_sample,
         production_or_test=production_or_test
     )
-    
+
+    # Fill values in summary file
+    obj_p_combiner.backfill_missing_data(fname_meta_data=fname_meta_data)
+    df_cbio_summary = obj_p_combiner.return_final()
+    df_cbio_summary['Ethnicity'].value_counts()
+
     # Save the merged summaries to file
     print('Saving summary file: %s' % fname_summary_save)
     obj_p_combiner.save_update(fname=fname_summary_save)
-    df_cbio_summary = obj_p_combiner.return_final()
-
-    # # Databricks processing for saving data
-    # fname_databricks_env = dict_databricks['fname_databricks_config']
-    # catalog = dict_databricks['catalog']
-    # schema = dict_databricks['schema']
-    # volume = dict_databricks['volume']
-    # sep = dict_databricks['sep']
-    # overwrite = dict_databricks['overwrite']
-    #
-    # dir_volume = os.path.join('/Volumes',catalog,schema,volume)
-    # fname_summary_save_basename = os.path.basename(fname_summary_save)
-    # fname_save_databricks = os.path.join(dir_volume, fname_summary_save_basename)
-    # table = Path(fname_summary_save).stem
-    #
-    # dict_database_table_info = {
-    #     'catalog': catalog,
-    #     'schema': schema,
-    #     'volume_path': fname_save_databricks,
-    #     'table': table,
-    #     'sep': sep
-    # }
-
-    # obj_db = DatabricksAPI(fname_databricks_env=fname_databricks_env)
-    # obj_db.write_db_obj(
-    #     df=df_cbio_summary,
-    #     volume_path=fname_save_databricks,
-    #     sep=sep,
-    #     overwrite=overwrite  #,
-    #     # dict_database_table_info=dict_database_table_info
-    # )
-
 
 
 
