@@ -36,9 +36,9 @@ template_files:
   # Header template for sample summary file
   fname_cbio_header_template_s: "cbioportal/cbioportal_summary_header_sample.tsv"
   # Patient ID list in the cbioportal format. Additional patient summary information is appended to this. Derived from `inputs.fname_cbio_sid`
-  fname_p_sum_template_cdsi: "cbioportal/intermediate_files/data_clinical_patient_template_cdsi.txt"
+  fname_p_sum_template_cdsi: "cbioportal/intermediate_files/mskimpact_heme/data_clinical_patient_template_cdsi.txt"
   # Sample ID list in the cbioportal format. Additional patient summary information is appended to this. Derived from `inputs.fname_cbio_sid`
-  fname_s_sum_template_cdsi: "cbioportal/intermediate_files/data_clinical_sample_template_cdsi.txt"
+  fname_s_sum_template_cdsi: "cbioportal/intermediate_files/mskimpact_heme/data_clinical_sample_template_cdsi.txt"
 
 # TODO all tables on minio should be in codebook
 #phi_generated_files:

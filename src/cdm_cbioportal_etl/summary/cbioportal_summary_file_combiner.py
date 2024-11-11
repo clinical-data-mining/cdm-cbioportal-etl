@@ -112,5 +112,7 @@ class cbioportalSummaryFileCombiner(object):
             if ind < df_manifest.shape[0] - 1:
                 self._obj_patient_merge.reset_origin()
 
-        
+    def backfill_missing_data(self, fname_meta_data):
+        complete = self._obj_patient_merge.backfill_missing_data(fname_meta_data=fname_meta_data)
 
+        return complete
