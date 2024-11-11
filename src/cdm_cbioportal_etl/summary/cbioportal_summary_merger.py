@@ -226,6 +226,7 @@ class cBioPortalSummaryMergeTool(object):
 
     def backfill_missing_data(self, fname_meta_data):
         # Create function that backfills missing summary data
+        print('Backfilling missing data')
         df_cbio_summary = self.return_final()
 
         df_metadata = pd.read_csv(fname_meta_data, sep=',', dtype=object)
