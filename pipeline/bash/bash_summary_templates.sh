@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-#REPO_LOCATION="/gpfs/mindphidata/cdm_repos/github/"
+YAML_CONFIG="/gpfs/mindphidata/cdm_repos/github/cdm-cbioportal-etl/config/etl_config_mskimpact.yml"
 
 set -e
 
@@ -16,7 +16,7 @@ cd ../utils
 # Get variables
 SCRIPT="generate_cbioportal_template.py"
 #YAML_CONFIG="${REPO_LOCATION}cdm-cbioportal-etl/config/etl_config_all_impact.yml"
-# YAML_CONFIG="/gpfs/mindphidata/cdm_repos/github/cdm-cbioportal-etl/config/etl_config_mskarcher.yml"
+
 echo "YAML CONFIG: "
 echo $YAML_CONFIG
 
