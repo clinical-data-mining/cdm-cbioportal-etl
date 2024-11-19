@@ -12,6 +12,41 @@ COLS_ORDER_GENERAL = constants.COLS_ORDER_GENERAL
 COL_ANCHOR_DATE = constants.COL_ANCHOR_DATE
 COL_OS_DATE = 'OS_DATE'
 
+def process_df_os(
+        df,
+        col_id,
+        col_os_date
+):
+    df_os = df[[col_id, col_os_date]].copy()
+    df_os.columns = ['MRN', COL_OS_DATE]
+
+    return df_os
+
+def process_codebook(fname_metadata, fname_tables):
+    cols_keep_meta = [
+        'form_name',
+        'field_name',
+        'text_validation_type_or_sh',
+        'identifier'
+    ]
+    cols_keep_tables = [
+        'form_name',
+        'cbio_deid_filename'
+    ]
+
+    df_metadata = pd.read_csv(
+        fname_metadata,
+        usecols=cols_keep_meta
+    )
+
+    df_tables = pd.read_csv(fname_tables, usecols=cols_keep_tables)
+    df_tables = df_tables.dropna(subset=['cbio_deid_filename'])
+
+    df = df_tables.merge(right=df_metadata, how='left', on='form_name')
+    print(df.head())
+
+    return df
+
 
 def cbioportal_deid_timeline_files(
     fname_minio_env,
@@ -19,6 +54,8 @@ def cbioportal_deid_timeline_files(
     df_patient_os_date,
     col_os_date,
     col_id,
+    fname_meta_data,
+    fname_tables,
     list_dmp_ids=None
 ):
     """ De-identifies timeline files listed in `dict_files_timeline` and saves to object storage. Dates are deidentified using `get_anchor_dates`
@@ -29,8 +66,16 @@ def cbioportal_deid_timeline_files(
     df_path_g = get_anchor_dates()
     obj_minio = MinioAPI(fname_minio_env=fname_minio_env)
 
-    df_os = df_patient_os_date[[col_id, col_os_date]].copy()
-    df_os.columns = ['MRN', COL_OS_DATE]
+    df_os = process_df_os(
+        df=df_patient_os_date,
+        col_id=col_id,
+        col_os_date=col_os_date
+    )
+
+    df_metadata = process_codebook(
+        fname_tables=fname_tables,
+        fname_meta_data=fname_meta_data
+    )
     
     for fname in dict_files_timeline:
         print(fname)
