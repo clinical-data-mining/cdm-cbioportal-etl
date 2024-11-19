@@ -89,9 +89,9 @@ def cbioportal_deid_timeline_files(
         fname_base = os.path.basename(file_deid)
         df_codebook_current = df_codebook[df_codebook['cbio_deid_filename'] == fname_base].copy()
         logic_1 = df_codebook_current['field_name'] != 'MRN'
-        logic_2 = df_codebook_current['text_validation_type_or_sh'].notnull()
+        logic_2 = df_codebook_current['text_validation_type_or_sh'].isnull()
         logic_3 = df_codebook_current['identifier'].notnull()
-        logic_f = logic_3 & ~(logic_1 | logic_2)
+        logic_f = logic_1 & logic_2 & logic_3
         list_rmv_cols = list(df_codebook_current.loc[logic_f, 'field_name'])
 
         print(df_codebook_current.head())
