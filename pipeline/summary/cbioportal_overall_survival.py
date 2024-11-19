@@ -108,6 +108,8 @@ def _process_data(
     
     # Add annotations for OS
     df_os_f = _create_os_cols(df_os=df_os)
+
+    print('Shape of OS file: %s' % str(df_os_f.shape))
     
     # Save data
     obj_minio.save_obj(
