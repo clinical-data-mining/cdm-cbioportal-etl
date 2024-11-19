@@ -1,3 +1,5 @@
+import os
+
 import pandas as pd
 
 from msk_cdm.minio import MinioAPI
@@ -43,7 +45,6 @@ def process_codebook(fname_metadata, fname_tables):
     df_tables = df_tables.dropna(subset=['cbio_deid_filename'])
 
     df = df_tables.merge(right=df_metadata, how='left', on='form_name')
-    print(df.head())
 
     return df
 
@@ -72,7 +73,7 @@ def cbioportal_deid_timeline_files(
         col_os_date=col_os_date
     )
 
-    df_metadata = process_codebook(
+    df_codebook = process_codebook(
         fname_tables=fname_tables,
         fname_metadata=fname_metadata
     )
@@ -85,10 +86,22 @@ def cbioportal_deid_timeline_files(
         df_ = pd.read_csv(obj, header=0, low_memory=False, sep='\t')
         df_ = mrn_zero_pad(df=df_, col_mrn='MRN')
 
+        fname_base = os.path.basename(file_deid)
+        df_codebook_current = df_codebook[df_codebook['cbio_deid_filename'] == fname_base].copy()
+        logic_1 = df_codebook_current['field_name'] != 'MRN'
+        logic_2 = df_codebook_current['text_validation_type_or_sh'].notnull()
+        logic_3 = df_codebook_current['identifier'].notnull()
+        logic_f = logic_3 & ~(logic_1 | logic_2)
+        list_rmv_cols = list(df_codebook_current.loc[logic_f, 'field_name'])
+
+        print(df_codebook_current.head())
+        print('Drop Columns')
+        print(list_rmv_cols)
+
         if 'STOP_DATE' not in df_.columns:
             df_['STOP_DATE'] = ''
 
-        df_['START_DATE'] = pd.to_datetime(df_['START_DATE'], errors='coerce') 
+        df_['START_DATE'] = pd.to_datetime(df_['START_DATE'], errors='coerce')
         df_['STOP_DATE'] = pd.to_datetime(df_['STOP_DATE'], errors='coerce')
 
         # Merge deid date
@@ -99,7 +112,8 @@ def cbioportal_deid_timeline_files(
         df_.loc[logic_error_1, 'START_DATE'] = pd.NaT
         df_.loc[logic_error_2, 'STOP_DATE'] = pd.NaT
 
-        df_ = df_.drop(columns=['MRN', COL_OS_DATE])
+        cols_drop = ['MRN', COL_OS_DATE] + list_rmv_cols
+        df_ = df_.drop(columns=cols_drop)
         df_ = df_.rename(columns={'DMP_ID': 'PATIENT_ID'})
 
         # DeID dates
