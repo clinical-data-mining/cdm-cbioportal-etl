@@ -54,7 +54,7 @@ def cbioportal_deid_timeline_files(
     df_patient_os_date,
     col_os_date,
     col_id,
-    fname_meta_data,
+    fname_metadata,
     fname_tables,
     list_dmp_ids=None
 ):
@@ -74,7 +74,7 @@ def cbioportal_deid_timeline_files(
 
     df_metadata = process_codebook(
         fname_tables=fname_tables,
-        fname_meta_data=fname_meta_data
+        fname_metadata=fname_metadata
     )
     
     for fname in dict_files_timeline:
