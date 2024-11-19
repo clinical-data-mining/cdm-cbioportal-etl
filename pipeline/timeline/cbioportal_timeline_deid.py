@@ -42,6 +42,7 @@ def main():
     DICT_FILES_TIMELINE = obj_yaml.return_dict_phi_to_deid_timeline_production()
     DICT_FILES_TIMELINE_TESTING = obj_yaml.return_dict_phi_to_deid_timeline_testing()
     fname_meta_data = obj_yaml.return_filename_codebook_metadata()
+    fname_tables = obj_yaml.return_filename_codebook_tables()
     ENV_MINIO = obj_yaml.return_credential_filename()
     production_or_test = obj_yaml.return_production_or_test_indicator()
     fname_demo = cdm_files.fname_demo
@@ -72,7 +73,8 @@ def main():
         df_patient_os_date=df_patient_os_date,
         col_os_date=COL_OS_DATE,
         col_id=COL_ID,
-        fname_meta_data=fname_meta_data
+        fname_meta_data=fname_meta_data,
+        fname_tables=fname_tables
     )
 
 
