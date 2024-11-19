@@ -1,3 +1,5 @@
+import os
+
 import pandas as pd
 
 from msk_cdm.minio import MinioAPI
@@ -12,6 +14,40 @@ COLS_ORDER_GENERAL = constants.COLS_ORDER_GENERAL
 COL_ANCHOR_DATE = constants.COL_ANCHOR_DATE
 COL_OS_DATE = 'OS_DATE'
 
+def process_df_os(
+        df,
+        col_id,
+        col_os_date
+):
+    df_os = df[[col_id, col_os_date]].copy()
+    df_os.columns = ['MRN', COL_OS_DATE]
+
+    return df_os
+
+def process_codebook(fname_metadata, fname_tables):
+    cols_keep_meta = [
+        'form_name',
+        'field_name',
+        'text_validation_type_or_sh',
+        'identifier'
+    ]
+    cols_keep_tables = [
+        'form_name',
+        'cbio_deid_filename'
+    ]
+
+    df_metadata = pd.read_csv(
+        fname_metadata,
+        usecols=cols_keep_meta
+    )
+
+    df_tables = pd.read_csv(fname_tables, usecols=cols_keep_tables)
+    df_tables = df_tables.dropna(subset=['cbio_deid_filename'])
+
+    df = df_tables.merge(right=df_metadata, how='left', on='form_name')
+
+    return df
+
 
 def cbioportal_deid_timeline_files(
     fname_minio_env,
@@ -19,6 +55,8 @@ def cbioportal_deid_timeline_files(
     df_patient_os_date,
     col_os_date,
     col_id,
+    fname_metadata,
+    fname_tables,
     list_dmp_ids=None
 ):
     """ De-identifies timeline files listed in `dict_files_timeline` and saves to object storage. Dates are deidentified using `get_anchor_dates`
@@ -29,8 +67,16 @@ def cbioportal_deid_timeline_files(
     df_path_g = get_anchor_dates()
     obj_minio = MinioAPI(fname_minio_env=fname_minio_env)
 
-    df_os = df_patient_os_date[[col_id, col_os_date]].copy()
-    df_os.columns = ['MRN', COL_OS_DATE]
+    df_os = process_df_os(
+        df=df_patient_os_date,
+        col_id=col_id,
+        col_os_date=col_os_date
+    )
+
+    df_codebook = process_codebook(
+        fname_tables=fname_tables,
+        fname_metadata=fname_metadata
+    )
     
     for fname in dict_files_timeline:
         print(fname)
@@ -40,10 +86,22 @@ def cbioportal_deid_timeline_files(
         df_ = pd.read_csv(obj, header=0, low_memory=False, sep='\t')
         df_ = mrn_zero_pad(df=df_, col_mrn='MRN')
 
+        fname_base = os.path.basename(file_deid)
+        df_codebook_current = df_codebook[df_codebook['cbio_deid_filename'] == fname_base].copy()
+        logic_1 = df_codebook_current['field_name'] != 'MRN'
+        logic_2 = df_codebook_current['text_validation_type_or_sh'].isnull()
+        logic_3 = df_codebook_current['identifier'].notnull()
+        logic_f = logic_1 & logic_2 & logic_3
+        list_rmv_cols = list(df_codebook_current.loc[logic_f, 'field_name'])
+
+        print(df_codebook_current.head())
+        print('Drop Columns')
+        print(list_rmv_cols)
+
         if 'STOP_DATE' not in df_.columns:
             df_['STOP_DATE'] = ''
 
-        df_['START_DATE'] = pd.to_datetime(df_['START_DATE'], errors='coerce') 
+        df_['START_DATE'] = pd.to_datetime(df_['START_DATE'], errors='coerce')
         df_['STOP_DATE'] = pd.to_datetime(df_['STOP_DATE'], errors='coerce')
 
         # Merge deid date
@@ -54,7 +112,8 @@ def cbioportal_deid_timeline_files(
         df_.loc[logic_error_1, 'START_DATE'] = pd.NaT
         df_.loc[logic_error_2, 'STOP_DATE'] = pd.NaT
 
-        df_ = df_.drop(columns=['MRN', COL_OS_DATE])
+        cols_drop = ['MRN', COL_OS_DATE] + list_rmv_cols
+        df_ = df_.drop(columns=cols_drop)
         df_ = df_.rename(columns={'DMP_ID': 'PATIENT_ID'})
 
         # DeID dates

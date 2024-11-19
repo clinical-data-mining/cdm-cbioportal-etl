@@ -41,6 +41,8 @@ def main():
     obj_yaml = cbioportal_update_config(fname_yaml_config=args.config_yaml)
     DICT_FILES_TIMELINE = obj_yaml.return_dict_phi_to_deid_timeline_production()
     DICT_FILES_TIMELINE_TESTING = obj_yaml.return_dict_phi_to_deid_timeline_testing()
+    fname_metadata = obj_yaml.return_filename_codebook_metadata()
+    fname_tables = obj_yaml.return_filename_codebook_tables()
     ENV_MINIO = obj_yaml.return_credential_filename()
     production_or_test = obj_yaml.return_production_or_test_indicator()
     fname_demo = cdm_files.fname_demo
@@ -70,7 +72,9 @@ def main():
         list_dmp_ids=list_dmp_ids,
         df_patient_os_date=df_patient_os_date,
         col_os_date=COL_OS_DATE,
-        col_id=COL_ID
+        col_id=COL_ID,
+        fname_metadata=fname_metadata,
+        fname_tables=fname_tables
     )
 
 
