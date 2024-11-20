@@ -46,8 +46,7 @@ def _clean_and_merge(
     df_demo_f = convert_col_to_datetime(df=df_demo_f, col='PT_DEATH_DTE')
     df_demo_f = convert_col_to_datetime(df=df_demo_f, col='PLA_LAST_CONTACT_DTE')
 
-    df_os = df_ids.merge(right=df_path_g, how='left', on='DMP_ID')
-    df_os = df_os.merge(right=df_demo_f, how='left', on='MRN')
+    df_os = df_demo_f.merge(right=df_path_g, how='left', on='MRN')
     
     return df_os
 
