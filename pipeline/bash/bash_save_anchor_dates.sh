@@ -8,8 +8,12 @@ set -e
 source /gpfs/mindphidata/fongc2/miniconda3/etc/profile.d/conda.sh
 conda activate conda-env-cdm
 
+MY_PATH="$(dirname -- "${BASH_SOURCE[0]}")"
+cd $MY_PATH
+cd ../utils
+
 # Get variables
-SCRIPT="${REPO_LOCATION}cdm-cbioportal-etl/pipeline/utils/save_anchor_dates.py"
+SCRIPT="save_anchor_dates.py"
 #YAML_CONFIG="${REPO_LOCATION}cdm-cbioportal-etl/config/etl_config_all_impact.yml"
 
 # Run script
