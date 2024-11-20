@@ -125,6 +125,8 @@ def main():
     )
     
     print(df_os_f.sample())
+    print('Missing data:')
+    print(df_os_f.isnull().sum())
           
 if __name__ == '__main__':
     main()
