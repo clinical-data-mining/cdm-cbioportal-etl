@@ -35,8 +35,7 @@ def _load_data(
 
 def _clean_and_merge(
     df_demo, 
-    df_path_g, 
-    df_ids
+    df_path_g
 ):
     
     # Clean demographics
