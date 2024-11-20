@@ -127,6 +127,7 @@ def main():
     print(df_os_f.sample())
     print('Missing data:')
     print(df_os_f.isnull().sum())
+    print('Shape of OS file: %s' % str(df_os_f.shape))
           
 if __name__ == '__main__':
     main()
