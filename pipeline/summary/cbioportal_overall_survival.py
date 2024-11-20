@@ -27,6 +27,7 @@ def _load_data(
 
     # Pathology table for sequencing date
     df_path_g = get_anchor_dates()
+    print(df_path_g.head())
 
     print('Data loaded')
     

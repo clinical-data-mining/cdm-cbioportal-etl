@@ -56,9 +56,9 @@ def create_cbioportal_summary(
         production_or_test=production_or_test
     )
 
-    # Fill values in summary file
-    obj_p_combiner.backfill_missing_data(fname_meta_data=fname_meta_data)
-    df_cbio_summary = obj_p_combiner.return_final()
+    # # Fill values in summary file
+    # obj_p_combiner.backfill_missing_data(fname_meta_data=fname_meta_data)
+    # df_cbio_summary = obj_p_combiner.return_final()
 
     # Save the merged summaries to file
     print('Saving summary file: %s' % fname_summary_save)
