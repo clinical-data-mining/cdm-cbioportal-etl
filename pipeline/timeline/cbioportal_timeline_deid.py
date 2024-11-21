@@ -51,6 +51,8 @@ def main():
     fname_sample = obj_yaml.return_sample_list_filename()
     df_samples_used = pd.read_csv(fname_sample, sep='\t')
     list_dmp_ids = list(df_samples_used['PATIENT_ID'].drop_duplicates())
+    list_sample_ids = list(df_samples_used['SAMPLE_ID'].drop_duplicates())
+    print('Number of sample ids in timeline template: %s' % str(len(list_sample_ids)))
     print('Number of patients in timeline template: %s' % str(len(list_dmp_ids)))
 
     if production_or_test == 'production':
@@ -70,6 +72,7 @@ def main():
         fname_minio_env=ENV_MINIO,
         dict_files_timeline=dict_files_timeline,
         list_dmp_ids=list_dmp_ids,
+        list_sample_ids=list_sample_ids,
         df_patient_os_date=df_patient_os_date,
         col_os_date=COL_OS_DATE,
         col_id=COL_ID,
