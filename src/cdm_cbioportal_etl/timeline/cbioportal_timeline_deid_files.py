@@ -57,7 +57,8 @@ def cbioportal_deid_timeline_files(
     col_id,
     fname_metadata,
     fname_tables,
-    list_dmp_ids=None
+    list_dmp_ids=None,
+    list_sample_ids=None
 ):
     """ De-identifies timeline files listed in `dict_files_timeline` and saves to object storage. Dates are deidentified using `get_anchor_dates`
     :param fname_minio_env: Minio environment file for loading and saving data
@@ -144,6 +145,12 @@ def cbioportal_deid_timeline_files(
         else:
             print('No patient list in timeline template')
 
+        # Filter by list of sample IDs, if list and 'SAMPLE_ID' column in file exists
+        if (list_sample_ids is not None) & ('SAMPLE_ID' in df_f.columns):
+            print('Number of sample ids in timeline template: %s' % str(len(list_sample_ids)))
+            df_f = df_f[df_f['SAMPLE_ID'].isin(list_sample_ids)].copy()
+        else:
+            print('No sample id list in timeline template')
 
         if df_f.shape[0] > 0:
             save_appended_df(
