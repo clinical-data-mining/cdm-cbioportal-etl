@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #REPO_LOCATION="/gpfs/mindphidata/cdm_repos/github/"
-YAML_CONFIG="/gpfs/mindphidata/cdm_repos/github/cdm-cbioportal-etl/config/etl_config_mskimpact.yml"
+#YAML_CONFIG="/gpfs/mindphidata/cdm_repos/github/cdm-cbioportal-etl/config/etl_config_mskimpact.yml"
 
 set -e
 
