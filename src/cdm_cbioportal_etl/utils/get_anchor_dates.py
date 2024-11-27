@@ -39,11 +39,19 @@ def get_anchor_dates():
     
     # Remove mismapped cases
     filt_mismapped = df_path_g['MRN'].duplicated(keep=False) | df_path_g['DMP_ID'].duplicated(keep=False)
-    df_path_g_f = df_path_g[~filt_mismapped]
-    
     df_path_g_error = df_path_g[filt_mismapped].copy()
+
+    # Remove any MRN or DMP-ID in df_path_g_error
+    filt_rmv_patients = df_path_g['DMP_ID'].isin(df_path_g_error['DMP_ID']) | \
+                        df_path_g['MRN'].isin(df_path_g_error['MRN']) | \
+                        df_path_g['DMP_ID'].isin(df_path_g_error['DMP_ID_DERIVED'])
+
+    df_path_g_f = df_path_g[~filt_rmv_patients]
+
     print('Error in mapping summary:')
+    print('df_path_g_error:')
     print(df_path_g_error)
+    print('df_path_sample_id_error:')
     print(df_path_sample_id_error)
     
     print('Done!')
