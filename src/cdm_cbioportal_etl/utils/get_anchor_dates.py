@@ -42,9 +42,9 @@ def get_anchor_dates():
     df_path_g_error = df_path_g[filt_mismapped].copy()
 
     # Remove any MRN or DMP-ID in df_path_g_error
-    filt_rmv_patients = df_path_g['DMP_ID'].isin(df_path_g_error['DMP_ID']) | \
-                        df_path_g['MRN'].isin(df_path_g_error['MRN']) | \
-                        df_path_g['DMP_ID'].isin(df_path_g_error['DMP_ID_DERIVED'])
+    filt_rmv_patients = df_path_g['DMP_ID'].isin(df_path_sample_id_error['DMP_ID']) | \
+                        df_path_g['MRN'].isin(df_path_sample_id_error['MRN']) | \
+                        df_path_g['DMP_ID'].isin(df_path_sample_id_error['DMP_ID_DERIVED'])
 
     df_path_g_f = df_path_g[~filt_rmv_patients]
 
