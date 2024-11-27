@@ -36,14 +36,15 @@ def get_anchor_dates():
     df_path_g = df_path_filt.groupby(['MRN', 'DMP_ID'])['DTE_TUMOR_SEQUENCING'].first().reset_index()
     
     df_path_g = mrn_zero_pad(df=df_path_g, col_mrn='MRN')
-    
-    # Remove mismapped cases
-    filt_mismapped = df_path_g['MRN'].duplicated(keep=False) | df_path_g['DMP_ID'].duplicated(keep=False)
-    df_path_g_f = df_path_g[~filt_mismapped]
-    
-    df_path_g_error = df_path_g[filt_mismapped].copy()
+
+    # Remove any MRN or DMP-ID in df_path_g_error
+    filt_rmv_patients = df_path_g['DMP_ID'].isin(df_path_sample_id_error['DMP_ID']) | \
+                        df_path_g['MRN'].isin(df_path_sample_id_error['MRN']) | \
+                        df_path_g['DMP_ID'].isin(df_path_sample_id_error['DMP_ID_DERIVED'])
+
+    df_path_g_f = df_path_g[~filt_rmv_patients]
+
     print('Error in mapping summary:')
-    print(df_path_g_error)
     print(df_path_sample_id_error)
     
     print('Done!')
