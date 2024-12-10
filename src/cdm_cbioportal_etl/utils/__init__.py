@@ -7,7 +7,7 @@ from .cbioportal_update_config import CbioportalUpdateConfig as cbioportal_updat
 __all__ = [
     "get_anchor_dates",
     "compute_age_at_sequencing",
-    "compute_age_at_sequencing"
+    "date_of_sequencing",
     "constants",
     "cbioportal_update_config"
 ]
