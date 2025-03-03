@@ -11,7 +11,7 @@ test -n "$YAML_CONFIG"
 test -n "$FNAME_LOG"
 
 # Activate virtual env
-source /gpfs/mindphidata/fongc2/miniconda3/etc/profile.d/conda.sh
+source $CONDA_INSTALL_PATH/etc/profile.d/conda.sh
 conda activate "$CONDA_ENV_NAME"
 
 MY_PATH="$(dirname -- "${BASH_SOURCE[0]}")"
