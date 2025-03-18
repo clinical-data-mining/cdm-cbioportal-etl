@@ -9,7 +9,7 @@ YAML_CONFIG=$1
 test -n "$YAML_CONFIG"
 
 # Activate virtual env
-source /gpfs/mindphidata/fongc2/miniconda3/etc/profile.d/conda.sh
+source $CONDA_INSTALL_PATH/etc/profile.d/conda.sh
 conda activate "$CONDA_ENV_NAME"
 
 MY_PATH="$(dirname -- "${BASH_SOURCE[0]}")"
@@ -22,4 +22,3 @@ SCRIPT="generate_date_of_sequencing.py"
 
 # Run script
 python $SCRIPT --config_yaml=$YAML_CONFIG --fname_save_date_of_seq=$FNAME_SAVE
-
