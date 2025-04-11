@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 
-#REPO_LOCATION="/gpfs/mindphidata/cdm_repos/github/"
-#YAML_CONFIG="/gpfs/mindphidata/cdm_repos/github/cdm-cbioportal-etl/config/etl_config_mskimpact.yml"
-
 set -e
+
+REPO_LOCATION=$1
+YAML_CONFIG=$2
+
+test -n "$REPO_LOCATION"
+test -n "$YAML_CONFIG"
 
 # Activate virtual env
 source /gpfs/mindphidata/fongc2/miniconda3/etc/profile.d/conda.sh
@@ -15,8 +18,6 @@ cd ../utils
 
 # Get variables
 SCRIPT="save_anchor_dates.py"
-#YAML_CONFIG="${REPO_LOCATION}cdm-cbioportal-etl/config/etl_config_all_impact.yml"
 
 # Run script
 python $SCRIPT --config_yaml=$YAML_CONFIG
-
