@@ -1,0 +1,10 @@
+name: cdm-cbioportal-etl
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - git
+  - python=3.12
+  - pip
+  - pip:
+      - "--editable=git+https://github.com/clinical-data-mining/cdm-cbioportal-etl.git@main#egg=cdm-cbioportal-etl"
