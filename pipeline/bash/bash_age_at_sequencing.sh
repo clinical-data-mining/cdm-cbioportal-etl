@@ -3,7 +3,6 @@
 REPO_LOCATION="/gpfs/mindphidata/cdm_repos/github/"
 CONDA_ENV_NAME="cdm-cbioportal-etl"
 
-
 set -e
 
 # Activate virtual env

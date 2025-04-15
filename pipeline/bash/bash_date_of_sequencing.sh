@@ -2,12 +2,13 @@
 
 REPO_LOCATION="/gpfs/mindphidata/cdm_repos/github/"
 FNAME_SAVE="cbioportal/seq_date.txt"
+CONDA_ENV_NAME="cdm-cbioportal-etl"
 
 set -e
 
 # Activate virtual env
 source /gpfs/mindphidata/fongc2/miniconda3/etc/profile.d/conda.sh
-conda activate conda-env-cdm
+conda activate "$CONDA_ENV_NAME"
 
 
 # Get variables
