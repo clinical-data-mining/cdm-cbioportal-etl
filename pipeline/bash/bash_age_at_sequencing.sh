@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 
 REPO_LOCATION="/gpfs/mindphidata/cdm_repos/github/"
+CONDA_ENV_NAME="cdm-cbioportal-etl"
+
 
 set -e
 
 # Activate virtual env
 source /gpfs/mindphidata/fongc2/miniconda3/etc/profile.d/conda.sh
-conda activate conda-env-cdm
+conda activate "$CONDA_ENV_NAME"
 
 # Get variables
 #SCRIPT=$(python -c "from msk_cdm.data_classes.legacy import CDMProcessingVariablesCbioportal as config_cbio_etl; print (${VAR_SCRIPT})")
