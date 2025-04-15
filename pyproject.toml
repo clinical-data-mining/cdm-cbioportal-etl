@@ -17,10 +17,8 @@ classifiers = [
 ]
 
 dependencies = [
-    "minio>=7.1, <8",
-    "pydantic>=2.3, <3",
-    "python-dotenv>=1.0, <2",
-    "pyarrow>=14.0.2",
+    "pandas==2.1.4",
+    "dataclasses==0.8",
     "msk_cdm @ git+https://github.com/clinical-data-mining/msk_cdm.git"
 ]
 
