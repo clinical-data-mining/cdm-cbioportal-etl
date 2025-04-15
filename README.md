@@ -2,10 +2,19 @@
 ETL processing to transform CDM data into cBioPortal formatted files
 
 
-## Requirements
-This package requires use of the [`msk_cdm` Python package](https://github.com/clinical-data-mining/msk_cdm).
+## Installation
+```
+conda env create -f environment.yml
+```
 
-## Using/installing this repo.
+
+to create an environment called `cdm-cbioportal-etl` that you can activate via
+
+```
+conda activate cdm-cbioportal-etl
+```
+
+
 ### Direct installation into your virtual environment
 The simplest way to use this repo is to set up a conda env or environment of your choice
 and then, after `git clone`-ing this directory, simply issue
