@@ -9,24 +9,18 @@ include = ["cdm_cbioportal_etl*"]
 [project]
 name = "cdm_cbioportal_etl"
 version = "0.1.0"
-requires-python = ">=3.9, <4"
+requires-python = ">=3.10, <4"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "Programming Language :: Python :: 3 :: Only",
 ]
 
-dependencies = [
-    "pandas==2.1.4",
-    "dataclasses==0.8",
-    "msk_cdm @ git+https://github.com/clinical-data-mining/msk_cdm.git"
-]
-
-[project.optional-dependencies]
-dev = ["check-manifest"]
-test =["pyfakefs", "pytest", "tox"]
-# 7.2.5 currently broken https://github.com/sphinx-doc/sphinx/issues/11662
-docs = ["sphinx==7.2.4"]
+#dependencies = [
+#    "pandas==2.1.4",
+#    "dataclasses==0.8",
+#    "msk_cdm @ git+https://github.com/clinical-data-mining/msk_cdm.git"
+#]
 
 [tool.setuptools_scm]
 root = "."
