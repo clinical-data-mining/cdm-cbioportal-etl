@@ -8,6 +8,5 @@ dependencies:
   - pip
   - pip:
       - pandas=2.1.4
-      - dataclasses=0.8
       - "msk_cdm @ git+https://github.com/clinical-data-mining/msk_cdm.git"
       - "--editable=git+https://github.com/clinical-data-mining/cdm-cbioportal-etl.git@main#egg=cdm-cbioportal-etl"
