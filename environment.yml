@@ -8,5 +8,5 @@ dependencies:
   - pip
   - pip:
       - pandas==2.1.4
-      - "msk_cdm @ git+https://github.com/clinical-data-mining/msk_cdm.git"
-      - "--editable=git+https://github.com/clinical-data-mining/cdm-cbioportal-etl.git@main#egg=cdm-cbioportal-etl"
+      - "--editable=git+https://github.com/clinical-data-mining/msk_cdm.git@dev#egg=msk_cdm"
+      - "--editable=git+https://github.com/clinical-data-mining/cdm-cbioportal-etl.git@dev#egg=cdm-cbioportal-etl"
