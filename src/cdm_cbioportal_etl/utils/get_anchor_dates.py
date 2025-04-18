@@ -22,6 +22,8 @@ def get_anchor_dates():
     print('Loading %s' % FNAME_PATHOLOGY)
     obj = obj_minio.load_obj(path_object=FNAME_PATHOLOGY)
     df_path = pd.read_csv(obj, header=0, low_memory=False, sep='\t', usecols=COLS_PATHOLOGY)
+
+    print(df_path.head())
     
     df_path = df_path.dropna().copy()
     df_path['DTE_TUMOR_SEQUENCING'] = pd.to_datetime(
@@ -29,7 +31,7 @@ def get_anchor_dates():
         errors='coerce'
     )
     
-    df_path_filt = df_path[df_path['SAMPLE_ID'].notnull() & df_path['SAMPLE_ID'].str.contains('T')]
+    df_path_filt = df_path[df_path['SAMPLE_ID'].notnull() & df_path['SAMPLE_ID'].str.contains('T')].copy()
     df_path_filt['DMP_ID_DERIVED'] = df_path_filt['SAMPLE_ID'].apply(lambda x: x[:9])
 
     # Remove cases where DMP_ID does not match DMP_ID Derived
