@@ -54,8 +54,6 @@ def get_anchor_dates():
     df_path_g = df_path_filt_clean1.groupby(['MRN', 'DMP_ID'])['DTE_TUMOR_SEQUENCING'].first().reset_index()
 
     print(f"df_path_g: {df_path_g.head()}")
-    
-
 
     # Remove any MRN or DMP-ID in df_path_g_error
     filt_rmv_patients = df_path_g['DMP_ID'].isin(df_path_sample_id_error['DMP_ID']) | \
