@@ -1,13 +1,18 @@
 import pandas as pd
 
-from msk_cdm.data_classes.legacy import CDMProcessingVariables as config_rrpt
+# from msk_cdm.data_classes.legacy import CDMProcessingVariables as c_var
+from msk_cdm.data_classes.epic_ddp_concat import CDMProcessing Variables as c_var
 from msk_cdm.minio import MinioAPI
 from msk_cdm.data_processing import set_debug_console, mrn_zero_pad
 
-
-FNAME_MINIO_ENV = config_rrpt.minio_env
-FNAME_PATHOLOGY = config_rrpt.fname_path_clean
-COLS_PATHOLOGY = ['MRN', 'DTE_TUMOR_SEQUENCING', 'SAMPLE_ID', 'DMP_ID']
+FNAME_MINIO_ENV = c_var.minio_env
+FNAME_PATHOLOGY = c_var.fname_id_map
+COLS_PATHOLOGY = [
+    'MRN',
+    'DTE_TUMOR_SEQUENCING',
+    'SAMPLE_ID',
+    'DMP_ID'
+]
 
 
 def get_anchor_dates():
