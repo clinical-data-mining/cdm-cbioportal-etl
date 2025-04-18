@@ -51,7 +51,7 @@ def get_anchor_dates():
 
     print(f"df_path_filt_clean1: {df_path_filt_clean1.head()}")
 
-    df_path_g = df_path_filt_clean1.groupby(['MRN', 'DMP_ID'])['DTE_TUMOR_SEQUENCING'].first().reset_index()
+    df_path_g = df_path_filt_clean1.groupby(['MRN', 'DMP_ID'])['DTE_TUMOR_SEQUENCING'].min().reset_index()
 
     print(f"df_path_g: {df_path_g.head()}")
 
