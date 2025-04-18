@@ -22,6 +22,7 @@ def get_anchor_dates():
     print('Loading %s' % FNAME_PATHOLOGY)
     obj = obj_minio.load_obj(path_object=FNAME_PATHOLOGY)
     df_path = pd.read_csv(obj, header=0, low_memory=False, sep='\t', usecols=COLS_PATHOLOGY)
+    df_path = mrn_zero_pad(df=df_path, col_mrn='MRN')
     
     df_path = df_path.dropna().copy()
     df_path['DTE_TUMOR_SEQUENCING'] = pd.to_datetime(
@@ -54,7 +55,7 @@ def get_anchor_dates():
 
     print(f"df_path_g: {df_path_g.head()}")
     
-    df_path_g = mrn_zero_pad(df=df_path_g, col_mrn='MRN')
+
 
     # Remove any MRN or DMP-ID in df_path_g_error
     filt_rmv_patients = df_path_g['DMP_ID'].isin(df_path_sample_id_error['DMP_ID']) | \
