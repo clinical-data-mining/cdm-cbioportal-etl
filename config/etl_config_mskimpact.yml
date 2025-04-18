@@ -8,16 +8,16 @@ inputs:
   # Credential file
   env_minio: "/gpfs/mindphidata/fongc2/minio_env.txt"
   # Input file of all sample and patient IDs that should be included in the portal
-  fname_cbio_sid: "/gpfs/mindphidata/cdm_repos/datahub/impact-data/mskimpact/data_clinical_sample.txt"
+  fname_cbio_sid: "/gpfs/mindphidata/cdm_repos_dev/data/impact-data/mskimpact/data_clinical_sample.txt"
   # Exclusion list (TODO: Consider deprecating since have a to USE list above)
   fname_sample_remove: "/gpfs/mindphidata/cdm_repos/github/cdm-cbioportal-etl/pipeline/mskimpact_clinical_data_remove.tsv"
   # Data manifest files (MinIO)
-  fname_manifest_patient: "cbioportal/summary_manifests/mskimpact/summary_manifest_patient.csv"
-  fname_manifest_sample: "cbioportal/summary_manifests/mskimpact/summary_manifest_sample.csv"
+  fname_manifest_patient: "epic_ddp_concat/cbioportal/summary_manifests/mskimpact/summary_manifest_patient.csv"
+  fname_manifest_sample: "epic_ddp_concat/cbioportal/summary_manifests/mskimpact/summary_manifest_sample.csv"
   # Intermediate summary file and header location on minio
   path_minio_cbio_summary_intermediate: "cbioportal/intermediate_files/mskimpact/"
   # folder path for final deid files
-  path_datahub: "/gpfs/mindphidata/cdm_repos/datahub/cdm-data/mskimpact/"
+  path_datahub: "/gpfs/mindphidata/cdm_repos_dev/data/cdm-data/mskimpact/"
   path_minio_cbio: "cbioportal/mskimpact/"
   # Variable for cBioPortal production or test portal study use
   production_or_test: "production"
