@@ -36,15 +36,18 @@ def get_anchor_dates():
     df_path_filt = df_path[logic_filt].copy()
     df_path_filt['DMP_ID_DERIVED'] = df_path_filt['SAMPLE_ID'].apply(lambda x: x[:9])
 
-    print(df_path_filt.head())
+
 
     # Remove cases where DMP_ID does not match DMP_ID Derived
     df_path_sample_id_error = df_path_filt[df_path_filt['DMP_ID_DERIVED'] != df_path_filt['DMP_ID']]
     df_path_filt_clean1 = df_path_filt[df_path_filt['DMP_ID_DERIVED'] == df_path_filt['DMP_ID']]
 
+    print(df_path_filt_clean1.head())
 
     df_path_filt_clean1 = df_path_filt_clean1.sort_values(by=['MRN', 'DTE_TUMOR_SEQUENCING'])
     df_path_g = df_path_filt_clean1.groupby(['MRN', 'DMP_ID'])['DTE_TUMOR_SEQUENCING'].first().reset_index()
+
+    print(df_path_g.head())
     
     df_path_g = mrn_zero_pad(df=df_path_g, col_mrn='MRN')
 
@@ -54,6 +57,8 @@ def get_anchor_dates():
                         df_path_g['DMP_ID'].isin(df_path_sample_id_error['DMP_ID_DERIVED'])
 
     df_path_g_f = df_path_g[~filt_rmv_patients]
+
+    print(df_path_g_f.head())
 
     print('Error in mapping summary:')
     print(df_path_sample_id_error)
