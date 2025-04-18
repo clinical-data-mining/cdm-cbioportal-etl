@@ -17,7 +17,7 @@ inputs:
   # Intermediate summary file and header location on minio
   path_minio_cbio_summary_intermediate: "cbioportal/intermediate_files/mskimpact/"
   # folder path for final deid files
-  path_datahub: "/gpfs/mindphidata/cdm_repos_dev/data/cdm-data/mskimpact/"
+  path_datahub: "/gpfs/mindphidata/cdm_repos_dev/dev/data/cdm-data/mskimpact"
   path_minio_cbio: "cbioportal/mskimpact/"
   # Variable for cBioPortal production or test portal study use
   production_or_test: "production"
