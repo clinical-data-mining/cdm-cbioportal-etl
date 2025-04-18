@@ -22,25 +22,29 @@ def get_anchor_dates():
     print('Loading %s' % FNAME_PATHOLOGY)
     obj = obj_minio.load_obj(path_object=FNAME_PATHOLOGY)
     df_path = pd.read_csv(obj, header=0, low_memory=False, sep='\t', usecols=COLS_PATHOLOGY)
-
-    print(df_path.head())
     
     df_path = df_path.dropna().copy()
     df_path['DTE_TUMOR_SEQUENCING'] = pd.to_datetime(
         df_path['DTE_TUMOR_SEQUENCING'],
         errors='coerce'
     )
-    
-    df_path_filt = df_path[df_path['SAMPLE_ID'].notnull() & df_path['SAMPLE_ID'].str.contains('T')].copy()
+    logic_filt1 = df_path['SAMPLE_ID'].notnull()
+    logic_filt2 = df_path['SAMPLE_ID'].str.contains('T')
+    logic_filt3 = df_path['DTE_TUMOR_SEQUENCING'].notnull()
+    logic_filt = logic_filt1 & logic_filt2 & logic_filt3
+
+    df_path_filt = df_path[logic_filt].copy()
     df_path_filt['DMP_ID_DERIVED'] = df_path_filt['SAMPLE_ID'].apply(lambda x: x[:9])
+
+    print(df_path_filt.head())
 
     # Remove cases where DMP_ID does not match DMP_ID Derived
     df_path_sample_id_error = df_path_filt[df_path_filt['DMP_ID_DERIVED'] != df_path_filt['DMP_ID']]
-    df_path_filt = df_path_filt[df_path_filt['DMP_ID_DERIVED'] == df_path_filt['DMP_ID']]
+    df_path_filt_clean1 = df_path_filt[df_path_filt['DMP_ID_DERIVED'] == df_path_filt['DMP_ID']]
 
 
-    df_path_filt = df_path_filt.sort_values(by=['MRN', 'DTE_TUMOR_SEQUENCING'])
-    df_path_g = df_path_filt.groupby(['MRN', 'DMP_ID'])['DTE_TUMOR_SEQUENCING'].first().reset_index()
+    df_path_filt_clean1 = df_path_filt_clean1.sort_values(by=['MRN', 'DTE_TUMOR_SEQUENCING'])
+    df_path_g = df_path_filt_clean1.groupby(['MRN', 'DMP_ID'])['DTE_TUMOR_SEQUENCING'].first().reset_index()
     
     df_path_g = mrn_zero_pad(df=df_path_g, col_mrn='MRN')
 
