@@ -47,10 +47,10 @@ def get_anchor_dates():
     print(df_path_sample_id_error.head())
 
     df_path_filt_clean1 = df_path_filt[df_path_filt['DMP_ID_DERIVED'] == df_path_filt['DMP_ID']]
+    df_path_filt_clean1 = df_path_filt_clean1.sort_values(by=['MRN', 'DTE_TUMOR_SEQUENCING'])
 
     print(f"df_path_filt_clean1: {df_path_filt_clean1.head()}")
 
-    df_path_filt_clean1 = df_path_filt_clean1.sort_values(by=['MRN', 'DTE_TUMOR_SEQUENCING'])
     df_path_g = df_path_filt_clean1.groupby(['MRN', 'DMP_ID'])['DTE_TUMOR_SEQUENCING'].first().reset_index()
 
     print(f"df_path_g: {df_path_g.head()}")
