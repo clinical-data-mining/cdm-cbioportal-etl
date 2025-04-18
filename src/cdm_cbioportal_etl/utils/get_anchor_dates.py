@@ -36,7 +36,7 @@ def get_anchor_dates():
     df_path_filt = df_path[logic_filt].copy()
     df_path_filt['DMP_ID_DERIVED'] = df_path_filt['SAMPLE_ID'].apply(lambda x: x[:9])
 
-
+    print(df_path_filt.head())
 
     # Remove cases where DMP_ID does not match DMP_ID Derived
     df_path_sample_id_error = df_path_filt[df_path_filt['DMP_ID_DERIVED'] != df_path_filt['DMP_ID']]
