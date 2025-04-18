@@ -26,6 +26,7 @@ import numpy as np
 
 from msk_cdm.minio import MinioAPI
 from msk_cdm.data_processing import mrn_zero_pad
+from msk_cdm.codebook import load_metadata_tab, load_tables_tab, load_project_tab
 
 from cdm_cbioportal_etl.utils import (
     get_anchor_dates
@@ -45,14 +46,14 @@ class RedcapToCbioportalFormat(object):
         self,
         fname_minio_env,
         path_minio_summary_intermediate,
-        fname_metadata,
-        fname_metaproject,
-        fname_metatables
+        # fname_metadata,
+        # fname_metaproject,
+        # fname_metatables
     ):
         # Filenames
-        self._fname_metadata = fname_metadata
-        self._fname_metaproject = fname_metaproject
-        self._fname_metatables = fname_metatables
+        # self._fname_metadata = fname_metadata
+        # self._fname_metaproject = fname_metaproject
+        # self._fname_metatables = fname_metatables
         
         # Dataframes
         # self._df_rc_summary = None
@@ -185,9 +186,9 @@ class RedcapToCbioportalFormat(object):
 
     def init_metadata(self):
         # Load CDM Codebook files
-        df_metadata = pd.read_csv(self._fname_metadata)
-        df_project = pd.read_csv(self._fname_metaproject)
-        df_tables = pd.read_csv(self._fname_metatables)
+        df_metadata = load_metadata_tab()
+        df_project = load_project_tab()
+        df_tables = load_tables_tab()
 
         return df_metadata, df_tables, df_project
     
