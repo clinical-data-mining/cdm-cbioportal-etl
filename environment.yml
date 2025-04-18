@@ -4,11 +4,10 @@ channels:
   - bioconda
 dependencies:
   - git
-  - python=3.11
-  - conda-build=3.21.6
+  - python=3.12
   - pip
-  - pip:
-      - pandas==2.1.4
-      - urllib3
-      - "--editable=git+https://github.com/clinical-data-mining/msk_cdm.git@dev#egg=msk_cdm"
-      - "--editable=git+https://github.com/clinical-data-mining/cdm-cbioportal-etl.git@dev#egg=cdm-cbioportal-etl"
+#  - pip:
+#      - pandas==2.1.4
+#      - urllib3
+#      - "--editable=git+https://github.com/clinical-data-mining/msk_cdm.git@dev#egg=msk_cdm"
+#      - "--editable=git+https://github.com/clinical-data-mining/cdm-cbioportal-etl.git@dev#egg=cdm-cbioportal-etl"
