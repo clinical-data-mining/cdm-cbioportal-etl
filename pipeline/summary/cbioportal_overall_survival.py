@@ -3,7 +3,7 @@ import argparse
 import pandas as pd
 
 from msk_cdm.minio import MinioAPI
-from msk_cdm.data_classes.legacy import CDMProcessingVariables as cdm_files
+from msk_cdm.data_classes.epic_ddp_concat import CDMProcessingVariables as cdm_files
 from cdm_cbioportal_etl.utils import cbioportal_update_config
 from msk_cdm.data_processing import (
     mrn_zero_pad,

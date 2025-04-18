@@ -10,7 +10,7 @@ import argparse
 import pandas as pd
 
 from msk_cdm.minio import MinioAPI
-from msk_cdm.data_classes.legacy import CDMProcessingVariables as cdm_data
+from msk_cdm.data_classes.epic_ddp_concat import CDMProcessingVariables as cdm_data
 from cdm_cbioportal_etl.utils.get_anchor_dates import get_anchor_dates
 from cdm_cbioportal_etl.utils import cbioportal_update_config
 
