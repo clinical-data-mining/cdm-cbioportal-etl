@@ -28,12 +28,15 @@ def get_anchor_dates():
         df_path['DTE_TUMOR_SEQUENCING'],
         errors='coerce'
     )
+    print(df_path.head())
     logic_filt1 = df_path['SAMPLE_ID'].notnull()
     logic_filt2 = df_path['SAMPLE_ID'].str.contains('T')
     logic_filt3 = df_path['DTE_TUMOR_SEQUENCING'].notnull()
     logic_filt = logic_filt1 & logic_filt2 & logic_filt3
 
     df_path_filt = df_path[logic_filt].copy()
+    print(df_path_filt.head())
+
     df_path_filt['DMP_ID_DERIVED'] = df_path_filt['SAMPLE_ID'].apply(lambda x: x[:9])
 
     print(df_path_filt.head())
