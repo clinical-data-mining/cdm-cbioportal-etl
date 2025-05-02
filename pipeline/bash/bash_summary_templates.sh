@@ -5,6 +5,9 @@ CONDA_ENV_NAME="cdm-cbioportal-etl"
 
 set -e
 
+YAML_CONFIG=$1
+test -n "$YAML_CONFIG"
+
 # Activate virtual env
 source /gpfs/mindphidata/fongc2/miniconda3/etc/profile.d/conda.sh
 conda activate "$CONDA_ENV_NAME"
@@ -23,4 +26,6 @@ echo $YAML_CONFIG
 
 # Run script
 python $SCRIPT --config_yaml=$YAML_CONFIG
+
+
 
