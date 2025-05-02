@@ -12,13 +12,13 @@ inputs:
   # Exclusion list (TODO: Consider deprecating since have a to USE list above)
   fname_sample_remove: "/gpfs/mindphidata/cdm_repos/github/cdm-cbioportal-etl/pipeline/mskimpact_clinical_data_remove.tsv"
   # Data manifest files (MinIO)
-  fname_manifest_patient: "cbioportal/summary_manifests/mskaccess/summary_manifest_patient.csv"
-  fname_manifest_sample: "cbioportal/summary_manifests/mskaccess/summary_manifest_sample.csv"
+  fname_manifest_patient: "epic_ddp_concat/cbioportal/summary_manifests/mskaccess/summary_manifest_patient.csv"
+  fname_manifest_sample: "epic_ddp_concat/cbioportal/summary_manifests/mskaccess/summary_manifest_sample.csv"
   # Intermediate summary file and header location on minio
-  path_minio_cbio_summary_intermediate: "cbioportal/intermediate_files/mskaccess/"
+  path_minio_cbio_summary_intermediate: "epic_ddp_concat/cbioportal/intermediate_files/mskaccess/"
   # folder path for final deid files
   path_datahub: "/gpfs/mindphidata/cdm_repos_dev/dev/data/cdm-data/mskaccess"
-  path_minio_cbio: "cbioportal/mskaccess/"
+  path_minio_cbio: "epic_ddp_concat/cbioportal/mskaccess/"
   # Variable for cBioPortal production or test portal study use
   production_or_test: "production"
 
@@ -36,9 +36,9 @@ template_files:
   # Header template for sample summary file
   fname_cbio_header_template_s: "cbioportal/cbioportal_summary_header_sample.tsv"
   # Patient ID list in the cbioportal format. Additional patient summary information is appended to this. Derived from `inputs.fname_cbio_sid`
-  fname_p_sum_template_cdsi: "cbioportal/intermediate_files/mskaccess/data_clinical_patient_template_cdsi.txt"
+  fname_p_sum_template_cdsi: "epic_ddp_concat/cbioportal/intermediate_files/mskaccess/data_clinical_patient_template_cdsi.txt"
   # Sample ID list in the cbioportal format. Additional patient summary information is appended to this. Derived from `inputs.fname_cbio_sid`
-  fname_s_sum_template_cdsi: "cbioportal/intermediate_files/mskaccess/data_clinical_sample_template_cdsi.txt"
+  fname_s_sum_template_cdsi: "epic_ddp_concat/cbioportal/intermediate_files/mskaccess/data_clinical_sample_template_cdsi.txt"
 
 # TODO all tables on minio should be in codebook
 #phi_generated_files:
