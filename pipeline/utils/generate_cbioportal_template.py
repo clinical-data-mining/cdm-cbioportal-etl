@@ -24,10 +24,31 @@ if __name__ == "__main__":
         dest="config_yaml",
         help="Yaml file containing run parameters and necessary file locations.",
     )
+    parser.add_argument(
+        "--minio_env",
+        action="store",
+        dest="minio_env",
+        required=True,
+        help="--location of Minio environment file",
+    )
+    parser.add_argument(
+        "--cbio_sample_list",
+        action="store",
+        dest="cbio_sample_list",
+        required=True,
+        help="location of sample list file",
+    )
+    parser.add_argument(
+        "--sample_exclude_list",
+        action="store",
+        dest="sample_exclude_list",
+        required=True,
+        help="location of sample exclusion list file",
+    )
+
     args = parser.parse_args()
 
     obj_yaml = cbioportal_update_config(fname_yaml_config=args.config_yaml)
-    fname_minio_env = obj_yaml.return_credential_filename()
 
     fname_summary_header_template_patient = obj_yaml.return_template_info()['fname_cbio_header_template_p']
     fname_summary_template_patient = obj_yaml.return_template_info()['fname_p_sum_template_cdsi']
@@ -35,13 +56,11 @@ if __name__ == "__main__":
     fname_summary_header_template_sample = obj_yaml.return_template_info()['fname_cbio_header_template_s']
     fname_summary_template_sample = obj_yaml.return_template_info()['fname_s_sum_template_cdsi']
 
-    FNAME_SAMPLE_REMOVE = obj_yaml.return_sample_exclude_list()
-    FNAME_CBIO_SID = obj_yaml.return_sample_list_filename()
-
-
+    FNAME_SAMPLE_REMOVE = args.sample_exclude_list
+    FNAME_CBIO_SID = args.cbio_sample_list
 
     cbioportal_template_generator(
-        env_minio=fname_minio_env,
+        env_minio=args.minio_env,
         path_header_sample=fname_summary_header_template_sample,
         path_header_patient=fname_summary_header_template_patient,
         fname_cbio_sid=FNAME_CBIO_SID,
