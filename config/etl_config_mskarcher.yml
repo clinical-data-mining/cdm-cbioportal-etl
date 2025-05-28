@@ -9,7 +9,7 @@ inputs:
   env_minio: "/gpfs/mindphidata/fongc2/minio_env.txt"
   # Input file of all sample and patient IDs that should be included in the portal
 #  fname_cbio_sid: "/gpfs/mindphidata/cdm_repos_dev/dev/data/impact-data/mskarcher/data_clinical_sample.txt"
-  fname_cbio_sid: "/gpfs/mindphidata/cdm_repos/datahub/cdm-data/mskarcher/data_clinical_sample.txt"
+  fname_cbio_sid: "/gpfs/mindphidata/cdm_repos/datahub/impact-data/mskarcher/data_clinical_sample.txt"
   # Exclusion list (TODO: Consider deprecating since have a to USE list above)
   fname_sample_remove: "/gpfs/mindphidata/cdm_repos/github/cdm-cbioportal-etl/pipeline/mskimpact_clinical_data_remove.tsv"
   # Data manifest files (MinIO)
