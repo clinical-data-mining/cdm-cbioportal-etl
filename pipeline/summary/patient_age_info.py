@@ -110,8 +110,6 @@ def _process_data(
 
     df_f = deidentify_dates(df_f=df_merged)
 
-    print('Shape of Age attributes file: %s' % str(df_f.shape))
-
     # Save data
     obj_minio.save_obj(
         df=df_f,
