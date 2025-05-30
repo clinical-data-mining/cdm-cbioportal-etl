@@ -19,7 +19,7 @@ inputs:
   path_minio_cbio_summary_intermediate: "epic_ddp_concat/cbioportal/intermediate_files/mskaccess/"
   # folder path for final deid files
 #  path_datahub: "/gpfs/mindphidata/cdm_repos_dev/dev/data/cdm-data/mskaccess"
-  path_datahub: "/gpfs/mindphidata/cdm_repos/datahub/cdm-data/mskimpact"
+  path_datahub: "/gpfs/mindphidata/cdm_repos/datahub/cdm-data/mskaccess"
   path_minio_cbio: "epic_ddp_concat/cbioportal/mskaccess/"
   # Variable for cBioPortal production or test portal study use
   production_or_test: "production"
