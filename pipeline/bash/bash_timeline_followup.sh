@@ -16,11 +16,7 @@ cd $MY_PATH
 cd ../timeline
 
 # Get variables
-<<<<<<< HEAD
 SCRIPT="cbioportal_timeline_follow_up.py"
-=======
-SCRIPT="${REPO_LOCATION}/cdm-cbioportal-etl/pipeline/timeline/cbioportal_timeline_follow_up.py"
->>>>>>> 74ce931 (fix typo)
 
 # Run script
 python $SCRIPT --config_yaml=$YAML_CONFIG
