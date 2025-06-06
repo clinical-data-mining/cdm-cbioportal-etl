@@ -64,7 +64,7 @@ def cbioportal_timeline_follow_up(
     )
 
     df_os_ = df_os_.assign(STOP_DATE='')
-    df_os_ = df_os_.assign(EVENT_TYPE='Diagnosis')
+    df_os_ = df_os_.assign(EVENT_TYPE='STATUS')
     df_os_ = df_os_.assign(SUBTYPE='Follow-Up')
 
     df_os_ = df_os_[df_os_['START_DATE'].notnull()].copy()
