@@ -1,6 +1,6 @@
 import argparse
 
-from msk_cdm.data_classes.legacy import CDMProcessingVariables as config_cdm
+from msk_cdm.data_classes.epic_ddp_concat import CDMProcessingVariables as config_cdm
 from cdm_cbioportal_etl.utils import cbioportal_update_config
 from cdm_cbioportal_etl.utils import compute_age_at_sequencing
 
@@ -21,7 +21,7 @@ if __name__ == "__main__":
     fname_minio_env = obj_yaml.return_credential_filename()
 
     fname_demo = config_cdm.fname_demo
-    fname_samples = config_cdm.fname_path_clean
+    fname_samples = config_cdm.fname_id_map
 
     compute_age_at_sequencing(
         minio_env=fname_minio_env,

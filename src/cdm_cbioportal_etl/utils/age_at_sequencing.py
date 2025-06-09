@@ -13,8 +13,7 @@ from datetime import date
 import pandas as pd
 
 from msk_cdm.minio import MinioAPI
-from msk_cdm.data_processing import mrn_zero_pad, convert_to_int
-from msk_cdm.data_classes.legacy import CDMProcessingVariables as config_cdm
+from msk_cdm.data_processing import mrn_zero_pad
 from cdm_cbioportal_etl.utils.get_anchor_dates import get_anchor_dates
 
 AGE_CONVERSION_FACTOR = 365.2422
