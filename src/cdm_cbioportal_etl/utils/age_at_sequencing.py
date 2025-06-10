@@ -83,6 +83,9 @@ def compute_age_at_sequencing(
     print(df_f['AGE_AT_SEQUENCING_YEARS_PHI'].head())
     print(df_f['AGE_AT_SEQUENCING_YEARS_WITH_OS_INT_PHI'].head())
 
+    df_f['AGE_AT_SEQUENCING_YEARS_PHI'] = df_f['AGE_AT_SEQUENCING_YEARS_PHI'].fillna(-1)
+    df_f['AGE_AT_SEQUENCING_YEARS_WITH_OS_INT_PHI'] = df_f['AGE_AT_SEQUENCING_YEARS_WITH_OS_INT_PHI'].fillna(-1)
+
     df_f['AGE_AT_SEQUENCING_YEARS_PHI'] = df_f['AGE_AT_SEQUENCING_YEARS_PHI'].astype(int)
     df_f['AGE_AT_SEQUENCING_YEARS_WITH_OS_INT_PHI'] = df_f['AGE_AT_SEQUENCING_YEARS_WITH_OS_INT_PHI'].astype(int)
 
