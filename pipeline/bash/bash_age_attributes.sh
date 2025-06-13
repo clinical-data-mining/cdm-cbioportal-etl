@@ -2,13 +2,18 @@
 
 set -e
 
-YAML_CONFIG=$1
+REPO_LOCATION=$1
+CONDA_INSTALL_PATH=$2
+CONDA_ENV_NAME=$3
+YAML_CONFIG=$4
+
+test -n "$REPO_LOCATION"
+test -n "$CONDA_INSTALL_PATH"
+test -n "$CONDA_ENV_NAME"
 test -n "$YAML_CONFIG"
 
-CONDA_ENV_NAME="cdm-cbioportal-etl"
-
 # Activate virtual env
-source /gpfs/mindphidata/fongc2/miniconda3/etc/profile.d/conda.sh
+source $CONDA_INSTALL_PATH/etc/profile.d/conda.sh
 conda activate "$CONDA_ENV_NAME"
 
 MY_PATH="$(dirname -- "${BASH_SOURCE[0]}")"
@@ -21,4 +26,3 @@ SCRIPT="patient_age_info.py"
 
 # Run script
 python $SCRIPT --config_yaml=$YAML_CONFIG
-

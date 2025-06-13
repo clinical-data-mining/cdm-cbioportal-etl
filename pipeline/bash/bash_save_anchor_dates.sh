@@ -2,10 +2,14 @@
 
 set -e
 
-CONDA_ENV_NAME="cdm-cbioportal-etl"
+REPO_LOCATION=$1
+CONDA_INSTALL_PATH=$2
+CONDA_ENV_NAME=$3
+YAML_CONFIG=$4
 
-YAML_CONFIG=$1
-
+test -n "$REPO_LOCATION"
+test -n "$CONDA_INSTALL_PATH"
+test -n "$CONDA_ENV_NAME"
 test -n "$YAML_CONFIG"
 
 # Activate virtual env
@@ -21,4 +25,3 @@ SCRIPT="save_anchor_dates.py"
 
 # Run script
 python $SCRIPT --config_yaml=$YAML_CONFIG
-
