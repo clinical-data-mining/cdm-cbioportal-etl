@@ -46,21 +46,19 @@ def copy_files(
     return None
 
 
-def transfer_to_databricks(config_yaml):
+def transfer_to_databricks(config_yaml, fname_minio_env, databricks_config, catalog, schema, volume, sep, overwrite):
     print('Using config file: %s:' % config_yaml)
     obj_yaml = cbioportal_update_config(fname_yaml_config=config_yaml)
-
-    fname_minio_env = obj_yaml.return_credential_filename()
 
     fname_codebook_tables = obj_yaml.return_filename_codebook_tables()
     df_codebook_tables = pd.read_csv(fname_codebook_tables, sep=',')
     list_minio = list(df_codebook_tables.loc[df_codebook_tables['copy_to_databricks'].notnull(), 'cdm_source_table'])
 
+    # TODO idk about this
     # Databricks configs
     dict_databricks = obj_yaml.return_databricks_configs()
     print(dict_databricks)
     # Databricks processing for saving data
-    fname_databricks_env = dict_databricks['fname_databricks_config']
     catalog = dict_databricks['catalog']
     schema = dict_databricks['schema']
     volume = dict_databricks['volume']
@@ -70,9 +68,8 @@ def transfer_to_databricks(config_yaml):
     dir_volume = os.path.join('/Volumes',catalog,schema,volume)
 
     # Setup MinIO
-    obj_db = DatabricksAPI(fname_databricks_env=fname_databricks_env)
+    obj_db = DatabricksAPI(fname_databricks_env=databricks_config)
     obj_minio = MinioAPI(fname_minio_env=fname_minio_env)
-
 
     # Copy files
     for i,fname_source in enumerate(list_minio):
@@ -108,6 +105,21 @@ if __name__ == "__main__":
         dest="config_yaml",
         help="Yaml file containing run parameters and necessary file locations.",
     )
+    parser.add_argument(
+        "--minio_env",
+        action="store",
+        dest="minio_env",
+        required=True,
+        help="--location of Minio environment file",
+    )
+    parser.add_argument(
+        "--databricks_config",
+        action="store",
+        dest="databricks_config",
+        required=True,
+        help="--location of Databricks config file",
+    )
+
     args = parser.parse_args()
 
-    transfer_to_databricks(config_yaml=args.config_yaml)
+    transfer_to_databricks(config_yaml=args.config_yaml, fname_minio_env=args.minio_env)
