@@ -1,6 +1,5 @@
 cluster_account=$1
-
-EKS_ACCOUNT_PRIVATE_CREDENTIALS_FILE=$HOME/.eks-account.private.credentials
+EKS_ACCOUNT_PRIVATE_CREDENTIALS_FILE=$2
 
 if ! [[ -f $EKS_ACCOUNT_PRIVATE_CREDENTIALS_FILE ]] ; then
     echo "$EKS_ACCOUNT_PRIVATE_CREDENTIALS_FILE could not be found, exiting..."
