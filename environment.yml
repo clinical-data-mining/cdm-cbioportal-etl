@@ -5,6 +5,8 @@ channels:
 dependencies:
   - git
   - python=3.11
+  - numpy=1.23.5
+  - pyzmq=25.1.2
   - pip
   - pip:
       - git+https://github.com/clinical-data-mining/msk_cdm.git
