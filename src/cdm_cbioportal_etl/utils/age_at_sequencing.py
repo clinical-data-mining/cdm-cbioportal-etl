@@ -13,8 +13,7 @@ from datetime import date
 import pandas as pd
 
 from msk_cdm.minio import MinioAPI
-from msk_cdm.data_processing import mrn_zero_pad, convert_to_int
-from msk_cdm.data_classes.legacy import CDMProcessingVariables as config_cdm
+from msk_cdm.data_processing import mrn_zero_pad
 from cdm_cbioportal_etl.utils.get_anchor_dates import get_anchor_dates
 
 AGE_CONVERSION_FACTOR = 365.2422
@@ -80,6 +79,12 @@ def compute_age_at_sequencing(
 
     df_f['AGE_AT_SEQUENCING_YEARS_PHI'] = (df_f['AGE_AT_SEQUENCING_DAYS_PHI']/AGE_CONVERSION_FACTOR)
     df_f['AGE_AT_SEQUENCING_YEARS_WITH_OS_INT_PHI'] = ((df_f['AGE_AT_SEQUENCING_DAYS_PHI'] + df_f['OS_INT'])/AGE_CONVERSION_FACTOR)
+
+    print(df_f['AGE_AT_SEQUENCING_YEARS_PHI'].head())
+    print(df_f['AGE_AT_SEQUENCING_YEARS_WITH_OS_INT_PHI'].head())
+
+    df_f['AGE_AT_SEQUENCING_YEARS_PHI'] = df_f['AGE_AT_SEQUENCING_YEARS_PHI'].fillna(-1)
+    df_f['AGE_AT_SEQUENCING_YEARS_WITH_OS_INT_PHI'] = df_f['AGE_AT_SEQUENCING_YEARS_WITH_OS_INT_PHI'].fillna(-1)
 
     df_f['AGE_AT_SEQUENCING_YEARS_PHI'] = df_f['AGE_AT_SEQUENCING_YEARS_PHI'].astype(int)
     df_f['AGE_AT_SEQUENCING_YEARS_WITH_OS_INT_PHI'] = df_f['AGE_AT_SEQUENCING_YEARS_WITH_OS_INT_PHI'].astype(int)

@@ -5,7 +5,7 @@ import pandas as pd
 from cdm_cbioportal_etl.utils import cbioportal_update_config
 from cdm_cbioportal_etl.timeline import cbioportal_deid_timeline_files
 from msk_cdm.minio import MinioAPI
-from msk_cdm.data_classes.legacy import CDMProcessingVariables as cdm_files
+from msk_cdm.data_classes.epic_ddp_concat import CDMProcessingVariables as cdm_files
 from msk_cdm.data_processing import mrn_zero_pad
 
 COL_OS_DATE = 'OS_DATE'

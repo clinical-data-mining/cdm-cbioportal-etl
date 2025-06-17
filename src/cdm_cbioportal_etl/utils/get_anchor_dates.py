@@ -1,6 +1,5 @@
 import pandas as pd
 
-# from msk_cdm.data_classes.legacy import CDMProcessingVariables as c_var
 from msk_cdm.data_classes.epic_ddp_concat import CDMProcessingVariables as c_var
 from msk_cdm.minio import MinioAPI
 from msk_cdm.data_processing import set_debug_console, mrn_zero_pad

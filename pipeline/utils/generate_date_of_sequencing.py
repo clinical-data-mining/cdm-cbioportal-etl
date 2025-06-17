@@ -1,6 +1,6 @@
 import argparse
 
-from msk_cdm.data_classes.legacy import CDMProcessingVariables as config_cdm
+from msk_cdm.data_classes.epic_ddp_concat import CDMProcessingVariables as config_cdm
 from cdm_cbioportal_etl.utils import cbioportal_update_config
 from cdm_cbioportal_etl.utils import date_of_sequencing
 
@@ -33,7 +33,7 @@ if __name__ == "__main__":
     fname_save_date_of_seq = args.fname_save_date_of_seq
     obj_yaml = cbioportal_update_config(fname_yaml_config=args.config_yaml)
 
-    fname_samples = config_cdm.fname_path_clean
+    fname_samples = config_cdm.fname_id_map
 
     date_of_sequencing(
         minio_env=args.minio_env,
