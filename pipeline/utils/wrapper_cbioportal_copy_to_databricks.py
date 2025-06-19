@@ -46,7 +46,7 @@ def copy_files(
     return None
 
 
-def transfer_to_databricks(config_yaml, fname_minio_env, databricks_config, catalog, schema, volume, sep, overwrite):
+def transfer_to_databricks(config_yaml, fname_minio_env, databricks_config):
     print('Using config file: %s:' % config_yaml)
     obj_yaml = cbioportal_update_config(fname_yaml_config=config_yaml)
 
@@ -54,7 +54,6 @@ def transfer_to_databricks(config_yaml, fname_minio_env, databricks_config, cata
     df_codebook_tables = pd.read_csv(fname_codebook_tables, sep=',')
     list_minio = list(df_codebook_tables.loc[df_codebook_tables['copy_to_databricks'].notnull(), 'cdm_source_table'])
 
-    # TODO idk about this
     # Databricks configs
     dict_databricks = obj_yaml.return_databricks_configs()
     print(dict_databricks)
@@ -122,4 +121,4 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    transfer_to_databricks(config_yaml=args.config_yaml, fname_minio_env=args.minio_env)
+    transfer_to_databricks(config_yaml=args.config_yaml, fname_minio_env=args.minio_env, databricks_config=args.databricks_config)
