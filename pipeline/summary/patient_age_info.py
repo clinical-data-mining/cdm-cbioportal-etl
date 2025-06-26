@@ -128,17 +128,21 @@ def main():
         dest="config_yaml",
         help="Yaml file containing run parameters and necessary file locations.",
     )
+    parser.add_argument(
+        "--minio_env",
+        action="store",
+        dest="minio_env",
+        required=True,
+        help="--location of Minio environment file",
+    )
     args = parser.parse_args()
-
-    obj_yaml = cbioportal_update_config(fname_yaml_config=args.config_yaml)
-    fname_minio_env = obj_yaml.return_credential_filename()
 
     fname_save = FNAME_SAVE_PATIENT_AGE
     fname_demo = cdm_files.fname_demo
     fname_dx = cdm_files_old.fname_dx_summary
 
     df_merged = _process_data(
-        fname_minio_env=fname_minio_env,
+        fname_minio_env=args.minio_env,
         fname_save=fname_save,
         fname_demo=fname_demo,
         fname_dx=fname_dx
