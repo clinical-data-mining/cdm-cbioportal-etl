@@ -6,6 +6,7 @@ REPO_LOCATION=$1
 CONDA_INSTALL_PATH=$2
 CONDA_ENV_NAME=$3
 YAML_CONFIG=$4
+MINIO_ENV=$5
 
 test -n "$REPO_LOCATION"
 test -n "$CONDA_INSTALL_PATH"
@@ -24,4 +25,4 @@ cd ../timeline
 SCRIPT="cbioportal_timeline_follow_up.py"
 
 # Run script
-python $SCRIPT --config_yaml=$YAML_CONFIG
+python $SCRIPT --config_yaml=$YAML_CONFIG --minio_env=$MINIO_ENV

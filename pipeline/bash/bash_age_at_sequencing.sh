@@ -5,11 +5,13 @@ REPO_LOCATION=$1
 CONDA_INSTALL_PATH=$2
 CONDA_ENV_NAME=$3
 YAML_CONFIG=$4
+YAML_CONFIG=$5
 
 test -n "$REPO_LOCATION"
 test -n "$CONDA_INSTALL_PATH"
 test -n "$CONDA_ENV_NAME"
 test -n "$YAML_CONFIG"
+test -n "$MINIO_ENV"
 
 # Activate virtual env
 source $CONDA_INSTALL_PATH/etc/profile.d/conda.sh
@@ -24,4 +26,4 @@ cd ../utils
 SCRIPT="generate_age_at_sequencing.py"
 
 # Run script
-python $SCRIPT --config_yaml=$YAML_CONFIG
+python $SCRIPT --config_yaml=$YAML_CONFIG --minio_env=$MINIO_ENV
