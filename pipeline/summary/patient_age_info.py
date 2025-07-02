@@ -21,6 +21,7 @@ def convert_col_to_datetime(df, list_cols):
     return df
 
 def _load_data(
+        fname_minio_env,
         obj_minio,
         fname_demo,
         fname_dx
@@ -32,7 +33,7 @@ def _load_data(
     df_demo = df_demo.drop_duplicates()
 
     # Pathology table for sequencing date
-    df_path_g = get_anchor_dates()
+    df_path_g = get_anchor_dates(fname_minio_env=fname_minio_env)
 
     # Diagnosis
     print('Loading %s' % fname_dx)
@@ -96,6 +97,7 @@ def _process_data(
 
     # Load data
     df_demo, df_path_g, df_dx = _load_data(
+        fname_minio_env=fname_minio_env,
         obj_minio=obj_minio,
         fname_demo=fname_demo,
         fname_dx=fname_dx
