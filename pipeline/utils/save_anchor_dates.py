@@ -23,7 +23,7 @@ def save_anchor_dates(fname_minio_env, fname_save):
     obj_minio = MinioAPI(fname_minio_env=fname_minio_env)
 
     # Anchor dates
-    df_path_g = get_anchor_dates()
+    df_path_g = get_anchor_dates(fname_minio_env)
 
     print('Saving anchor dates: %s' % fname_save)
     # Save dataframe
@@ -44,14 +44,20 @@ if __name__ == "__main__":
         dest="config_yaml",
         help="Yaml file containing run parameters and necessary file locations.",
     )
+    parser.add_argument(
+        "--minio_env",
+        action="store",
+        dest="minio_env",
+        required=True,
+        help="--location of Minio environment file",
+    )
     args = parser.parse_args()
 
     obj_yaml = cbioportal_update_config(fname_yaml_config=args.config_yaml)
-    fname_minio_env = obj_yaml.return_credential_filename()
     fname_save = FNAME_SAVE_ANCHOR_DATES
 
     args = parser.parse_args()
     save_anchor_dates(
-        fname_minio_env=fname_minio_env,
+        fname_minio_env=args.minio_env,
         fname_save=fname_save
     )

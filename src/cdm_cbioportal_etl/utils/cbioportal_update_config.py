@@ -171,7 +171,7 @@ class CbioportalUpdateConfig(object):
 
         return template_files
 
-    def return_dict_datahub_to_minio(self):
+    def return_dict_datahub_to_minio(self, path_datahub, path_minio):
         """
         Map DataHub and MinIO filenames and return a dictionary of the mapped paths.
 
@@ -184,9 +184,6 @@ class CbioportalUpdateConfig(object):
         deid_filenames = list(config.get('deid_filenames', {}).values())
         list_deid_files = deid_filenames + list_timeline_files
 
-        path_datahub = config.get('inputs', {}).get('path_datahub')
-        path_minio = config.get('inputs', {}).get('path_minio_cbio')
-
         list_deid_files_datahub = [os.path.join(path_datahub,x) for x in list_deid_files]
         list_deid_files_minio = [os.path.join(path_minio,x) for x in list_deid_files]
 
@@ -194,7 +191,7 @@ class CbioportalUpdateConfig(object):
 
         return dict_datahub_to_minio
 
-    def return_dict_phi_to_deid_timeline_production(self) -> dict:
+    def return_dict_phi_to_deid_timeline_production(self, path_datahub) -> dict:
         """
         Map template files to actual filenames using the 'template_files' section
         of the YAML file and the mapping from the loaded codebook table.
@@ -211,7 +208,6 @@ class CbioportalUpdateConfig(object):
         """
         config = self._config
 
-        path_datahub = config.get('inputs', {}).get('path_datahub')
         codebook_table = self._df_codebook_table
         df_codebook_timeline_prod = codebook_table[codebook_table['cbio_timeline_file_production'] == 'x'].copy()
         df_timeline_files = df_codebook_timeline_prod[['cdm_source_table', 'cbio_deid_filename']].dropna()
@@ -221,7 +217,7 @@ class CbioportalUpdateConfig(object):
 
         return dict_phi_to_deid_timeline
 
-    def return_dict_phi_to_deid_timeline_testing(self) -> dict:
+    def return_dict_phi_to_deid_timeline_testing(self, path_datahub) -> dict:
         """
         Map template files to actual filenames using the 'template_files' section
         of the YAML file and the mapping from the loaded codebook table. (Testing study)
@@ -238,7 +234,6 @@ class CbioportalUpdateConfig(object):
         """
         config = self._config
 
-        path_datahub = config.get('inputs', {}).get('path_datahub')
         codebook_table = self._df_codebook_table
         df_codebook_timeline_prod = codebook_table[codebook_table['cbio_timeline_file_testing'] == 'x'].copy()
         df_timeline_files = df_codebook_timeline_prod[['cdm_source_table', 'cbio_deid_filename']].dropna()
@@ -248,12 +243,11 @@ class CbioportalUpdateConfig(object):
 
         return dict_phi_to_deid_timeline
 
-    def return_filenames_deid_datahub(self) -> dict:
+    def return_filenames_deid_datahub(self, path_datahub) -> dict:
         config = self._config
 
-        path_datahub_root = config.get('inputs', {}).get('path_datahub')
         files = config.get('deid_filenames', {})
-        joined_paths_dict = {key: os.path.join(path_datahub_root, filename) for key, filename in files.items()}
+        joined_paths_dict = {key: os.path.join(path_datahub, filename) for key, filename in files.items()}
 
         return joined_paths_dict
 
