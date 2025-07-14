@@ -59,6 +59,10 @@ def _clean_and_merge(
     df_dx = convert_col_to_datetime(df=df_dx, list_cols=['DATE_AT_FIRST_ICDO_DX'])
     df_dx_f = df_dx[['MRN', 'DATE_AT_FIRST_ICDO_DX']].copy()
 
+    # Clean anchor dates
+    df_path_g = mrn_zero_pad(df=df_path_g, col_mrn='MRN')
+    df_path_g = convert_col_to_datetime(df=df_path_g, list_cols=['DTE_TUMOR_SEQUENCING'])
+
     ## Merge data
     df_f = df_demo_f.merge(right=df_dx_f, how='left', on='MRN')
     df_f = df_f.merge(right=df_path_g, how='left', on='MRN')
