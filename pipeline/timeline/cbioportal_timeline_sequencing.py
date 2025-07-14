@@ -49,7 +49,7 @@ def sequencing_timeline(
     )
     log1 = df_path['SAMPLE_ID'].notnull()
     log2 = df_path['SAMPLE_ID'].str.contains('T')
-    log3 = df_path['COL_DTE_SEQ'].notnull()  # Drop samples without sequencing date
+    log3 = df_path[COL_DTE_SEQ].notnull()  # Drop samples without sequencing date
     log = log1 & log2 & log3
     df_path_filt = df_path[log].copy()
 
