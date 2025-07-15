@@ -10,7 +10,7 @@ from cdm_cbioportal_etl.utils import cbioportal_update_config
 from cdm_cbioportal_etl.utils import get_anchor_dates
 
 
-FNAME_SAVE_PATIENT_AGE = 'epic_ddp_concat/cbioportal/patient_age_cbioportal.tsv'
+FNAME_SAVE_PATIENT_AGE = 'epic_ddp_concat/cbioportal/patient_age_summary_cbioportal.tsv'
 COLS_KEEP = ['MRN', 'AGE_LAST_FOLLOWUP', 'AGE_FIRST_CANCER_DIAGNOSIS', 'AGE_FIRST_SEQUENCING']
 
 
