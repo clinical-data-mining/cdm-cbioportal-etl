@@ -2,23 +2,16 @@
 
 set -e
 
-REPO_LOCATION=$1
-CONDA_INSTALL_PATH=$2
-CONDA_ENV_NAME=$3
-YAML_CONFIG=$4
-FNAME_LOG=$5
-PATH_DATAHUB=$6
-PATH_MINIO=$7
+CONDA_ENV_NAME="cdm-cbioportal-etl"
 
-test -n "$REPO_LOCATION"
-test -n "$CONDA_INSTALL_PATH"
-test -n "$CONDA_ENV_NAME"
+YAML_CONFIG=$1
+FNAME_LOG=$2
+
 test -n "$YAML_CONFIG"
 test -n "$FNAME_LOG"
-test -n "$PATH_MINIO"
 
 # Activate virtual env
-source $CONDA_INSTALL_PATH/etc/profile.d/conda.sh
+source /gpfs/mindphidata/fongc2/miniconda3/etc/profile.d/conda.sh
 conda activate "$CONDA_ENV_NAME"
 
 MY_PATH="$(dirname -- "${BASH_SOURCE[0]}")"
@@ -32,6 +25,5 @@ SCRIPT="monitoring_completeness.py"
 # Run script
 python $SCRIPT \
   --config_yaml=$YAML_CONFIG \
-  --incomplete_fields_csv="$FNAME_LOG" \
-  --path_datahub=$PATH_DATAHUB \
-  --path_minio=$PATH_MINIO
+  --incomplete_fields_csv="$FNAME_LOG"
+

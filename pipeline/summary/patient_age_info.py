@@ -21,7 +21,6 @@ def convert_col_to_datetime(df, list_cols):
     return df
 
 def _load_data(
-        fname_minio_env,
         obj_minio,
         fname_demo,
         fname_dx
@@ -33,7 +32,7 @@ def _load_data(
     df_demo = df_demo.drop_duplicates()
 
     # Pathology table for sequencing date
-    df_path_g = get_anchor_dates(fname_minio_env=fname_minio_env)
+    df_path_g = get_anchor_dates()
 
     # Diagnosis
     print('Loading %s' % fname_dx)
@@ -103,7 +102,6 @@ def _process_data(
     # Load data
     print('Loading data')
     df_demo, df_path_g, df_dx = _load_data(
-        fname_minio_env=fname_minio_env,
         obj_minio=obj_minio,
         fname_demo=fname_demo,
         fname_dx=fname_dx
@@ -142,21 +140,17 @@ def main():
         dest="config_yaml",
         help="Yaml file containing run parameters and necessary file locations.",
     )
-    parser.add_argument(
-        "--minio_env",
-        action="store",
-        dest="minio_env",
-        required=True,
-        help="--location of Minio environment file",
-    )
     args = parser.parse_args()
+
+    obj_yaml = cbioportal_update_config(fname_yaml_config=args.config_yaml)
+    fname_minio_env = obj_yaml.return_credential_filename()
 
     fname_save = FNAME_SAVE_PATIENT_AGE
     fname_demo = cdm_files.fname_demo
     fname_dx = cdm_files_old.fname_dx_summary
 
     df_merged = _process_data(
-        fname_minio_env=args.minio_env,
+        fname_minio_env=fname_minio_env,
         fname_save=fname_save,
         fname_demo=fname_demo,
         fname_dx=fname_dx
