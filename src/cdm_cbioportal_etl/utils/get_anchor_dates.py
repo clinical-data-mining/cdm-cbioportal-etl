@@ -4,7 +4,6 @@ from msk_cdm.data_classes.epic_ddp_concat import CDMProcessingVariables as c_var
 from msk_cdm.minio import MinioAPI
 from msk_cdm.data_processing import set_debug_console, mrn_zero_pad
 
-FNAME_MINIO_ENV = c_var.minio_env
 FNAME_PATHOLOGY = c_var.fname_id_map
 COLS_PATHOLOGY = [
     'MRN',
@@ -14,9 +13,9 @@ COLS_PATHOLOGY = [
 ]
 
 
-def get_anchor_dates():
+def get_anchor_dates(fname_minio_env):
     print('Creating anchor date table from first sequencing date..')
-    obj_minio = MinioAPI(fname_minio_env=FNAME_MINIO_ENV)
+    obj_minio = MinioAPI(fname_minio_env=fname_minio_env)
     
     print('Loading %s' % FNAME_PATHOLOGY)
     obj = obj_minio.load_obj(path_object=FNAME_PATHOLOGY)

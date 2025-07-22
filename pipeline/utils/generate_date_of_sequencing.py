@@ -21,18 +21,22 @@ if __name__ == "__main__":
         dest="fname_save_date_of_seq",
         help="Yaml file containing run parameters and necessary file locations.",
     )
+    parser.add_argument(
+        "--minio_env",
+        action="store",
+        dest="minio_env",
+        required=True,
+        help="--location of Minio environment file",
+    )
     args = parser.parse_args()
 
     fname_save_date_of_seq = args.fname_save_date_of_seq
     obj_yaml = cbioportal_update_config(fname_yaml_config=args.config_yaml)
-    fname_minio_env = obj_yaml.return_credential_filename()
 
     fname_samples = config_cdm.fname_id_map
 
     date_of_sequencing(
-        minio_env=fname_minio_env,
+        minio_env=args.minio_env,
         fname_samples=fname_samples,
         fname_save_date_of_seq=fname_save_date_of_seq
     )
-
-
