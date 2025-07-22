@@ -31,11 +31,12 @@ rep_dict = {
 def cbioportal_timeline_follow_up(
         yaml_config,
         fname_demo,
-        fname_save,
-        fname_minio_env
+        fname_save
 ):
     print('Parsing config file %s' % yaml_config)
     obj_yaml = cbioportal_update_config(fname_yaml_config=yaml_config)
+    fname_minio_env = obj_yaml.return_credential_filename()
+
 
     ## Create timeline file for follow-up
     ### Load data
@@ -88,13 +89,6 @@ if __name__ == "__main__":
         dest="config_yaml",
         help="Yaml file containing run parameters and necessary file locations.",
     )
-    parser.add_argument(
-        "--minio_env",
-        action="store",
-        dest="minio_env",
-        required=True,
-        help="--location of Minio environment file",
-    )
     args = parser.parse_args()
 
     fname_demo = cdm_files.fname_demo
@@ -103,6 +97,5 @@ if __name__ == "__main__":
     cbioportal_timeline_follow_up(
         yaml_config=args.config_yaml,
         fname_demo=fname_demo,
-        fname_save=fname_fu_save,
-        fname_minio_env=args.minio_env
+        fname_save=fname_fu_save
     )

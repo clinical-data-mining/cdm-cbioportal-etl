@@ -76,7 +76,7 @@ class RedcapToCbioportalFormat(object):
         )
         
         # Load anchor data containing data to deidentify tables
-        self._df_anchor = get_anchor_dates(self._fname_minio_env)
+        self._df_anchor = get_anchor_dates()
         
         df_metadata, df_tables, df_project = self.init_metadata()
         self._df_metadata = df_metadata

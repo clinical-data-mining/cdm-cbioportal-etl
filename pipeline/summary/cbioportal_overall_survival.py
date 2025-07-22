@@ -17,8 +17,7 @@ COL_P_ID = 'PATIENT_ID'
 
 def _load_data(
     obj_minio,
-    fname_demo,
-    fname_minio_env
+    fname_demo
 ):
     # Demographics
     print('Loading %s' % fname_demo)
@@ -27,7 +26,7 @@ def _load_data(
     df_demo = df_demo.drop_duplicates()
 
     # Pathology table for sequencing date
-    df_path_g = get_anchor_dates(fname_minio_env)
+    df_path_g = get_anchor_dates()
     print(df_path_g.head())
 
     print('Data loaded')
@@ -81,8 +80,7 @@ def _process_data(
     # Load data
     df_demo, df_path_g = _load_data(
         obj_minio=obj_minio,
-        fname_demo=fname_demo,
-        fname_minio_env=fname_minio_env
+        fname_demo=fname_demo
     )
     
     # Clean and merge data
@@ -114,22 +112,16 @@ def main():
         dest="config_yaml",
         help="Yaml file containing run parameters and necessary file locations.",
     )
-    parser.add_argument(
-        "--minio_env",
-        action="store",
-        dest="minio_env",
-        required=True,
-        help="--location of Minio environment file",
-    )
     args = parser.parse_args()
 
     obj_yaml = cbioportal_update_config(fname_yaml_config=args.config_yaml)
+    fname_minio_env = obj_yaml.return_credential_filename()
 
     fname_save = cdm_files.fname_overall_survival
     fname_demo = cdm_files.fname_demo
     
     df_os_f = _process_data(
-        fname_minio_env=args.minio_env,
+        fname_minio_env=fname_minio_env,
         fname_save=fname_save,
         fname_demo=fname_demo
     )

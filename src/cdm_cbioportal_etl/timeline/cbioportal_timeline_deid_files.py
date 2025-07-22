@@ -65,7 +65,7 @@ def cbioportal_deid_timeline_files(
     :param dict_files_timeline: Dictionary of cbioportal formatted timeline file names to load (containing PHI) and corresponding filenames of files to be pushed to cbioportal
     :return: None
     """
-    df_path_g = get_anchor_dates(fname_minio_env)
+    df_path_g = get_anchor_dates()
     obj_minio = MinioAPI(fname_minio_env=fname_minio_env)
 
     df_os = process_df_os(

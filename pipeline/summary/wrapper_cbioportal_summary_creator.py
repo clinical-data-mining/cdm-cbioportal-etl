@@ -5,15 +5,21 @@ Create summary files and corresponding headers from CDM data,
 then combine into a single file to be pushed to cbioportal
 
 """
+import os
 import argparse
+from pathlib import Path
+
+import pandas as pd
 
 from cdm_cbioportal_etl.summary import cbioportalSummaryFileCombiner
 from cdm_cbioportal_etl.summary import RedcapToCbioportalFormat
 from cdm_cbioportal_etl.utils import cbioportal_update_config
+from msk_cdm.databricks import DatabricksAPI
 
 
 def create_cbioportal_summary(
     fname_minio_env,
+    dict_databricks,
     patient_or_sample,
     fname_manifest, 
     fname_summary_template,
@@ -64,43 +70,33 @@ def main():
         dest="config_yaml",
         help="Yaml file containing run parameters and necessary file locations.",
     )
-    parser.add_argument(
-        "--minio_env",
-        action="store",
-        dest="minio_env",
-        required=True,
-        help="location of Minio environment file",
-    )
-    parser.add_argument(
-        "--path_datahub",
-        action="store",
-        dest="path_datahub",
-        required=True,
-        help="Path to datahub",
-    )
     args = parser.parse_args()
 
     obj_yaml = cbioportal_update_config(fname_yaml_config=args.config_yaml)
+    fname_minio_env = obj_yaml.return_credential_filename()
     path_minio_summary_intermediate = obj_yaml.return_intermediate_folder_path()
     # fname_meta_data = obj_yaml.return_filename_codebook_metadata()
     # fname_meta_project = obj_yaml.return_filename_codebook_projects()
     # fname_meta_table = obj_yaml.return_filename_codebook_tables()
     production_or_test = obj_yaml.return_production_or_test_indicator()
 
+    # Databricks configs
+    dict_databricks = obj_yaml.return_databricks_configs()
 
     fname_manifest_patient = obj_yaml.return_manifest_filename_patient()
     fname_summary_template_patient = obj_yaml.return_template_info()['fname_p_sum_template_cdsi']
-    fname_summary_patient = obj_yaml.return_filenames_deid_datahub(path_datahub=args.path_datahub)['summary_patient']
+    fname_summary_patient = obj_yaml.return_filenames_deid_datahub()['summary_patient']
 
     fname_manifest_sample = obj_yaml.return_manifest_filename_sample()
     fname_summary_template_sample = obj_yaml.return_template_info()['fname_s_sum_template_cdsi']
-    fname_summary_sample = obj_yaml.return_filenames_deid_datahub(path_datahub=args.path_datahub)['summary_sample']
+    fname_summary_sample = obj_yaml.return_filenames_deid_datahub()['summary_sample']
 
 
     # Create patient summary
     patient_or_sample = 'patient'
     create_cbioportal_summary(
-        fname_minio_env=args.minio_env,
+        fname_minio_env=fname_minio_env,
+        dict_databricks=dict_databricks,
         patient_or_sample=patient_or_sample,
         fname_manifest=fname_manifest_patient,
         fname_summary_template=fname_summary_template_patient,
@@ -110,12 +106,14 @@ def main():
         # fname_meta_data = fname_meta_data,
         # fname_meta_table = fname_meta_table,
         # fname_meta_project = fname_meta_project
+
     )
 
     # Create sample summary
     patient_or_sample = 'sample'
     create_cbioportal_summary(
-        fname_minio_env = args.minio_env,
+        fname_minio_env = fname_minio_env,
+        dict_databricks=dict_databricks,
         patient_or_sample=patient_or_sample,
         fname_manifest=fname_manifest_sample,
         fname_summary_template=fname_summary_template_sample,
@@ -129,3 +127,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
+    
+  

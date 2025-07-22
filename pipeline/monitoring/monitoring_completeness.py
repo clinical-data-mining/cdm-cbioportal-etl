@@ -79,23 +79,10 @@ if __name__ == "__main__":
         dest="config_yaml",
         help="Yaml file containing run parameters and necessary file locations.",
     )
-    parser.add_argument(
-        "--path_datahub",
-        action="store",
-        dest="path_datahub",
-        help="Path to datahub",
-    )
-    parser.add_argument(
-        "--path_minio",
-        action="store",
-        dest="path_minio_cbio",
-        help="Path to minio",
-    )
-
     args = parser.parse_args()
 
     obj_yaml = cbioportal_update_config(fname_yaml_config=args.config_yaml)
-    dict_files_to_copy = obj_yaml.return_dict_datahub_to_minio(path_datahub=args.path_datahub, path_minio=args.path_minio_cbio)
+    dict_files_to_copy = obj_yaml.return_dict_datahub_to_minio()
 
     test = monitor_completeness(
         incomplete_fields_csv=args.incomplete_fields_csv,

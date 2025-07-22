@@ -36,41 +36,19 @@ def main():
         dest="config_yaml",
         help="Yaml file containing run parameters and necessary file locations.",
     )
-    parser.add_argument(
-        "--minio_env",
-        action="store",
-        dest="minio_env",
-        required=True,
-        help="location of Minio environment file",
-    )
-    parser.add_argument(
-        "--cbio_sample_list",
-        action="store",
-        dest="cbio_sample_list",
-        required=True,
-        help="location of sample list file",
-    )
-    parser.add_argument(
-        "--path_datahub",
-        action="store",
-        dest="path_datahub",
-        required=True,
-        help="path to datahub",
-    )
-
     args = parser.parse_args()
 
     obj_yaml = cbioportal_update_config(fname_yaml_config=args.config_yaml)
-    DICT_FILES_TIMELINE = obj_yaml.return_dict_phi_to_deid_timeline_production(path_datahub=args.path_datahub)
-    DICT_FILES_TIMELINE_TESTING = obj_yaml.return_dict_phi_to_deid_timeline_testing(path_datahub=args.path_datahub)
+    DICT_FILES_TIMELINE = obj_yaml.return_dict_phi_to_deid_timeline_production()
+    DICT_FILES_TIMELINE_TESTING = obj_yaml.return_dict_phi_to_deid_timeline_testing()
     fname_metadata = obj_yaml.return_filename_codebook_metadata()
     fname_tables = obj_yaml.return_filename_codebook_tables()
-    ENV_MINIO = args.minio_env
+    ENV_MINIO = obj_yaml.return_credential_filename()
     production_or_test = obj_yaml.return_production_or_test_indicator()
     fname_demo = cdm_files.fname_demo
 
     # Get list of sample and patient IDs used for cbioportal ETL
-    fname_sample = args.cbio_sample_list
+    fname_sample = obj_yaml.return_sample_list_filename()
     df_samples_used = pd.read_csv(fname_sample, sep='\t')
     list_dmp_ids = list(df_samples_used['PATIENT_ID'].drop_duplicates())
     list_sample_ids = list(df_samples_used['SAMPLE_ID'].drop_duplicates())

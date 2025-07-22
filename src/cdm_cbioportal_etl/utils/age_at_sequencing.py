@@ -58,7 +58,7 @@ def compute_age_at_sequencing(
     df_path = mrn_zero_pad(df=df_path, col_mrn='MRN')
 
     ## Load anchor dates
-    df_archor_dates = get_anchor_dates(minio_env)
+    df_archor_dates = get_anchor_dates()
     list_sample_ids_used = list(set(df_archor_dates['DMP_ID']))
 
     # Clean and Combine data
