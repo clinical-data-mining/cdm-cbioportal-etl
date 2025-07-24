@@ -26,11 +26,7 @@ COL_ORDER_SEQ = [
 ]
 
 
-def sequencing_timeline(
-        yaml_config
-):
-    obj_yaml = cbioportal_update_config(fname_yaml_config=yaml_config)
-    fname_minio_env = obj_yaml.return_credential_filename()
+def sequencing_timeline(fname_minio_env):
     obj_minio = MinioAPI(fname_minio_env=fname_minio_env)
     
     print('Loading %s' % FNAME_SEQ_DATA)
@@ -74,20 +70,18 @@ def sequencing_timeline(
     return df_samples_seq_f
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Script for creating timeline file for sequencing dates")
+    parser = argparse.ArgumentParser(description="Script for creating timeline file for sequencing dates")
     parser.add_argument(
-        "--config_yaml",
+        "--minio_env",
         action="store",
-        dest="config_yaml",
-        help="Yaml file containing run parameters and necessary file locations.",
+        dest="minio_env",
+        required=True,
+        help="--location of Minio environment file",
     )
     args = parser.parse_args()
-    yaml_config = args.config_yaml
+    minio_env = args.minio_env
 
-    df_seq_timeline = sequencing_timeline(
-        yaml_config=yaml_config
-    )
+    df_seq_timeline = sequencing_timeline(fname_minio_env=minio_env)
     print(df_seq_timeline.sample())
     
 
