@@ -10,7 +10,7 @@ from cdm_cbioportal_etl.utils import cbioportal_update_config
 from cdm_cbioportal_etl.utils import get_anchor_dates
 
 
-FNAME_SAVE_PATIENT_AGE = 'epic_ddp_concat/cbioportal/patient_age_cbioportal.tsv'
+FNAME_SAVE_PATIENT_AGE = 'epic_ddp_concat/cbioportal/patient_age_summary_cbioportal.tsv'
 COLS_KEEP = ['MRN', 'AGE_LAST_FOLLOWUP', 'AGE_FIRST_CANCER_DIAGNOSIS', 'AGE_FIRST_SEQUENCING']
 
 
@@ -40,8 +40,6 @@ def _load_data(
     obj = obj_minio.load_obj(path_object=fname_dx)
     df_dx = pd.read_csv(obj, sep='\t', low_memory=False)
 
-    print('Data loaded')
-
     return df_demo, df_path_g, df_dx
 
 
@@ -59,6 +57,13 @@ def _clean_and_merge(
     df_dx = mrn_zero_pad(df=df_dx, col_mrn='MRN')
     df_dx = convert_col_to_datetime(df=df_dx, list_cols=['DATE_AT_FIRST_ICDO_DX'])
     df_dx_f = df_dx[['MRN', 'DATE_AT_FIRST_ICDO_DX']].copy()
+
+    # Clean anchor dates
+    df_path_g = mrn_zero_pad(df=df_path_g, col_mrn='MRN')
+    df_path_g = convert_col_to_datetime(df=df_path_g, list_cols=['DTE_TUMOR_SEQUENCING'])
+    print(df_path_g.shape)
+    print(df_path_g['MRN'].nunique())
+    print(df_path_g.head())
 
     ## Merge data
     df_f = df_demo_f.merge(right=df_dx_f, how='left', on='MRN')
@@ -96,6 +101,7 @@ def _process_data(
     obj_minio = MinioAPI(fname_minio_env=fname_minio_env)
 
     # Load data
+    print('Loading data')
     df_demo, df_path_g, df_dx = _load_data(
         fname_minio_env=fname_minio_env,
         obj_minio=obj_minio,
@@ -103,16 +109,22 @@ def _process_data(
         fname_dx=fname_dx
     )
 
+    print('Cleaning and merging data')
     # Clean and merge data
     df_merged = _clean_and_merge(
         df_demo=df_demo,
         df_path_g=df_path_g,
         df_dx=df_dx
     )
+    print(f"Shape of df_merged: {df_merged.shape}")
+    print(df_merged.head())
 
     df_f = deidentify_dates(df_f=df_merged)
+    print(f"Shape of deid df: {df_f.shape}")
+    print(df_f.head())
 
     # Save data
+    print(f'Saving data to {fname_save}')
     obj_minio.save_obj(
         df=df_f,
         path_object=fname_save,
