@@ -12,6 +12,7 @@ test -n "$REPO_LOCATION"
 test -n "$CONDA_INSTALL_PATH"
 test -n "$CONDA_ENV_NAME"
 test -n "$YAML_CONFIG"
+test -n "$MINIO_ENV"
 
 # Activate virtual env
 source $CONDA_INSTALL_PATH/etc/profile.d/conda.sh

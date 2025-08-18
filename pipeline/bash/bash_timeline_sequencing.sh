@@ -5,11 +5,13 @@ set -e
 REPO_LOCATION=$1
 CONDA_INSTALL_PATH=$2
 CONDA_ENV_NAME=$3
-MINIO_ENV=$4
+YAML_CONFIG=$4
+MINIO_ENV=$5
 
 test -n "$REPO_LOCATION"
 test -n "$CONDA_INSTALL_PATH"
 test -n "$CONDA_ENV_NAME"
+test -n "$YAML_CONFIG"
 test -n "$MINIO_ENV"
 
 # Activate virtual env
