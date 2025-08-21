@@ -2,13 +2,24 @@
 
 set -e
 
-CONDA_ENV_NAME="cdm-cbioportal-etl"
+REPO_LOCATION=$1
+CONDA_INSTALL_PATH=$2
+CONDA_ENV_NAME=$3
+YAML_CONFIG=$4
+MINIO_ENV=$5
+SAMPLE_LIST=$6
+PATH_DATAHUB=$7
 
-YAML_CONFIG=$1
+test -n "$REPO_LOCATION"
+test -n "$CONDA_INSTALL_PATH"
+test -n "$CONDA_ENV_NAME"
 test -n "$YAML_CONFIG"
+test -n "$MINIO_ENV"
+test -n "$SAMPLE_LIST"
+test -n "$PATH_DATAHUB"
 
 # Activate virtual env
-source /gpfs/mindphidata/fongc2/miniconda3/etc/profile.d/conda.sh
+source $CONDA_INSTALL_PATH/etc/profile.d/conda.sh
 conda activate "$CONDA_ENV_NAME"
 
 MY_PATH="$(dirname -- "${BASH_SOURCE[0]}")"
@@ -22,5 +33,4 @@ echo $SCRIPT
 echo $YAML_CONFIG
 
 # Run script
-python $SCRIPT --config_yaml=$YAML_CONFIG
-
+python $SCRIPT --config_yaml=$YAML_CONFIG --minio_env=$MINIO_ENV --cbio_sample_list=$SAMPLE_LIST --path_datahub=$PATH_DATAHUB
