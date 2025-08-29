@@ -108,10 +108,6 @@ def cbioportal_deid_timeline_files(
         # Merge deid date
         df_ = df_.merge(right=df_path_g, how='inner', on='MRN')
         df_ = df_.merge(right=df_os, how='inner', on='MRN')
-        logic_error_1 =  df_['START_DATE'] > df_['OS_DATE']
-        logic_error_2 =  df_['STOP_DATE'] > df_['OS_DATE']
-        df_.loc[logic_error_1, 'START_DATE'] = pd.NaT
-        df_.loc[logic_error_2, 'STOP_DATE'] = pd.NaT
 
         cols_drop = ['MRN', COL_OS_DATE] + list_rmv_cols
         df_ = df_.drop(columns=cols_drop)
