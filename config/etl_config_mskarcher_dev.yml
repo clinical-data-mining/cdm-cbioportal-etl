@@ -13,7 +13,7 @@ inputs:
   # folder path for final deid files
   path_minio_cbio: "epic_ddp_concat/cbioportal/mskarcher/"
   # Variable for cBioPortal production or test portal study use
-  production_or_test: "production"
+  production_or_test: "test"
 
 inputs_databricks:
   overwrite: True
