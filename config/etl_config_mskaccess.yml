@@ -12,8 +12,6 @@ inputs:
   path_minio_cbio_summary_intermediate: "epic_ddp_concat/cbioportal/intermediate_files/mskaccess/"
   # folder path for final deid files
   path_minio_cbio: "epic_ddp_concat/cbioportal/mskaccess/"
-  # Variable for cBioPortal production or test portal study use
-  production_or_test: "production"
 
 inputs_databricks:
   overwrite: True
@@ -31,10 +29,6 @@ template_files:
   fname_p_sum_template_cdsi: "epic_ddp_concat/cbioportal/intermediate_files/mskaccess/data_clinical_patient_template_cdsi.txt"
   # Sample ID list in the cbioportal format. Additional patient summary information is appended to this. Derived from `inputs.fname_cbio_sid`
   fname_s_sum_template_cdsi: "epic_ddp_concat/cbioportal/intermediate_files/mskaccess/data_clinical_sample_template_cdsi.txt"
-
-# TODO all tables on minio should be in codebook
-#phi_generated_files:
-#  fname_follow_up_table: "demographics/table_timeline_follow_up.tsv"
 
 # File names
 deid_filenames:

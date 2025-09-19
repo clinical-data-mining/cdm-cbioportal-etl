@@ -57,6 +57,13 @@ def main():
         required=True,
         help="path to datahub",
     )
+    parser.add_argument(
+        "--production_or_test",
+        action="store",
+        dest="production_or_test",
+        required=True,
+        help="Enter test or production to indicate the columns/files to use for portal file generation",
+    )
 
     args = parser.parse_args()
 
@@ -66,7 +73,7 @@ def main():
     fname_metadata = obj_yaml.return_filename_codebook_metadata()
     fname_tables = obj_yaml.return_filename_codebook_tables()
     ENV_MINIO = args.minio_env
-    production_or_test = obj_yaml.return_production_or_test_indicator()
+    production_or_test = args.production_or_test
     fname_demo = cdm_files.fname_demo
 
     # Get list of sample and patient IDs used for cbioportal ETL

@@ -20,17 +20,10 @@ def create_cbioportal_summary(
     fname_summary_save,
     production_or_test,
     path_minio_summary_intermediate,
-    # fname_meta_data,
-    # fname_meta_table,
-    # fname_meta_project
 ):
     obj_format_cbio = RedcapToCbioportalFormat(
         fname_minio_env=fname_minio_env,
         path_minio_summary_intermediate=path_minio_summary_intermediate,
-        # fname_metadata=fname_meta_data,
-        # fname_metaproject=fname_meta_project,
-        # fname_metatables=fname_meta_table
-
     )
     
     ## Create individual summary and header files, with a manifest file summarizing the outputs
@@ -78,14 +71,18 @@ def main():
         required=True,
         help="Path to datahub",
     )
+    parser.add_argument(
+        "--production_or_test",
+        action="store",
+        dest="production_or_test",
+        required=True,
+        help="Enter test or production to indicate the columns/files to use for portal file generation",
+    )
     args = parser.parse_args()
 
     obj_yaml = cbioportal_update_config(fname_yaml_config=args.config_yaml)
     path_minio_summary_intermediate = obj_yaml.return_intermediate_folder_path()
-    # fname_meta_data = obj_yaml.return_filename_codebook_metadata()
-    # fname_meta_project = obj_yaml.return_filename_codebook_projects()
-    # fname_meta_table = obj_yaml.return_filename_codebook_tables()
-    production_or_test = obj_yaml.return_production_or_test_indicator()
+    production_or_test = args.production_or_test
 
 
     fname_manifest_patient = obj_yaml.return_manifest_filename_patient()
@@ -107,9 +104,6 @@ def main():
         fname_summary_save=fname_summary_patient,
         production_or_test=production_or_test,
         path_minio_summary_intermediate=path_minio_summary_intermediate,
-        # fname_meta_data = fname_meta_data,
-        # fname_meta_table = fname_meta_table,
-        # fname_meta_project = fname_meta_project
     )
 
     # Create sample summary
@@ -122,9 +116,6 @@ def main():
         fname_summary_save=fname_summary_sample,
         production_or_test=production_or_test,
         path_minio_summary_intermediate=path_minio_summary_intermediate,
-        # fname_meta_data = fname_meta_data,
-        # fname_meta_table = fname_meta_table,
-        # fname_meta_project = fname_meta_project
     )
 
 if __name__ == "__main__":

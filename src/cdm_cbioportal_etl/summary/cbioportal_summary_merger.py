@@ -11,6 +11,8 @@ from cdm_cbioportal_etl.utils import constants
 
 COLS_PRODUCTION = constants.COLS_PRODUCTION
 COLS_TESTING = constants.COLS_TESTING
+NROWS_HEADER = 4
+_row_label = NROWS_HEADER-1
 
 
 class cBioPortalSummaryMergeTool(object):
@@ -28,13 +30,10 @@ class cBioPortalSummaryMergeTool(object):
         # Transpose header df
         if self._production_or_test == 'production':
             self._cols_header = COLS_PRODUCTION
-            self._row_label = 3
         elif self._production_or_test == 'test':
             self._cols_header = COLS_TESTING
-            self._row_label = 4
         else:
-            cols = COLS_PRODUCTION
-            self._row_label = 3
+            self._cols_header = COLS_PRODUCTION
         
         # DataFrame variables
         self._df_summary_orig = None
@@ -93,30 +92,23 @@ class cBioPortalSummaryMergeTool(object):
             )
             
             # Clean header so that all label values are upper case
-            df_header_merged.loc[self._row_label, :] = df_header_merged.loc[self._row_label, :].str.upper()
+            df_header_merged.loc[_row_label, :] = df_header_merged.loc[_row_label, :].str.upper()
             df_data_merged.columns = df_data_merged.columns.str.upper() 
             
             # Save as member variable
             self._df_summary_output = df_data_merged
             self._df_header_output = df_header_merged
             
-            # print(df_header_merged)
-            # print(df_data_merged)
-            
             # Merge header and data file
             self._summary_header_data_combiner()
         
     def _summary_loader(self, fname):
         print('Loading %s' % fname)
-        if self._production_or_test == 'test':
-            nrows = 5
-        elif self._production_or_test == 'production':
-            nrows = 4
             
         obj = self._obj_minio.load_obj(path_object=fname)
-        df_data = pd.read_csv(obj, header=nrows, sep='\t', dtype=str)
+        df_data = pd.read_csv(obj, header=NROWS_HEADER, sep='\t', dtype=str)
         obj = self._obj_minio.load_obj(path_object=fname)
-        df_header = pd.read_csv(obj, header=0, sep='\t', nrows=nrows)
+        df_header = pd.read_csv(obj, header=0, sep='\t', nrows=NROWS_HEADER)
 
         return df_header, df_data
 
@@ -147,8 +139,8 @@ class cBioPortalSummaryMergeTool(object):
         header_new = header_new.drop(columns=list_keys_new)
         
         # Check if current summary has same columns and drop common from current summary (This will replace columns)
-        cols_current_raw = list(header_main.loc[self._row_label])
-        cols_replace = list(set.intersection(set(cols_current_raw), set(list(header_new.loc[self._row_label]))))
+        cols_current_raw = list(header_main.loc[_row_label])
+        cols_replace = list(set.intersection(set(cols_current_raw), set(list(header_new.loc[_row_label]))))
 
         cols_drop_index = [x in cols_replace for x in cols_current_raw]
         cols_drop = header_main.columns[cols_drop_index]
@@ -162,9 +154,9 @@ class cBioPortalSummaryMergeTool(object):
         print('MERGE NEW WITH MAIN----------------')
         print(df_header_new.head())
         
-        key_new = df_header_new[col_key][self._row_label]
+        key_new = df_header_new[col_key][_row_label]
         print(key_new)
-        key_current = df_header_main[col_key][self._row_label]
+        key_current = df_header_main[col_key][_row_label]
         
         # Drop columns from old df and replace if exists
         cols_drop = list(set.intersection(set(df_main.columns), set(list(df_new.columns))))
@@ -195,8 +187,8 @@ class cBioPortalSummaryMergeTool(object):
 
     def _summary_header_data_combiner(self):
         df_header, df_data = self.return_output()
-        col_name_data = list(df_header.loc[self._row_label, :])
-        col_name_new = list(df_header.loc[self._row_label, :].index)
+        col_name_data = list(df_header.loc[_row_label, :])
+        col_name_new = list(df_header.loc[_row_label, :].index)
         dict_col_name = dict(zip(col_name_data, col_name_new))
 
         df_summary_final = pd.concat([df_header, df_data.rename(columns=dict_col_name)], axis=0)

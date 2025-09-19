@@ -39,6 +39,24 @@ COL_RPT_NAME = constants.COL_RPT_NAME
 COL_PID = constants.COL_PID
 COL_PID_CBIO = constants.COL_PID_CBIO
 COL_ANCHOR_DATE = constants.COL_ANCHOR_DATE
+NROWS_HEADER = 4
+dict_redcap_header = {
+    'field_label': 'label',
+    'data_type': 'data_type',
+    'comment': 'comment',
+    'field_name': 'heading',
+    'is_date': 'is_date',
+    'fill_value': 'fill_value'
+}
+list_order_header = [
+    'label',
+    'comment',
+    'data_type',
+    'visible',
+    'heading',
+    'is_date',
+    'fill_value'
+]
 
 
 class RedcapToCbioportalFormat(object):
@@ -46,17 +64,9 @@ class RedcapToCbioportalFormat(object):
         self,
         fname_minio_env,
         path_minio_summary_intermediate,
-        # fname_metadata,
-        # fname_metaproject,
-        # fname_metatables
     ):
-        # Filenames
-        # self._fname_metadata = fname_metadata
-        # self._fname_metaproject = fname_metaproject
-        # self._fname_metatables = fname_metatables
         
         # Dataframes
-        # self._df_rc_summary = None
         self._df_manifest = None
         self._df_header = None
         self._df_anchor = None
@@ -93,47 +103,9 @@ class RedcapToCbioportalFormat(object):
         
     def _format_data_dictionary(
         self, 
-        df,
-        patient_or_sample,
-        production_or_test
+        df
     ): # -----------------------------------------------------------
         # Reformat the data_types to cbioportal format
-        ## Constants
-        if production_or_test == 'test':
-            list_order_header = [
-                'label', 
-                'comment', 
-                'data_type', 
-                'patient_or_sample',
-                'visible', 
-                'heading', 
-                'is_date', 
-                'fill_value'
-            ]
-            if patient_or_sample == 'patient':
-                col_patient_or_sample = 'PATIENT'
-            else:
-                col_patient_or_sample = 'SAMPLE'
-        else:
-            list_order_header = [
-                'label', 
-                'comment', 
-                'data_type', 
-                'visible', 
-                'heading', 
-                'is_date', 
-                'fill_value'
-            ]
-            
-        dict_redcap_header = {
-            'field_label': 'label', 
-            'data_type': 'data_type',
-            'comment': 'comment',
-            'field_name': 'heading',
-            'is_date': 'is_date',
-            'fill_value': 'fill_value'
-        }
-
         list_redcap_map = list(dict_redcap_header.keys())
 
         # For checkboxes, create new rows with actual names
@@ -170,9 +142,6 @@ class RedcapToCbioportalFormat(object):
 
         # Create header dataframe
         df_header = df_header1[list_redcap_map].rename(columns=dict_redcap_header)
-        if production_or_test == 'test':
-            df_header = df_header.assign(patient_or_sample=col_patient_or_sample)
-        
         df_header = df_header.assign(visible='1')
         df_header = df_header[list_order_header]
 
@@ -212,13 +181,10 @@ class RedcapToCbioportalFormat(object):
         """
         if production_or_test == 'production':
             col_metadata_list = 'for_cbioportal'
-            header_len = 4
         elif production_or_test == 'test':
             col_metadata_list = 'for_test_portal'
-            header_len = 5
         else:
             col_metadata_list = 'for_test_portal'
-            header_len = 5
         
         # Initialize the manifest file
         self.summary_manifest_init()
@@ -264,7 +230,7 @@ class RedcapToCbioportalFormat(object):
         obj = self._obj_minio.load_obj(path_object=fname_template)
         df_template = pd.read_csv(
             obj, 
-            header=header_len, 
+            header=NROWS_HEADER,
             low_memory=False,
             sep='\t',
             dtype=str
@@ -330,9 +296,7 @@ class RedcapToCbioportalFormat(object):
             cols_header = list(df_select.columns)
             
             df_header = self._format_data_dictionary(
-                df=df_metadata[filt_table_use],
-                patient_or_sample=patient_or_sample,
-                production_or_test=production_or_test
+                df=df_metadata[filt_table_use]
             )
             length_header = df_header.shape[0]
             df_header.loc[length_header, 'label'] = id_label
