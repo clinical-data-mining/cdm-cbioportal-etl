@@ -71,11 +71,18 @@ def main():
         required=True,
         help="Path to datahub",
     )
+    parser.add_argument(
+        "--production_or_test",
+        action="store",
+        dest="production_or_test",
+        required=True,
+        help="Enter test or production to indicate the columns/files to use for portal file generation",
+    )
     args = parser.parse_args()
 
     obj_yaml = cbioportal_update_config(fname_yaml_config=args.config_yaml)
     path_minio_summary_intermediate = obj_yaml.return_intermediate_folder_path()
-    production_or_test = obj_yaml.return_production_or_test_indicator()
+    production_or_test = args.production_or_test
 
 
     fname_manifest_patient = obj_yaml.return_manifest_filename_patient()

@@ -12,8 +12,6 @@ inputs:
   path_minio_cbio_summary_intermediate: "epic_ddp_concat/cbioportal/intermediate_files/mskarcher/"
   # folder path for final deid files
   path_minio_cbio: "epic_ddp_concat/cbioportal/mskarcher/"
-  # Variable for cBioPortal production or test portal study use
-  production_or_test: "production"
 
 inputs_databricks:
   overwrite: True
