@@ -106,14 +106,14 @@ def cbioportal_deid_timeline_files(
         df_['STOP_DATE'] = pd.to_datetime(df_['STOP_DATE'], errors='coerce')
 
         if pd.api.types.is_datetime64_any_dtype(df['START_DATE']):
-            df['START_DATE'] = df['START_DATE'].dt.date
+            df_['START_DATE'] = df_['START_DATE'].dt.date
         else:
-            df['START_DATE'] = pd.to_datetime(pd.to_datetime(df['START_DATE']).dt.date)
+            df_['START_DATE'] = pd.to_datetime(pd.to_datetime(df_['START_DATE']).dt.date)
 
         if pd.api.types.is_datetime64_any_dtype(df['STOP_DATE']):
-            df['STOP_DATE'] = df['STOP_DATE'].dt.date
+            df_['STOP_DATE'] = df_['STOP_DATE'].dt.date
         else:
-            df['STOP_DATE'] = pd.to_datetime(pd.to_datetime(df['STOP_DATE']).dt.date)
+            df_['STOP_DATE'] = pd.to_datetime(pd.to_datetime(df_['STOP_DATE']).dt.date)
 
         # Merge deid date
         df_ = df_.merge(right=df_path_g, how='inner', on='MRN')
