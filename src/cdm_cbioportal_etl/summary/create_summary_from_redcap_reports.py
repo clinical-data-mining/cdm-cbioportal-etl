@@ -217,7 +217,7 @@ class RedcapToCbioportalFormat(object):
             f2 = df_tables['cbio_summary_id_sample'].isnull()
             col_id_change = 'PATIENT_ID'
             
-        active_tables = df_tables.loc[f1&f2]
+        active_tables = df_tables.loc[f1&f2].copy()
         list_fname_minio = active_tables[col_cdm_source_table]
         
         print('Loading template %s' % fname_template)
