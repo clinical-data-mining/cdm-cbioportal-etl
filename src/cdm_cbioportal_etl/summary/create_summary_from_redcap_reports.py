@@ -181,10 +181,13 @@ class RedcapToCbioportalFormat(object):
         """
         if production_or_test == 'production':
             col_metadata_list = 'for_cbioportal'
+            col_cdm_source_table = 'cdm_source_table'
         elif production_or_test == 'test':
             col_metadata_list = 'for_test_portal'
+            col_cdm_source_table = 'cdm_source_table_dev'
         else:
             col_metadata_list = 'for_test_portal'
+            col_cdm_source_table = 'cdm_source_table_dev'
         
         # Initialize the manifest file
         self.summary_manifest_init()
@@ -215,7 +218,7 @@ class RedcapToCbioportalFormat(object):
             col_id_change = 'PATIENT_ID'
             
         active_tables = df_tables.loc[f1&f2]
-        list_fname_minio = active_tables['cdm_source_table']
+        list_fname_minio = active_tables[col_cdm_source_table]
         
         print('Loading template %s' % fname_template)
         obj = self._obj_minio.load_obj(path_object=fname_template)
