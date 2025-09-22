@@ -20,8 +20,8 @@ def create_cbioportal_summary(
     fname_summary_save,
     production_or_test,
     path_minio_summary_intermediate,
-    fname_metadata=fname_metadata,
-    fname_tables=fname_tables
+    fname_metadata,
+    fname_tables
 ):
     obj_format_cbio = RedcapToCbioportalFormat(
         fname_minio_env=fname_minio_env,
