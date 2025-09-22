@@ -19,21 +19,11 @@ class cBioPortalSummaryMergeTool(object):
     def __init__(
         self, 
         fname_minio_env, 
-        fname_current_summary, 
-        production_or_test='production'
+        fname_current_summary
     ):
         # Input filenames
         self._fname_minio_env = fname_minio_env
         self._fname_current_summary = fname_current_summary
-        self._production_or_test = production_or_test
-        
-        # Transpose header df
-        if self._production_or_test == 'production':
-            self._cols_header = COLS_PRODUCTION
-        elif self._production_or_test == 'test':
-            self._cols_header = COLS_TESTING
-        else:
-            self._cols_header = COLS_PRODUCTION
         
         # DataFrame variables
         self._df_summary_orig = None
@@ -126,7 +116,7 @@ class cBioPortalSummaryMergeTool(object):
         df_header = pd.read_csv(obj, header=0, sep=',', dtype=str)
         print(df_header.sample(1))
             
-        df_header = df_header[self._cols_header]
+        df_header = df_header[COLS_PRODUCTION]
         df_header_f = df_header.T.reset_index(drop=True)
 
         # Convert first row to column names
