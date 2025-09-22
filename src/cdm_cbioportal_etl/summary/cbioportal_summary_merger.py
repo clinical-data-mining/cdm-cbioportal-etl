@@ -10,7 +10,6 @@ from msk_cdm.minio import MinioAPI
 from cdm_cbioportal_etl.utils import constants
 
 COLS_PRODUCTION = constants.COLS_PRODUCTION
-COLS_TESTING = constants.COLS_TESTING
 NROWS_HEADER = 4
 _row_label = NROWS_HEADER-1
 
