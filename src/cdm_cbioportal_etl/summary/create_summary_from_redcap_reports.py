@@ -25,13 +25,15 @@ import pandas as pd
 import numpy as np
 
 from msk_cdm.minio import MinioAPI
-from msk_cdm.data_processing import mrn_zero_pad
+from msk_cdm.data_processing import mrn_zero_pad, set_debug_console
 from msk_cdm.codebook import load_metadata_tab, load_tables_tab, load_project_tab
 
 from cdm_cbioportal_etl.utils import (
     get_anchor_dates
 )
 from cdm_cbioportal_etl.utils import constants
+
+set_debug_console()
 
 COL_SUMMARY_FNAME_SAVE = constants.COL_SUMMARY_FNAME_SAVE
 COL_SUMMARY_HEADER_FNAME_SAVE = constants.COL_SUMMARY_HEADER_FNAME_SAVE
@@ -197,6 +199,8 @@ class RedcapToCbioportalFormat(object):
         
         # Load the CDM codebook
         df_metadata, df_tables, df_project = self.return_codebook()
+
+        print(df_tables.sample())
         
         ## Merge metadata info into "comment" column. Will include description, reason for missing, source
         df_metadata['comment'] = ' ---DESCRIPTION: ' + df_metadata['field_note'] + ' ---MISSING DATA: ' + df_metadata['reasons_for_missing_data'] + ' ---SOURCE:' + df_metadata['souce_from_idb_or_cdm']
@@ -218,6 +222,7 @@ class RedcapToCbioportalFormat(object):
             col_id_change = 'PATIENT_ID'
             
         active_tables = df_tables.loc[f1&f2].copy()
+        print(active_tables.sample())
         list_fname_minio = active_tables[col_cdm_source_table]
         
         print('Loading template %s' % fname_template)
