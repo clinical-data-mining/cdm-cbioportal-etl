@@ -112,6 +112,8 @@ def cbioportal_deid_timeline_files(
         cols_drop = ['MRN', COL_OS_DATE] + list_rmv_cols
         df_ = df_.drop(columns=cols_drop)
         df_ = df_.rename(columns={'DMP_ID': 'PATIENT_ID'})
+        print('Sample of dataframe')
+        print(df_.sample())
 
         # DeID dates
         start_date = (df_['START_DATE'] - df_[COL_ANCHOR_DATE]).dt.days
