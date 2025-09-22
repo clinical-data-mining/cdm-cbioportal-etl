@@ -26,7 +26,6 @@ import numpy as np
 
 from msk_cdm.minio import MinioAPI
 from msk_cdm.data_processing import mrn_zero_pad, set_debug_console
-from msk_cdm.codebook import load_metadata_tab, load_tables_tab, load_project_tab
 
 from cdm_cbioportal_etl.utils import (
     get_anchor_dates
@@ -66,15 +65,19 @@ class RedcapToCbioportalFormat(object):
         self,
         fname_minio_env,
         path_minio_summary_intermediate,
+        fname_metadata,
+        fname_tables
     ):
-        
+        # Filenames
+        self._fname_metadata = fname_metadata
+        self._fname_tables = fname_tables
+
         # Dataframes
         self._df_manifest = None
         self._df_header = None
         self._df_anchor = None
         self._df_metadata = None
-        self._df_tables = None 
-        self._df_project = None
+        self._df_tables = None
 
         self._fname_minio_env = fname_minio_env
         self._path_minio_summary_intermediate = path_minio_summary_intermediate
@@ -90,15 +93,14 @@ class RedcapToCbioportalFormat(object):
         # Load anchor data containing data to deidentify tables
         self._df_anchor = get_anchor_dates(self._fname_minio_env)
         
-        df_metadata, df_tables, df_project = self.init_metadata()
+        df_metadata, df_tables = self.init_metadata()
         self._df_metadata = df_metadata
-        self._df_tables = df_tables 
-        self._df_project = df_project
+        self._df_tables = df_tables
         
         return None
     
     def return_codebook(self):
-        return self._df_metadata, self._df_tables, self._df_project
+        return self._df_metadata, self._df_tables
     
     def return_manifest(self):  # ----------------------------------------------------
         return self._df_manifest
@@ -157,11 +159,10 @@ class RedcapToCbioportalFormat(object):
 
     def init_metadata(self):
         # Load CDM Codebook files
-        df_metadata = load_metadata_tab()
-        df_project = load_project_tab()
-        df_tables = load_tables_tab()
+        df_metadata = pd.read_csv(self._fname_metadata)
+        df_tables = pd.read_csv(self._fname_tables)
 
-        return df_metadata, df_tables, df_project
+        return df_metadata, df_tables
     
     def create_summaries_and_headers(
         self, 
@@ -198,7 +199,7 @@ class RedcapToCbioportalFormat(object):
         df_anchor = self._df_anchor
         
         # Load the CDM codebook
-        df_metadata, df_tables, df_project = self.return_codebook()
+        df_metadata, df_tables = self.return_codebook()
 
         print(df_tables.sample())
         
