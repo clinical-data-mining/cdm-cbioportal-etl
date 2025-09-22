@@ -105,12 +105,12 @@ def cbioportal_deid_timeline_files(
         df_['START_DATE'] = pd.to_datetime(df_['START_DATE'], errors='coerce')
         df_['STOP_DATE'] = pd.to_datetime(df_['STOP_DATE'], errors='coerce')
 
-        if pd.api.types.is_datetime64_any_dtype(df['START_DATE']):
+        if pd.api.types.is_datetime64_any_dtype(df_['START_DATE']):
             df_['START_DATE'] = df_['START_DATE'].dt.date
         else:
             df_['START_DATE'] = pd.to_datetime(pd.to_datetime(df_['START_DATE']).dt.date)
 
-        if pd.api.types.is_datetime64_any_dtype(df['STOP_DATE']):
+        if pd.api.types.is_datetime64_any_dtype(df_['STOP_DATE']):
             df_['STOP_DATE'] = df_['STOP_DATE'].dt.date
         else:
             df_['STOP_DATE'] = pd.to_datetime(pd.to_datetime(df_['STOP_DATE']).dt.date)
