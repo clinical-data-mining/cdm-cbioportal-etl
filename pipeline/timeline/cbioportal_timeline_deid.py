@@ -62,6 +62,7 @@ def main():
         action="store",
         dest="production_or_test",
         required=True,
+        choices=["test", "production"],
         help="Enter test or production to indicate the columns/files to use for portal file generation",
     )
 
