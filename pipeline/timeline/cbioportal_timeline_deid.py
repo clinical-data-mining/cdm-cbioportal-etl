@@ -78,6 +78,7 @@ def main():
 
     # Get list of sample and patient IDs used for cbioportal ETL
     fname_sample = args.cbio_sample_list
+    print(f'Loading {fname_sample}')
     df_samples_used = pd.read_csv(fname_sample, sep='\t')
     list_dmp_ids = list(df_samples_used['PATIENT_ID'].drop_duplicates())
     list_sample_ids = list(df_samples_used['SAMPLE_ID'].drop_duplicates())
