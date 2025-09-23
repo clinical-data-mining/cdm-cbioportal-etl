@@ -3,11 +3,13 @@
 set -e
 
 
+
 CONDA_INSTALL_PATH=/gpfs/mindphidata/fongc2/miniconda3
 CONDA_ENV_NAME=conda-env-cdm-fongc2
 YAML_CONFIG=/gpfs/mindphidata/fongc2/github/cdm-cbioportal-etl/config/etl_config_mskimpact.yml
 MINIO_ENV=/gpfs/mindphidata/fongc2/minio_env_dev.txt
 SAMPLE_LIST=/gpfs/mindphidata/cdm_repos_dev/dev/data/impact-data/mskimpact/data_clinical_sample.txt
+EXCLUDE_LIST=/gpfs/mindphidata/cdm_repos_dev/dev/github/cdm-cbioportal-etl/pipeline/mskimpact_clinical_data_remove.tsv
 
 
 test -n "$CONDA_INSTALL_PATH"
@@ -31,4 +33,4 @@ echo "YAML CONFIG: "
 echo $YAML_CONFIG
 
 # Run script
-python $SCRIPT --config_yaml=$YAML_CONFIG --minio_env=$MINIO_ENV --cbio_sample_list=$SAMPLE_LIST
+python $SCRIPT --config_yaml=$YAML_CONFIG --minio_env=$MINIO_ENV --cbio_sample_list=$SAMPLE_LIST --sample_exclude_list=$EXCLUDE_LIST
