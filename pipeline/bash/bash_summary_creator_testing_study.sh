@@ -4,9 +4,9 @@ set -e
 
 CONDA_INSTALL_PATH=/gpfs/mindphidata/fongc2/miniconda3
 CONDA_ENV_NAME=conda-env-cdm-fongc2
-YAML_CONFIG=/gpfs/mindphidata/fongc2/github/cdm-cbioportal-etl/config/etl_config_mskimpact_heme.yml
+YAML_CONFIG=/gpfs/mindphidata/fongc2/github/cdm-cbioportal-etl/config/etl_config_mskarcher.yml
 MINIO_ENV=/gpfs/mindphidata/fongc2/minio_env_dev.txt
-PATH_DATAHUB=/gpfs/mindphidata/cdm_repos_dev/dev/data/cdm-data/mskimpact_heme
+PATH_DATAHUB=/gpfs/mindphidata/cdm_repos_dev/dev/data/cdm-data/mskarcher
 TEST=test
 
 test -n "$CONDA_INSTALL_PATH"
