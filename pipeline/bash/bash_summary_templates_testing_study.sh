@@ -2,7 +2,6 @@
 
 set -e
 
-EXCLUDE_LIST=$7
 
 CONDA_INSTALL_PATH=/gpfs/mindphidata/fongc2/miniconda3
 CONDA_ENV_NAME=conda-env-cdm-fongc2
