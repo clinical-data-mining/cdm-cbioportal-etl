@@ -31,4 +31,4 @@ echo "YAML CONFIG: "
 echo $YAML_CONFIG
 
 # Run script
-python $SCRIPT --config_yaml=$YAML_CONFIG --minio_env=$MINIO_ENV --cbio_sample_list=$SAMPLE_LIST --sample_exclude_list=$EXCLUDE_LIST
+python $SCRIPT --config_yaml=$YAML_CONFIG --minio_env=$MINIO_ENV --cbio_sample_list=$SAMPLE_LIST
