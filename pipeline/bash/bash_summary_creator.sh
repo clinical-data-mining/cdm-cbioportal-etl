@@ -8,7 +8,7 @@ CONDA_ENV_NAME=$3
 YAML_CONFIG=$4
 MINIO_ENV=$5
 PATH_DATAHUB=$6
-TEST=$7
+PROD_OR_TEST=$7
 
 test -n "$REPO_LOCATION"
 test -n "$CONDA_INSTALL_PATH"
@@ -16,7 +16,7 @@ test -n "$CONDA_ENV_NAME"
 test -n "$YAML_CONFIG"
 test -n "$MINIO_ENV"
 test -n "$PATH_DATAHUB"
-test -n "$TEST"
+test -n "$PROD_OR_TEST"
 
 # Activate virtual env
 source $CONDA_INSTALL_PATH/etc/profile.d/conda.sh
@@ -31,4 +31,4 @@ cd ../summary
 SCRIPT=wrapper_cbioportal_summary_creator.py
 
 # Run script
-python $SCRIPT --config_yaml=$YAML_CONFIG --minio_env=$MINIO_ENV --path_datahub=$PATH_DATAHUB   --production_or_test=$TEST
+python $SCRIPT --config_yaml=$YAML_CONFIG --minio_env=$MINIO_ENV --path_datahub=$PATH_DATAHUB --production_or_test=$PROD_OR_TEST
