@@ -1,5 +1,5 @@
 codebook:
-  path: "/gpfs/mindphidata/cdm_repos/github/docs/docs/tables/"
+  path: "/gpfs/mindphidata/cdm_repos/prod/github/docs/docs/tables/"
   fname_metadata: "CDM-Codebook - metadata.csv"
   fname_tables: "CDM-Codebook - tables.csv"
   fname_project: "CDM-Codebook - project.csv"
