@@ -1,4 +1,5 @@
 import argparse
+import os
 from datetime import date
 
 import pandas as pd
@@ -59,6 +60,7 @@ def monitor_completeness(
     
     else:
         print('Monitoring test passed. Writing results to log: %s' % incomplete_fields_csv)
+        os.makedirs(os.path.dirname(incomplete_fields_csv), exist_ok=True)
         test_for_empty_all.to_csv(incomplete_fields_csv, sep=',')
         
         return False
