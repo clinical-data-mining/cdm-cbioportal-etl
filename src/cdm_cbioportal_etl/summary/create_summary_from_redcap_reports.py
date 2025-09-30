@@ -200,8 +200,6 @@ class RedcapToCbioportalFormat(object):
         
         # Load the CDM codebook
         df_metadata, df_tables = self.return_codebook()
-
-        print(df_tables.sample())
         
         ## Merge metadata info into "comment" column. Will include description, reason for missing, source
         df_metadata['comment'] = ' ---DESCRIPTION: ' + df_metadata['field_note'] + ' ---MISSING DATA: ' + df_metadata['reasons_for_missing_data'] + ' ---SOURCE:' + df_metadata['souce_from_idb_or_cdm']
@@ -223,7 +221,10 @@ class RedcapToCbioportalFormat(object):
             col_id_change = 'PATIENT_ID'
             
         active_tables = df_tables.loc[f1&f2].copy()
-        print(active_tables.sample())
+        if len(active_tables) > 0:
+            print(active_tables.sample())
+        else:
+            print("No active tables found")
         list_fname_minio = active_tables[col_cdm_source_table]
         
         print('Loading template %s' % fname_template)
