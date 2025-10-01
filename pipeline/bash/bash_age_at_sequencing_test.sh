@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-REPO_LOCATION=''
+REPO_LOCATION=/gpfs/mindphidata/cdm_repos/github/cdm-cbioportal-etl
 CONDA_INSTALL_PATH=/gpfs/mindphidata/fongc2/miniconda3
 CONDA_ENV_NAME=conda-env-cdm-fongc2
 MINIO_ENV=/gpfs/mindphidata/fongc2/minio_env_dev.txt
