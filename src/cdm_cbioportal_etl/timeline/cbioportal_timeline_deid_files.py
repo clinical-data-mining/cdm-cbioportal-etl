@@ -160,6 +160,8 @@ def cbioportal_deid_timeline_files(
         else:
             print('No sample id list in timeline template')
 
+        df_f = df_f.drop_duplicates()
+
         if df_f.shape[0] > 0:
             save_appended_df(
                 df=df_f,
