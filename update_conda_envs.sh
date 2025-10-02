@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Configuration: Path to conda initialization script
+CONDA_INIT_SCRIPT="/gpfs/mindphidata/fongc2/miniconda3/etc/profile.d/conda.sh"
+
 # Configuration: Define your environments and their corresponding repo paths
 declare -A ENV_REPO_MAP=(
     # Dev environments
@@ -59,6 +62,18 @@ update_env() {
 
 # Main execution
 echo "Starting conda environment updates..."
+echo ""
+
+# Initialize conda
+echo "Initializing conda..."
+if [ -f "$CONDA_INIT_SCRIPT" ]; then
+    source "$CONDA_INIT_SCRIPT"
+    echo "Conda initialized successfully"
+else
+    echo "ERROR: Conda initialization script not found at: $CONDA_INIT_SCRIPT"
+    echo "Please update the CONDA_INIT_SCRIPT variable with the correct path"
+    exit 1
+fi
 echo ""
 
 # Track results
