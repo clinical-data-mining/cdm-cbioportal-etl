@@ -4,10 +4,10 @@ set -e
 
 FNAME_SAVE="cbioportal/seq_date.txt"
 
-REPO_LOCATION=$1
-CONDA_INSTALL_PATH=$2
-CONDA_ENV_NAME=$3
-MINIO_ENV=$4
+REPO_LOCATION=/gpfs/mindphidata/cdm_repos/github/cdm-cbioportal-etl
+CONDA_INSTALL_PATH=/gpfs/mindphidata/fongc2/miniconda3
+CONDA_ENV_NAME=conda-env-cdm-fongc2
+MINIO_ENV=/gpfs/mindphidata/fongc2/minio_env_dev.txt
 
 test -n "$REPO_LOCATION"
 test -n "$CONDA_INSTALL_PATH"

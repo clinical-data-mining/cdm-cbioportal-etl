@@ -236,10 +236,10 @@ class CbioportalUpdateConfig(object):
 
         codebook_table = self._df_codebook_table
         df_codebook_timeline_prod = codebook_table[codebook_table['cbio_timeline_file_testing'] == 'x'].copy()
-        df_timeline_files = df_codebook_timeline_prod[['cdm_source_table', 'cbio_deid_filename']].dropna()
+        df_timeline_files = df_codebook_timeline_prod[['cdm_source_table_dev', 'cbio_deid_filename']].dropna()
         df_timeline_files['cbio_deid_filename'] = df_timeline_files['cbio_deid_filename'].apply(lambda x: os.path.join(path_datahub, x) )
 
-        dict_phi_to_deid_timeline = dict(zip(list(df_timeline_files['cdm_source_table']), list(df_timeline_files['cbio_deid_filename'])))
+        dict_phi_to_deid_timeline = dict(zip(list(df_timeline_files['cdm_source_table_dev']), list(df_timeline_files['cbio_deid_filename'])))
 
         return dict_phi_to_deid_timeline
 
