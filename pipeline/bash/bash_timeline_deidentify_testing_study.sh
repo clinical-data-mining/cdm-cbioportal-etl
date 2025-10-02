@@ -3,7 +3,7 @@
 set -e
 
 # Define the assay once
-ASSAY=mskarcher   # change this to mskaccess, etc.
+ASSAY=mskimpact_heme   # change this to mskaccess, etc.
 
 # Core variables
 CONDA_INSTALL_PATH=/gpfs/mindphidata/fongc2/miniconda3
