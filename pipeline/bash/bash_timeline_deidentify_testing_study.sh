@@ -8,7 +8,7 @@ YAML_CONFIG=/gpfs/mindphidata/fongc2/github/cdm-cbioportal-etl/config/etl_config
 MINIO_ENV=/gpfs/mindphidata/fongc2/minio_env_dev.txt
 SAMPLE_LIST=/gpfs/mindphidata/cdm_repos/dev/data/impact-data/mskimpact/data_clinical_sample.txt
 PATH_DATAHUB=/gpfs/mindphidata/cdm_repos/dev/data/cdm-data/mskimpact
-TEST=dev
+TEST=test
 
 test -n "$CONDA_INSTALL_PATH"
 test -n "$CONDA_ENV_NAME"
