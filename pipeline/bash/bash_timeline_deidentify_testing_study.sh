@@ -3,14 +3,14 @@
 set -e
 
 # Define the assay once
-ASSAY=mskaccess   # change this to mskaccess, etc.
+ASSAY=mskimpact   # change this to mskaccess, etc.
 
 # Core variables
 CONDA_INSTALL_PATH=/gpfs/mindphidata/fongc2/miniconda3
 CONDA_ENV_NAME=conda-env-cdm-fongc2
 YAML_CONFIG=/gpfs/mindphidata/fongc2/github/cdm-cbioportal-etl/config/etl_config_${ASSAY}.yml
 MINIO_ENV=/gpfs/mindphidata/fongc2/minio_env_dev.txt
-SAMPLE_LIST=/gpfs/mindphidata/cdm_repos/dev/data/${ASSAY}-data/${ASSAY}/data_clinical_sample.txt
+SAMPLE_LIST=/gpfs/mindphidata/cdm_repos/dev/data/impact-data/${ASSAY}/data_clinical_sample.txt
 PATH_DATAHUB=/gpfs/mindphidata/cdm_repos/dev/data/cdm-data/${ASSAY}
 TEST=test
 
