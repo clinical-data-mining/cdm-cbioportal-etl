@@ -20,10 +20,14 @@ def create_cbioportal_summary(
     fname_summary_save,
     production_or_test,
     path_minio_summary_intermediate,
+    fname_metadata,
+    fname_tables
 ):
     obj_format_cbio = RedcapToCbioportalFormat(
         fname_minio_env=fname_minio_env,
         path_minio_summary_intermediate=path_minio_summary_intermediate,
+        fname_metadata=fname_metadata,
+        fname_tables=fname_tables
     )
     
     ## Create individual summary and header files, with a manifest file summarizing the outputs
@@ -76,15 +80,17 @@ def main():
         action="store",
         dest="production_or_test",
         required=True,
+        choices=["test", "production"],
         help="Enter test or production to indicate the columns/files to use for portal file generation",
     )
     args = parser.parse_args()
 
+    production_or_test = args.production_or_test
     obj_yaml = cbioportal_update_config(fname_yaml_config=args.config_yaml)
     path_minio_summary_intermediate = obj_yaml.return_intermediate_folder_path()
-    production_or_test = args.production_or_test
 
-
+    fname_metadata = obj_yaml.return_filename_codebook_metadata()
+    fname_tables = obj_yaml.return_filename_codebook_tables()
     fname_manifest_patient = obj_yaml.return_manifest_filename_patient()
     fname_summary_template_patient = obj_yaml.return_template_info()['fname_p_sum_template_cdsi']
     fname_summary_patient = obj_yaml.return_filenames_deid_datahub(path_datahub=args.path_datahub)['summary_patient']
@@ -104,6 +110,8 @@ def main():
         fname_summary_save=fname_summary_patient,
         production_or_test=production_or_test,
         path_minio_summary_intermediate=path_minio_summary_intermediate,
+        fname_metadata=fname_metadata,
+        fname_tables=fname_tables
     )
 
     # Create sample summary
@@ -116,6 +124,8 @@ def main():
         fname_summary_save=fname_summary_sample,
         production_or_test=production_or_test,
         path_minio_summary_intermediate=path_minio_summary_intermediate,
+        fname_metadata=fname_metadata,
+        fname_tables=fname_tables
     )
 
 if __name__ == "__main__":

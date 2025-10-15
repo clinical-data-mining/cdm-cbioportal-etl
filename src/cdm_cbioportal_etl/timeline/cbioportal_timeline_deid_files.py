@@ -105,6 +105,16 @@ def cbioportal_deid_timeline_files(
         df_['START_DATE'] = pd.to_datetime(df_['START_DATE'], errors='coerce')
         df_['STOP_DATE'] = pd.to_datetime(df_['STOP_DATE'], errors='coerce')
 
+        if pd.api.types.is_datetime64_any_dtype(df_['START_DATE']):
+            df_['START_DATE'] = pd.to_datetime(df_['START_DATE'].dt.date)
+        else:
+            df_['START_DATE'] = pd.to_datetime(pd.to_datetime(df_['START_DATE']).dt.date)
+
+        if pd.api.types.is_datetime64_any_dtype(df_['STOP_DATE']):
+            df_['STOP_DATE'] = pd.to_datetime(df_['STOP_DATE'].dt.date)
+        else:
+            df_['STOP_DATE'] = pd.to_datetime(pd.to_datetime(df_['STOP_DATE']).dt.date)
+
         # Merge deid date
         df_ = df_.merge(right=df_path_g, how='inner', on='MRN')
         df_ = df_.merge(right=df_os, how='inner', on='MRN')
@@ -112,6 +122,8 @@ def cbioportal_deid_timeline_files(
         cols_drop = ['MRN', COL_OS_DATE] + list_rmv_cols
         df_ = df_.drop(columns=cols_drop)
         df_ = df_.rename(columns={'DMP_ID': 'PATIENT_ID'})
+        print('Sample of dataframe')
+        print(df_.sample())
 
         # DeID dates
         start_date = (df_['START_DATE'] - df_[COL_ANCHOR_DATE]).dt.days
@@ -147,6 +159,8 @@ def cbioportal_deid_timeline_files(
             df_f = df_f[df_f['SAMPLE_ID'].isin(list_sample_ids)].copy()
         else:
             print('No sample id list in timeline template')
+
+        df_f = df_f.drop_duplicates()
 
         if df_f.shape[0] > 0:
             save_appended_df(

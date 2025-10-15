@@ -25,13 +25,14 @@ import pandas as pd
 import numpy as np
 
 from msk_cdm.minio import MinioAPI
-from msk_cdm.data_processing import mrn_zero_pad
-from msk_cdm.codebook import load_metadata_tab, load_tables_tab, load_project_tab
+from msk_cdm.data_processing import mrn_zero_pad, set_debug_console
 
 from cdm_cbioportal_etl.utils import (
     get_anchor_dates
 )
 from cdm_cbioportal_etl.utils import constants
+
+set_debug_console()
 
 COL_SUMMARY_FNAME_SAVE = constants.COL_SUMMARY_FNAME_SAVE
 COL_SUMMARY_HEADER_FNAME_SAVE = constants.COL_SUMMARY_HEADER_FNAME_SAVE
@@ -64,15 +65,19 @@ class RedcapToCbioportalFormat(object):
         self,
         fname_minio_env,
         path_minio_summary_intermediate,
+        fname_metadata,
+        fname_tables
     ):
-        
+        # Filenames
+        self._fname_metadata = fname_metadata
+        self._fname_tables = fname_tables
+
         # Dataframes
         self._df_manifest = None
         self._df_header = None
         self._df_anchor = None
         self._df_metadata = None
-        self._df_tables = None 
-        self._df_project = None
+        self._df_tables = None
 
         self._fname_minio_env = fname_minio_env
         self._path_minio_summary_intermediate = path_minio_summary_intermediate
@@ -88,15 +93,14 @@ class RedcapToCbioportalFormat(object):
         # Load anchor data containing data to deidentify tables
         self._df_anchor = get_anchor_dates(self._fname_minio_env)
         
-        df_metadata, df_tables, df_project = self.init_metadata()
+        df_metadata, df_tables = self.init_metadata()
         self._df_metadata = df_metadata
-        self._df_tables = df_tables 
-        self._df_project = df_project
+        self._df_tables = df_tables
         
         return None
     
     def return_codebook(self):
-        return self._df_metadata, self._df_tables, self._df_project
+        return self._df_metadata, self._df_tables
     
     def return_manifest(self):  # ----------------------------------------------------
         return self._df_manifest
@@ -155,11 +159,10 @@ class RedcapToCbioportalFormat(object):
 
     def init_metadata(self):
         # Load CDM Codebook files
-        df_metadata = load_metadata_tab()
-        df_project = load_project_tab()
-        df_tables = load_tables_tab()
+        df_metadata = pd.read_csv(self._fname_metadata)
+        df_tables = pd.read_csv(self._fname_tables)
 
-        return df_metadata, df_tables, df_project
+        return df_metadata, df_tables
     
     def create_summaries_and_headers(
         self, 
@@ -181,10 +184,13 @@ class RedcapToCbioportalFormat(object):
         """
         if production_or_test == 'production':
             col_metadata_list = 'for_cbioportal'
+            col_cdm_source_table = 'cdm_source_table'
         elif production_or_test == 'test':
             col_metadata_list = 'for_test_portal'
+            col_cdm_source_table = 'cdm_source_table_dev'
         else:
             col_metadata_list = 'for_test_portal'
+            col_cdm_source_table = 'cdm_source_table_dev'
         
         # Initialize the manifest file
         self.summary_manifest_init()
@@ -193,7 +199,7 @@ class RedcapToCbioportalFormat(object):
         df_anchor = self._df_anchor
         
         # Load the CDM codebook
-        df_metadata, df_tables, df_project = self.return_codebook()
+        df_metadata, df_tables = self.return_codebook()
         
         ## Merge metadata info into "comment" column. Will include description, reason for missing, source
         df_metadata['comment'] = ' ---DESCRIPTION: ' + df_metadata['field_note'] + ' ---MISSING DATA: ' + df_metadata['reasons_for_missing_data'] + ' ---SOURCE:' + df_metadata['souce_from_idb_or_cdm']
@@ -214,8 +220,12 @@ class RedcapToCbioportalFormat(object):
             f2 = df_tables['cbio_summary_id_sample'].isnull()
             col_id_change = 'PATIENT_ID'
             
-        active_tables = df_tables.loc[f1&f2]
-        list_fname_minio = active_tables['cdm_source_table']
+        active_tables = df_tables.loc[f1&f2].copy()
+        if len(active_tables) > 0:
+            print(active_tables.sample())
+        else:
+            print("No active tables found")
+        list_fname_minio = active_tables[col_cdm_source_table]
         
         print('Loading template %s' % fname_template)
         obj = self._obj_minio.load_obj(path_object=fname_template)

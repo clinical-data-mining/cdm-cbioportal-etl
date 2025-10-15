@@ -17,7 +17,6 @@ class constants:
     COL_S_ID_CBIO = 'SAMPLE_ID'
 
     COLS_PRODUCTION = ['label', 'comment', 'data_type', 'visible', 'heading']
-    COLS_TESTING = ['label', 'comment', 'data_type', 'patient_or_sample', 'visible', 'heading']
 
     COLS_ORDER_GENERAL = [
         'PATIENT_ID',

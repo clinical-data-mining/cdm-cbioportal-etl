@@ -55,8 +55,7 @@ class cbioportalSummaryFileCombiner(object):
     def _load_current_summary(self):
         obj_patient_merge = cBioPortalSummaryMergeTool(
             fname_minio_env=self._fname_minio_env,
-            fname_current_summary=self._fname_current_summary,
-            production_or_test=self._production_or_test
+            fname_current_summary=self._fname_current_summary
         )
         self._obj_patient_merge = obj_patient_merge
         
