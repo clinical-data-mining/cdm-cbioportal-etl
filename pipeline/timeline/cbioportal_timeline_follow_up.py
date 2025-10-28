@@ -51,7 +51,7 @@ def cbioportal_timeline_follow_up(
 
     print('Creating timeline')
     df_os_ = pd.melt(
-        frame=df_demo,
+        frame=df_demo_f,
         id_vars='MRN',
         value_vars=[
             'MRN_CREATE_DTE',
