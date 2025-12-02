@@ -4,8 +4,8 @@ This directory contains scripts for deidentifying timeline data from various dom
 
 ## Files
 
-- **`timeline_utils.py`** - Shared utility functions used across all timeline deidentification scripts
-- **`cbioportal_timeline_deidentify.py`** - Generic timeline deidentification script (works for medications, labs, diagnoses, etc.)
+- **`cbioportal_timeline_deidentify.py`** - Self-contained generic timeline deidentification script (works for medications, labs, diagnoses, etc.)
+  - All utility functions are included within this script (no external dependencies beyond installed packages)
 
 ## Shared Components
 
@@ -173,27 +173,11 @@ bash pipeline/bash/bash_timeline_deid_generic.sh \
   --columns_cbio="PATIENT_ID,START_DATE,STOP_DATE,EVENT_TYPE,DIAGNOSIS_CODE,DIAGNOSIS_DESCRIPTION"
 ```
 
-## Utility Functions
-
-### `timeline_utils.py`
-
-- **`load_dbx_table(fname_dbx, table_name)`** - Load table from Databricks
-- **`compute_os_date(fname_dbx, fname_demo)`** - Calculate OS date from demographics
-- **`process_df_os(df, col_id, col_os_date)`** - Standardize OS date dataframe
-- **`validate_date_parsing(df, ...)`** - Report date parsing statistics
-- **`report_deidentification_stats(df, ...)`** - Report deidentification statistics
-
-These functions are shared across all timeline deidentification scripts.
-
 ## Troubleshooting
 
 **Issue: "Missing columns in output"**
 - Check that `--columns_cbio` matches your source data columns
 - The script will warn about missing columns but continue
-
-**Issue: "Module not found: pipeline.timeline"**
-- Make sure you run from the repo root directory
-- The bash script handles this automatically
 
 **Issue: "Databricks connection failed"**
 - Verify `--fname_dbx` points to valid environment file
