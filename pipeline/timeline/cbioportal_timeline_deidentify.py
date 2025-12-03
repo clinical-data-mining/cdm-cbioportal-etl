@@ -13,7 +13,7 @@ Processing steps:
 
 Usage examples:
 
-Medications:
+Medications (patient-level):
   python pipeline/timeline/cbioportal_timeline_deidentify.py \
     --fname_dbx=/path/to/databricks_env.txt \
     --fname_timeline=schema.table_timeline_medications \
@@ -23,7 +23,7 @@ Medications:
     --columns_cbio="PATIENT_ID,START_DATE,STOP_DATE,EVENT_TYPE,SUBTYPE,TREATMENT_TYPE,AGENT" \
     --truncate_by_os_date
 
-Labs:
+Labs (patient-level):
   python pipeline/timeline/cbioportal_timeline_deidentify.py \
     --fname_dbx=/path/to/databricks_env.txt \
     --fname_timeline=schema.table_timeline_labs \
@@ -31,6 +31,16 @@ Labs:
     --fname_output_volume=/Volumes/path/data_timeline_lab_test_phi.tsv \
     --fname_output_gpfs=/gpfs/path/data_timeline_lab_test.txt \
     --columns_cbio="PATIENT_ID,START_DATE,STOP_DATE,EVENT_TYPE,TEST,RESULT"
+
+Sample-level timeline (e.g., sequencing data):
+  python pipeline/timeline/cbioportal_timeline_deidentify.py \
+    --fname_dbx=/path/to/databricks_env.txt \
+    --fname_timeline=schema.table_timeline_sequencing \
+    --fname_sample=/path/to/data_clinical_sample.txt \
+    --fname_output_volume=/Volumes/path/data_timeline_sequencing_phi.tsv \
+    --fname_output_gpfs=/gpfs/path/data_timeline_sequencing.txt \
+    --columns_cbio="PATIENT_ID,SAMPLE_ID,START_DATE,EVENT_TYPE" \
+    --merge_level=sample
 """
 
 import argparse
@@ -251,6 +261,14 @@ def main():
         default=False,
         help="If set, truncate START_DATE and STOP_DATE that exceed OS_DATE"
     )
+    parser.add_argument(
+        "--merge_level",
+        action="store",
+        dest="merge_level",
+        default="patient",
+        choices=["patient", "sample"],
+        help="Level at which to merge timeline data: 'patient' (default) or 'sample'"
+    )
 
     args = parser.parse_args()
 
@@ -264,6 +282,7 @@ def main():
     print(f"Sample list: {args.fname_sample}")
     print(f"Output volume (PHI): {args.fname_output_volume}")
     print(f"Output GPFS (deid): {args.fname_output_gpfs}")
+    print(f"Merge level: {args.merge_level}")
     print(f"Truncate by OS_DATE: {args.truncate_by_os_date}")
     print(f"cBioPortal columns: {list_cols_cbio_timeline}")
     print("=" * 80)
@@ -335,11 +354,20 @@ def main():
     # =========================================================================
     # 5. Merge data and create timeline
     # =========================================================================
-    print('\nMerging data...')
-    df_f = df_samples_used[['PATIENT_ID']].drop_duplicates()
-    df_f = df_f.merge(right=df_anchor, how='left', left_on='PATIENT_ID', right_on='DMP_ID')
-    df_f = df_f.merge(right=df_os, how='left', on='MRN')
-    df_f = df_f.merge(right=df_timeline_raw, how='left', on='MRN')
+    print(f'\nMerging data at {args.merge_level} level...')
+
+    if args.merge_level == 'patient':
+        # Patient-level merge: merge timeline data on MRN (patient level)
+        df_f = df_samples_used[['SAMPLE_ID', 'PATIENT_ID']].drop_duplicates()
+        df_f = df_f.merge(right=df_anchor, how='left', left_on='PATIENT_ID', right_on='DMP_ID')
+        df_f = df_f.merge(right=df_os, how='left', on='MRN')
+        df_f = df_f.merge(right=df_timeline_raw, how='left', on='MRN')
+    else:  # sample level
+        # Sample-level merge: merge timeline data on SAMPLE_ID
+        df_f = df_samples_used[['SAMPLE_ID', 'PATIENT_ID']].drop_duplicates()
+        df_f = df_f.merge(right=df_anchor, how='left', left_on='PATIENT_ID', right_on='DMP_ID')
+        df_f = df_f.merge(right=df_os, how='left', on='MRN')
+        df_f = df_f.merge(right=df_timeline_raw, how='left', on='SAMPLE_ID')
 
     # =========================================================================
     # 6. Truncate dates by OS_DATE if requested
