@@ -301,6 +301,15 @@ def main():
     df_timeline_raw = load_dbx_table(fname_dbx=args.fname_dbx, table_name=args.fname_timeline)
     df_timeline_raw = mrn_zero_pad(df=df_timeline_raw, col_mrn='MRN')
 
+    # Ensure START_DATE and STOP_DATE columns exist
+    if 'START_DATE' not in df_timeline_raw.columns:
+        print("WARNING: START_DATE column not found, creating empty column")
+        df_timeline_raw['START_DATE'] = pd.NaT
+
+    if 'STOP_DATE' not in df_timeline_raw.columns:
+        print("WARNING: STOP_DATE column not found, creating empty column")
+        df_timeline_raw['STOP_DATE'] = pd.NaT
+
     # Parse dates and validate
     df_timeline_raw['START_DATE_FORMATTED'] = pd.to_datetime(df_timeline_raw['START_DATE'], errors='coerce')
     df_timeline_raw['STOP_DATE_FORMATTED'] = pd.to_datetime(df_timeline_raw['STOP_DATE'], errors='coerce')
