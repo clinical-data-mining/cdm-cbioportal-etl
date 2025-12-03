@@ -99,6 +99,12 @@ def compute_os_date(fname_dbx, fname_demo):
     df_demo['PLA_LAST_CONTACT_DTE'] = pd.to_datetime(df_demo['PLA_LAST_CONTACT_DTE'], errors='coerce')
     df_demo['PT_DEATH_DTE'] = pd.to_datetime(df_demo['PT_DEATH_DTE'], errors='coerce')
 
+    # Remove timezone info to ensure dates are tz-naive
+    if pd.api.types.is_datetime64tz_dtype(df_demo['PLA_LAST_CONTACT_DTE']):
+        df_demo['PLA_LAST_CONTACT_DTE'] = df_demo['PLA_LAST_CONTACT_DTE'].dt.tz_localize(None)
+    if pd.api.types.is_datetime64tz_dtype(df_demo['PT_DEATH_DTE']):
+        df_demo['PT_DEATH_DTE'] = df_demo['PT_DEATH_DTE'].dt.tz_localize(None)
+
     df_demo[COL_OS_DATE] = df_demo['PT_DEATH_DTE'].fillna(df_demo['PLA_LAST_CONTACT_DTE'])
 
     # If death date is earlier than last contact, use death date
@@ -294,6 +300,10 @@ def main():
     df_anchor = mrn_zero_pad(df=df_anchor, col_mrn='MRN')
     df_anchor[COL_ANCHOR_DATE] = pd.to_datetime(df_anchor[COL_ANCHOR_DATE], errors='coerce')
 
+    # Remove timezone info to ensure dates are tz-naive
+    if pd.api.types.is_datetime64tz_dtype(df_anchor[COL_ANCHOR_DATE]):
+        df_anchor[COL_ANCHOR_DATE] = df_anchor[COL_ANCHOR_DATE].dt.tz_localize(None)
+
     # =========================================================================
     # 4. Load timeline raw data
     # =========================================================================
@@ -313,6 +323,12 @@ def main():
     # Parse dates and validate
     df_timeline_raw['START_DATE_FORMATTED'] = pd.to_datetime(df_timeline_raw['START_DATE'], errors='coerce')
     df_timeline_raw['STOP_DATE_FORMATTED'] = pd.to_datetime(df_timeline_raw['STOP_DATE'], errors='coerce')
+
+    # Remove timezone info to ensure all dates are tz-naive
+    if pd.api.types.is_datetime64tz_dtype(df_timeline_raw['START_DATE_FORMATTED']):
+        df_timeline_raw['START_DATE_FORMATTED'] = df_timeline_raw['START_DATE_FORMATTED'].dt.tz_localize(None)
+    if pd.api.types.is_datetime64tz_dtype(df_timeline_raw['STOP_DATE_FORMATTED']):
+        df_timeline_raw['STOP_DATE_FORMATTED'] = df_timeline_raw['STOP_DATE_FORMATTED'].dt.tz_localize(None)
 
     validate_date_parsing(df_timeline_raw)
 
