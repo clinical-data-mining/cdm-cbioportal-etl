@@ -182,6 +182,43 @@ def validate_date_parsing(df, start_col='START_DATE', stop_col='STOP_DATE',
     }
 
 
+def days_to_readable_compact(days):
+    """Convert days to 'Ny Mm Xd' format. Handles negative values.
+
+    Args:
+        days: Number of days (can be negative)
+
+    Returns:
+        String in format like "2y 3m 15d" or "-1y 2m 5d"
+    """
+    if pd.isna(days):
+        return ""
+
+    # Handle negative values
+    is_negative = days < 0
+    days = abs(int(days))
+
+    years = days // 365
+    remaining_days = days % 365
+    months = remaining_days // 30
+    final_days = remaining_days % 30
+
+    parts = []
+    if years > 0:
+        parts.append(f"{years}y")
+    if months > 0:
+        parts.append(f"{months}m")
+    if final_days > 0 or len(parts) == 0:
+        parts.append(f"{final_days}d")
+
+    result = " ".join(parts)
+
+    if is_negative:
+        result = "-" + result
+
+    return result
+
+
 def report_deidentification_stats(df, anchor_col='ANCHOR_DATE', os_col=COL_OS_DATE):
     """Report statistics about the deidentification process.
 
@@ -399,6 +436,10 @@ def main():
 
     df_f['START_DATE_DEID'] = start_date
     df_f['STOP_DATE_DEID'] = stop_date
+
+    # Create readable date columns
+    df_f['START_DATE_READABLE'] = df_f['START_DATE_DEID'].apply(days_to_readable_compact)
+    df_f['STOP_DATE_READABLE'] = df_f['STOP_DATE_DEID'].apply(days_to_readable_compact)
 
     # Report statistics
     report_deidentification_stats(df_f)
