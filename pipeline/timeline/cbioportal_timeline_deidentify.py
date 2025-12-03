@@ -395,7 +395,7 @@ def main():
 
     if args.merge_level == 'patient':
         # Patient-level merge: merge timeline data on MRN (patient level)
-        df_f = df_samples_used[['SAMPLE_ID', 'PATIENT_ID']].drop_duplicates()
+        df_f = df_samples_used[['PATIENT_ID']].drop_duplicates()
         df_f = df_f.merge(right=df_anchor, how='left', left_on='PATIENT_ID', right_on='DMP_ID')
         df_f = df_f.merge(right=df_os, how='left', on='MRN')
         df_f = df_f.merge(right=df_timeline_raw, how='left', on='MRN')
