@@ -494,6 +494,10 @@ def main():
     # Drop rows with null START_DATE or PATIENT_ID
     df_deid_f = df_deid.dropna(subset=['START_DATE', 'PATIENT_ID'], how='any').sort_values(by=['PATIENT_ID', 'START_DATE'])
 
+    # Convert START_DATE and STOP_DATE to integers (use Int64 to handle NaN values)
+    df_deid_f['START_DATE'] = df_deid_f['START_DATE'].astype('Int64')
+    df_deid_f['STOP_DATE'] = df_deid_f['STOP_DATE'].astype('Int64')
+
     print(f'Final deidentified rows: {len(df_deid_f)}')
 
     print(f'\nSaving deidentified version to: {args.fname_output_gpfs}')
