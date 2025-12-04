@@ -6,10 +6,11 @@ This script works for all timeline data domains (medications, labs, diagnoses, e
 Processing steps:
 1. Loads timeline data from Databricks
 2. Merges with anchor dates and OS dates
-3. Optionally truncates dates that exceed OS_DATE
-4. Calculates deidentified dates (days from anchor)
-5. Saves PHI version to Databricks volume
-6. Saves deidentified version to GPFS
+3. Removes invalid future dates (sets to null)
+4. Optionally truncates dates that exceed OS_DATE
+5. Calculates deidentified dates (days from anchor)
+6. Saves PHI version to Databricks volume
+7. Saves deidentified version to GPFS
 
 Usage examples:
 
@@ -407,28 +408,52 @@ def main():
         df_f = df_f.merge(right=df_timeline_raw, how='left', on=['SAMPLE_ID', 'MRN'])
 
     # =========================================================================
-    # 6. Truncate dates by OS_DATE if requested
+    # 6. Remove future dates (dates in the future are invalid)
+    # =========================================================================
+    print('\nChecking for future dates...')
+    today = pd.Timestamp.today().normalize()
+
+    logic_future_start = df_f['START_DATE_FORMATTED'] > today
+    logic_future_stop = df_f['STOP_DATE_FORMATTED'] > today
+
+    # Create copies of the formatted dates
+    df_f['START_DATE_FORMATTED_FIXED'] = df_f['START_DATE_FORMATTED'].copy()
+    df_f['STOP_DATE_FORMATTED_FIXED'] = df_f['STOP_DATE_FORMATTED'].copy()
+
+    # Null out future dates
+    df_f.loc[logic_future_start, 'START_DATE_FORMATTED_FIXED'] = pd.NaT
+    df_f.loc[logic_future_stop, 'STOP_DATE_FORMATTED_FIXED'] = pd.NaT
+
+    patients_future_dates = df_f.loc[logic_future_start | logic_future_stop, 'PATIENT_ID'].nunique()
+    rows_future_start = logic_future_start.sum()
+    rows_future_stop = logic_future_stop.sum()
+    print(f'Number of rows with future START_DATE (set to null): {rows_future_start}')
+    print(f'Number of rows with future STOP_DATE (set to null): {rows_future_stop}')
+    print(f'Number of patients affected: {patients_future_dates}')
+
+    # =========================================================================
+    # 7. Truncate dates by OS_DATE if requested
     # =========================================================================
     if args.truncate_by_os_date:
         print('\nTruncating dates by OS_DATE...')
-        logic_fix_start = df_f['START_DATE_FORMATTED'] > df_f['OS_DATE']
-        logic_fix_stop = df_f['STOP_DATE_FORMATTED'] > df_f['OS_DATE']
+        logic_fix_start = df_f['START_DATE_FORMATTED_FIXED'] > df_f['OS_DATE']
+        logic_fix_stop = df_f['STOP_DATE_FORMATTED_FIXED'] > df_f['OS_DATE']
 
-        df_f['START_DATE_FORMATTED_FIXED'] = df_f['START_DATE_FORMATTED'].copy()
-        df_f['STOP_DATE_FORMATTED_FIXED'] = df_f['STOP_DATE_FORMATTED'].copy()
-
+        # Truncate to OS_DATE (working on already FIXED columns from future date check)
         df_f.loc[logic_fix_start, 'START_DATE_FORMATTED_FIXED'] = df_f['OS_DATE']
         df_f.loc[logic_fix_stop, 'STOP_DATE_FORMATTED_FIXED'] = df_f['OS_DATE']
 
-        patients_dates_fixed = df_f.loc[logic_fix_start | logic_fix_stop, 'PATIENT_ID'].nunique()
-        print(f'Number of patients with dates fixed: {patients_dates_fixed}')
+        patients_dates_truncated = df_f.loc[logic_fix_start | logic_fix_stop, 'PATIENT_ID'].nunique()
+        rows_truncated_start = logic_fix_start.sum()
+        rows_truncated_stop = logic_fix_stop.sum()
+        print(f'Number of rows with START_DATE truncated to OS_DATE: {rows_truncated_start}')
+        print(f'Number of rows with STOP_DATE truncated to OS_DATE: {rows_truncated_stop}')
+        print(f'Number of patients affected: {patients_dates_truncated}')
     else:
-        print('\nSkipping date truncation (use --truncate_by_os_date to enable)')
-        df_f['START_DATE_FORMATTED_FIXED'] = df_f['START_DATE_FORMATTED']
-        df_f['STOP_DATE_FORMATTED_FIXED'] = df_f['STOP_DATE_FORMATTED']
+        print('\nSkipping OS_DATE truncation (use --truncate_by_os_date to enable)')
 
     # =========================================================================
-    # 7. Calculate deidentified dates (days from anchor)
+    # 8. Calculate deidentified dates (days from anchor)
     # =========================================================================
     print('\nCalculating deidentified dates...')
     start_date = (df_f['START_DATE_FORMATTED_FIXED'] - df_f[COL_ANCHOR_DATE]).dt.days
@@ -445,14 +470,14 @@ def main():
     report_deidentification_stats(df_f)
 
     # =========================================================================
-    # 8. Save PHI version to Databricks volume
+    # 9. Save PHI version to Databricks volume
     # =========================================================================
     print(f'\nSaving PHI version to: {args.fname_output_volume}')
     obj_dbx = DatabricksAPI(fname_databricks_env=args.fname_dbx)
     obj_dbx.write_db_obj(df=df_f, volume_path=args.fname_output_volume, sep='\t', overwrite=True)
 
     # =========================================================================
-    # 9. Create deidentified version and save to GPFS
+    # 10. Create deidentified version and save to GPFS
     # =========================================================================
     print('\nCreating deidentified version...')
     df_deid = df_f.drop(columns=['START_DATE', 'STOP_DATE'])
