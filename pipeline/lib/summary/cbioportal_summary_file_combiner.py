@@ -9,9 +9,9 @@ Object requires
 """
 import pandas as pd
 
-from msk_cdm.minio import MinioAPI
-from cdm_cbioportal_etl.summary import cBioPortalSummaryMergeTool
-from cdm_cbioportal_etl.utils import constants
+from msk_cdm.databricks import DatabricksAPI
+from .cbioportal_summary_merger import cBioPortalSummaryMergeTool
+from ..utils import constants
 
 #Constants defined in python package for manifest file column names
 COL_SUMMARY_FNAME_SAVE = constants.COL_SUMMARY_FNAME_SAVE
@@ -20,16 +20,16 @@ COL_SUMMARY_HEADER_FNAME_SAVE = constants.COL_SUMMARY_HEADER_FNAME_SAVE
 
 class cbioportalSummaryFileCombiner(object):
     def __init__(
-        self, 
+        self,
         *,
-        fname_minio_env, 
-        fname_manifest, 
-        fname_current_summary, 
+        fname_databricks_env,
+        fname_manifest,
+        fname_current_summary,
         patient_or_sample,
         production_or_test
     ):
         # Input filenames
-        self._fname_minio_env = fname_minio_env
+        self._fname_databricks_env = fname_databricks_env
         self._fname_current_summary = fname_current_summary
         self._fname_manifest = fname_manifest
         self._patient_or_sample = patient_or_sample
@@ -42,19 +42,19 @@ class cbioportalSummaryFileCombiner(object):
         self._obj_patient_merge = None      
         
         # Process data
-        self._obj_minio = MinioAPI(fname_minio_env=self._fname_minio_env)
+        self._obj_db = DatabricksAPI(fname_databricks_env=self._fname_databricks_env)
         self._process_data()
-        
+
     def _read_manifest(self):
         # load patient manifest
         print('Loading %s' % self._fname_manifest)
-        obj = self._obj_minio.load_obj(path_object=self._fname_manifest)
-        df_manifest = pd.read_csv(obj)
+        sql = f"SELECT * FROM {self._fname_manifest}"
+        df_manifest = self._obj_db.query_from_sql(sql=sql)
         return df_manifest
     
     def _load_current_summary(self):
         obj_patient_merge = cBioPortalSummaryMergeTool(
-            fname_minio_env=self._fname_minio_env,
+            fname_databricks_env=self._fname_databricks_env,
             fname_current_summary=self._fname_current_summary
         )
         self._obj_patient_merge = obj_patient_merge

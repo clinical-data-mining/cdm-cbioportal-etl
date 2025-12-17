@@ -24,13 +24,11 @@ import os
 import pandas as pd
 import numpy as np
 
-from msk_cdm.minio import MinioAPI
+from msk_cdm.databricks import DatabricksAPI
 from msk_cdm.data_processing import mrn_zero_pad, set_debug_console
 
-from cdm_cbioportal_etl.utils import (
-    get_anchor_dates
-)
-from cdm_cbioportal_etl.utils import constants
+from ..utils.get_anchor_dates import get_anchor_dates
+from ..utils import constants
 
 set_debug_console()
 
@@ -63,10 +61,11 @@ list_order_header = [
 class RedcapToCbioportalFormat(object):
     def __init__(
         self,
-        fname_minio_env,
-        path_minio_summary_intermediate,
+        fname_databricks_env,
+        volume_path_summary_intermediate,
         fname_metadata,
-        fname_tables
+        fname_tables,
+        table_cdm_source=None
     ):
         # Filenames
         self._fname_metadata = fname_metadata
@@ -79,24 +78,25 @@ class RedcapToCbioportalFormat(object):
         self._df_metadata = None
         self._df_tables = None
 
-        self._fname_minio_env = fname_minio_env
-        self._path_minio_summary_intermediate = path_minio_summary_intermediate
-        
+        self._fname_databricks_env = fname_databricks_env
+        self._volume_path_summary_intermediate = volume_path_summary_intermediate
+        self._table_cdm_source = table_cdm_source
+
         self._init()
 
     def _init(self):
          # Process data
-        self._obj_minio = MinioAPI(
-            fname_minio_env=self._fname_minio_env
+        self._obj_db = DatabricksAPI(
+            fname_databricks_env=self._fname_databricks_env
         )
-        
+
         # Load anchor data containing data to deidentify tables
-        self._df_anchor = get_anchor_dates(self._fname_minio_env)
-        
+        self._df_anchor = get_anchor_dates(self._fname_databricks_env)
+
         df_metadata, df_tables = self.init_metadata()
         self._df_metadata = df_metadata
         self._df_tables = df_tables
-        
+
         return None
     
     def return_codebook(self):
@@ -165,10 +165,10 @@ class RedcapToCbioportalFormat(object):
         return df_metadata, df_tables
     
     def create_summaries_and_headers(
-        self, 
+        self,
         patient_or_sample,
         fname_manifest,
-        fname_template,
+        table_template,
         production_or_test='production'
     ):
         """
@@ -225,43 +225,29 @@ class RedcapToCbioportalFormat(object):
             print(active_tables.sample())
         else:
             print("No active tables found")
-        list_fname_minio = active_tables[col_cdm_source_table]
-        
-        print('Loading template %s' % fname_template)
-        obj = self._obj_minio.load_obj(path_object=fname_template)
-        df_template_display = pd.read_csv(
-            obj,
-            low_memory=False,
-            sep='\t',
-            dtype=str
-        )
+        list_table_names = active_tables[col_cdm_source_table]
+
+        print('Loading template %s' % table_template)
+        sql_template = f"SELECT * FROM {table_template}"
+        df_template_display = self._obj_db.query_from_sql(sql=sql_template)
         print(df_template_display.head(10))
 
-        obj = self._obj_minio.load_obj(path_object=fname_template)
-        df_template = pd.read_csv(
-            obj, 
-            header=NROWS_HEADER,
-            low_memory=False,
-            sep='\t',
-            dtype=str
-        )
+        # Load template again with header row offset
+        df_template = self._obj_db.query_from_sql(sql=sql_template)
+        # Remove first NROWS_HEADER rows to get data only
+        df_template = df_template.iloc[NROWS_HEADER:].reset_index(drop=True)
 
 
         print('CYCLE THROUGH CDM DATA SUMMARIES')
         # Cycle through the list of CDM dataset to be loaded
-        for i,fname in enumerate(list_fname_minio):
+        for i, table_name in enumerate(list_table_names):
             print('------------------------------------------------')
-            print('Loading %s' % fname)
-            obj = self._obj_minio.load_obj(path_object=fname)
-            df_ = pd.read_csv(
-                obj, 
-                header=0, 
-                low_memory=False, 
-                sep='\t',
-                dtype=str
-            )
+            print('Loading %s' % table_name)
+            sql = f"SELECT * FROM {table_name}"
+            df_ = self._obj_db.query_from_sql(sql=sql)
+
             print('Gathering metadata from documentation tables')
-            form = df_tables.loc[list_fname_minio.index[i], 'form_name']
+            form = df_tables.loc[list_table_names.index[i], 'form_name']
             filt_table_use = logic_for_cbio & (df_metadata['form_name'] == form)
             filt_col_dates = df_metadata.loc[filt_table_use]['text_validation_type_or_sh'] == 'date_mdy'
             cols_to_use = list(df_metadata.loc[filt_table_use, 'field_name'])
@@ -372,8 +358,8 @@ class RedcapToCbioportalFormat(object):
             print('Adding table and info to manifest file')
             fname_data = form.lower().replace(' ','_') + '_data.csv'
             fname_header = form.lower().replace(' ','_') + '_header.csv'
-            fname_save_data = os.path.join(self._path_minio_summary_intermediate, fname_data)
-            fname_save_header = os.path.join(self._path_minio_summary_intermediate, fname_header)
+            fname_save_data = os.path.join(self._volume_path_summary_intermediate, fname_data)
+            fname_save_header = os.path.join(self._volume_path_summary_intermediate, fname_header)
 
             # print(form)
             ##### This file will be used for merging data    
@@ -389,18 +375,20 @@ class RedcapToCbioportalFormat(object):
             print('df_select_f------------------------------------------------------------')
             print('Saving %s' % fname_save_data)
             print(df_select_f.head())
-            self._obj_minio.save_obj(
-                df=df_select_f, 
-                path_object=fname_save_data, 
-                sep=','
+            self._obj_db.write_db_obj(
+                df=df_select_f,
+                volume_path=fname_save_data,
+                sep=',',
+                overwrite=True
             )
             print('df_header------------------------------------------------------------')
             print('Saving %s' % fname_save_header)
             print(df_header.head())
-            self._obj_minio.save_obj(
-                df=df_header, 
-                path_object=fname_save_header, 
-                sep=','
+            self._obj_db.write_db_obj(
+                df=df_header,
+                volume_path=fname_save_header,
+                sep=',',
+                overwrite=True
             )
 
         ## Note: Continue appending manifest files here
@@ -445,10 +433,11 @@ class RedcapToCbioportalFormat(object):
         
     def summary_manifest_save(self, fname_save):    # ------------------------------------------
         print('Saving %s' % fname_save)
-        self._obj_minio.save_obj(
-            df=self._df_manifest, 
-            path_object=fname_save, 
-            sep=','
+        self._obj_db.write_db_obj(
+            df=self._df_manifest,
+            volume_path=fname_save,
+            sep=',',
+            overwrite=True
         )
         
         return None

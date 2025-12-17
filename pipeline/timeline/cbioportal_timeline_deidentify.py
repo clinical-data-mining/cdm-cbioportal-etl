@@ -45,12 +45,15 @@ Sample-level timeline (e.g., sequencing data):
 """
 
 import argparse
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 import pandas as pd
 
 from msk_cdm.databricks import DatabricksAPI
 from msk_cdm.data_processing import mrn_zero_pad
-from cdm_cbioportal_etl.utils import constants
+from lib.utils import constants
 
 COLS_ORDER_GENERAL = constants.COLS_ORDER_GENERAL
 COL_ANCHOR_DATE = constants.COL_ANCHOR_DATE

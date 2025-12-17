@@ -6,8 +6,8 @@ Object requires the path to the original sample/patient file, and for new/replac
 """
 import pandas as pd
 
-from msk_cdm.minio import MinioAPI
-from cdm_cbioportal_etl.utils import constants
+from msk_cdm.databricks import DatabricksAPI
+from ..utils import constants
 
 COLS_PRODUCTION = constants.COLS_PRODUCTION
 NROWS_HEADER = 4
@@ -16,14 +16,14 @@ _row_label = NROWS_HEADER-1
 
 class cBioPortalSummaryMergeTool(object):
     def __init__(
-        self, 
-        fname_minio_env, 
+        self,
+        fname_databricks_env,
         fname_current_summary
     ):
         # Input filenames
-        self._fname_minio_env = fname_minio_env
+        self._fname_databricks_env = fname_databricks_env
         self._fname_current_summary = fname_current_summary
-        
+
         # DataFrame variables
         self._df_summary_orig = None
         self._df_summary_addition = None
@@ -32,9 +32,9 @@ class cBioPortalSummaryMergeTool(object):
         self._df_header_addition = None
         self._df_header_output = None
         self._df_summary_final = None
-        
+
         # Process data
-        self._obj_minio = MinioAPI(fname_minio_env=self._fname_minio_env)
+        self._obj_db = DatabricksAPI(fname_databricks_env=self._fname_databricks_env)
         self._process_data()
         
     def return_orig(self):
@@ -93,11 +93,10 @@ class cBioPortalSummaryMergeTool(object):
         
     def _summary_loader(self, fname):
         print('Loading %s' % fname)
-            
-        obj = self._obj_minio.load_obj(path_object=fname)
-        df_data = pd.read_csv(obj, header=NROWS_HEADER, sep='\t', dtype=str)
-        obj = self._obj_minio.load_obj(path_object=fname)
-        df_header = pd.read_csv(obj, header=0, sep='\t', nrows=NROWS_HEADER)
+
+        # Load from Databricks volume path (fname should be full volume path)
+        df_data = pd.read_csv(fname, header=NROWS_HEADER, sep='\t', dtype=str)
+        df_header = pd.read_csv(fname, header=0, sep='\t', nrows=NROWS_HEADER)
 
         return df_header, df_data
 
@@ -107,12 +106,12 @@ class cBioPortalSummaryMergeTool(object):
         fname_data
     ):
         print('Loading %s' % fname_data)
-        obj = self._obj_minio.load_obj(path_object=fname_data)
-        df_data = pd.read_csv(obj, header=0, sep=',', dtype=str)
+        # Load from Databricks volume path (fname_data should be full volume path)
+        df_data = pd.read_csv(fname_data, header=0, sep=',', dtype=str)
         print(df_data.sample(1))
         print('Loading %s' % fname_header)        
-        obj = self._obj_minio.load_obj(path_object=fname_header)
-        df_header = pd.read_csv(obj, header=0, sep=',', dtype=str)
+        # Load from Databricks volume path (fname_header should be full volume path)
+        df_header = pd.read_csv(fname_header, header=0, sep=',', dtype=str)
         print(df_header.sample(1))
             
         df_header = df_header[COLS_PRODUCTION]

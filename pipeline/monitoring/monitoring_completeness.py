@@ -1,10 +1,12 @@
 import argparse
 import os
+import sys
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from datetime import date
 
 import pandas as pd
 
-from cdm_cbioportal_etl.utils import cbioportal_update_config
+from lib.utils import cbioportal_update_config
 
 
 cols_fixed = [

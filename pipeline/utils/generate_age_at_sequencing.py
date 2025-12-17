@@ -1,8 +1,10 @@
 import argparse
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 from msk_cdm.data_classes.epic_ddp_concat import CDMProcessingVariables as config_cdm
-from cdm_cbioportal_etl.utils import cbioportal_update_config
-from cdm_cbioportal_etl.utils import compute_age_at_sequencing
+from lib.utils import cbioportal_update_config, compute_age_at_sequencing
 
 fname_save_age_at_seq = 'cbioportal/age_at_sequencing.tsv'
 fname_demo = config_cdm.fname_demo

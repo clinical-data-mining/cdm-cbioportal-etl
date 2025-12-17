@@ -1,4 +1,7 @@
 import argparse
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 import pandas as pd
 
@@ -6,8 +9,7 @@ from msk_cdm.minio import MinioAPI
 from msk_cdm.data_processing import mrn_zero_pad, set_debug_console
 from msk_cdm.data_classes.epic_ddp_concat import CDMProcessingVariables as cdm_files
 from msk_cdm.data_classes.legacy import CDMProcessingVariables as cdm_files_old
-from cdm_cbioportal_etl.utils import cbioportal_update_config
-from cdm_cbioportal_etl.utils import get_anchor_dates
+from lib.utils import cbioportal_update_config, get_anchor_dates
 
 
 FNAME_SAVE_PATIENT_AGE = 'epic_ddp_concat/cbioportal/patient_age_summary_cbioportal.tsv'

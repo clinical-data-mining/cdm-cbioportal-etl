@@ -4,13 +4,16 @@ cbioportal_timeline_sequencing.py
 Generates cBioPortal timeline files for sequencing dates
 """
 import argparse
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 import pandas as pd
 
 from msk_cdm.minio import MinioAPI
 from msk_cdm.data_classes.legacy import CDMProcessingVariables as config_cdm
 from msk_cdm.data_classes.epic_ddp_concat import CDMProcessingVariables as config_cdm_epic
-from cdm_cbioportal_etl.utils import cbioportal_update_config
+from lib.utils import cbioportal_update_config
 
 
 FNAME_SEQ_DATA = config_cdm_epic.fname_id_map

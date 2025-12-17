@@ -1,18 +1,12 @@
 import argparse
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 import numpy as np
-# import os
-# import sys
-
 import pandas as pd
 
-# sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..')))
-# from variables import (
-#     ENV_MINIO,
-#     FNAME_DEMO,
-#     FNAME_TIMELINE_FU
-# )
-from cdm_cbioportal_etl.utils import cbioportal_update_config
+from lib.utils import cbioportal_update_config
 from msk_cdm.minio import MinioAPI
 from msk_cdm.data_classes.epic_ddp_concat import CDMProcessingVariables as cdm_files
 

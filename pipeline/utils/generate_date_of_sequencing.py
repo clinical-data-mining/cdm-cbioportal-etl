@@ -1,8 +1,10 @@
 import argparse
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 from msk_cdm.data_classes.epic_ddp_concat import CDMProcessingVariables as config_cdm
-from cdm_cbioportal_etl.utils import cbioportal_update_config
-from cdm_cbioportal_etl.utils import date_of_sequencing
+from lib.utils import cbioportal_update_config, date_of_sequencing
 
 
 fname_samples = config_cdm.fname_id_map

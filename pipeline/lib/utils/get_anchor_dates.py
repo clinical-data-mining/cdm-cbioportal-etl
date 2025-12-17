@@ -1,10 +1,12 @@
 import pandas as pd
 
 from msk_cdm.data_classes.epic_ddp_concat import CDMProcessingVariables as c_var
-from msk_cdm.minio import MinioAPI
+from msk_cdm.databricks import DatabricksAPI
 from msk_cdm.data_processing import set_debug_console, mrn_zero_pad
 
+# Default table name for pathology data (can be overridden)
 FNAME_PATHOLOGY = c_var.fname_id_map
+TABLE_PATHOLOGY = 'cdsi_prod.cdm_impact_pipeline_prod.t02_epic_ddp_pathology'
 COLS_PATHOLOGY = [
     'MRN',
     'DTE_TUMOR_SEQUENCING',
@@ -13,13 +15,14 @@ COLS_PATHOLOGY = [
 ]
 
 
-def get_anchor_dates(fname_minio_env):
+def get_anchor_dates(fname_databricks_env, table_pathology=TABLE_PATHOLOGY):
     print('Creating anchor date table from first sequencing date..')
-    obj_minio = MinioAPI(fname_minio_env=fname_minio_env)
-    
-    print('Loading %s' % FNAME_PATHOLOGY)
-    obj = obj_minio.load_obj(path_object=FNAME_PATHOLOGY)
-    df_path = pd.read_csv(obj, header=0, low_memory=False, sep='\t', usecols=COLS_PATHOLOGY)
+    obj_db = DatabricksAPI(fname_databricks_env=fname_databricks_env)
+
+    print('Loading %s' % table_pathology)
+    cols_str = ', '.join(COLS_PATHOLOGY)
+    sql = f"SELECT {cols_str} FROM {table_pathology}"
+    df_path = obj_db.query_from_sql(sql=sql)
     df_path = mrn_zero_pad(df=df_path, col_mrn='MRN')
     
     df_path = df_path.dropna().copy()

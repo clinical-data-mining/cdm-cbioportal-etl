@@ -11,8 +11,11 @@ import pandas as pd
 
 from msk_cdm.minio import MinioAPI
 from msk_cdm.databricks import DatabricksAPI
-from cdm_cbioportal_etl.utils.get_anchor_dates import get_anchor_dates
-from cdm_cbioportal_etl.utils import cbioportal_update_config
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+
+from lib.utils import get_anchor_dates, cbioportal_update_config
 
 FNAME_SAVE_ANCHOR_DATES = 'epic_ddp_concat/cbioportal/timeline_anchor_dates.tsv'
 # Databricks configurations

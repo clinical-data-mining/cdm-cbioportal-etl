@@ -6,43 +6,50 @@ Uses date of birth from demographics table
 
 Age at sequencing computed in days
 
-Data is saved to MinIO
+Data is saved to Databricks
 """
 from datetime import date
 
 import pandas as pd
 
-from msk_cdm.minio import MinioAPI
+from msk_cdm.databricks import DatabricksAPI
 from msk_cdm.data_processing import mrn_zero_pad
-from cdm_cbioportal_etl.utils.get_anchor_dates import get_anchor_dates
+from .get_anchor_dates import get_anchor_dates
 
 AGE_CONVERSION_FACTOR = 365.2422
 
 def compute_age_at_sequencing(
         *,
-        minio_env,
-        fname_demo,
-        fname_samples,
-        fname_save_age_at_seq
+        databricks_env,
+        table_demo,
+        table_samples,
+        volume_path_save_age_at_seq,
+        table_save_age_at_seq=None,
+        catalog=None,
+        schema=None
 ):
     """
 
-    :param minio_env: MinIO environment filename
-    :param fname_demo: object path to demographics table
-    :param fname_samples: object path to the pathology report table
-    :param fname_save_age_at_seq: object path to where age at sequencing is saved
+    :param databricks_env: Databricks environment filename
+    :param table_demo: Full table name for demographics table (e.g., 'catalog.schema.table')
+    :param table_samples: Full table name for pathology report table
+    :param volume_path_save_age_at_seq: Volume path where age at sequencing is saved
+    :param table_save_age_at_seq: Optional table name to create from the data
+    :param catalog: Optional catalog name for table creation
+    :param schema: Optional schema name for table creation
     :return: df_f: dataframe with age at sequencing
     """
     today = date.today()
 
     # Load data
-    ## Create Minio object
-    obj_minio = MinioAPI(fname_minio_env=minio_env)
+    ## Create Databricks object
+    obj_db = DatabricksAPI(fname_databricks_env=databricks_env)
 
     ## Load demographics for date of birth
-    col_keep = ['MRN', 'PT_BIRTH_DTE', 'PT_DEATH_DTE', 'PLA_LAST_CONTACT_DTE']
-    obj = obj_minio.load_obj(path_object=fname_demo)
-    df_demo = pd.read_csv(obj, sep='\t', usecols=col_keep)
+    col_keep_demo = ['MRN', 'PT_BIRTH_DTE', 'PT_DEATH_DTE', 'PLA_LAST_CONTACT_DTE']
+    cols_str_demo = ', '.join(col_keep_demo)
+    sql_demo = f"SELECT {cols_str_demo} FROM {table_demo}"
+    df_demo = obj_db.query_from_sql(sql=sql_demo)
     df_demo = mrn_zero_pad(df=df_demo, col_mrn='MRN')
     df_demo['PT_BIRTH_DTE'] = pd.to_datetime(df_demo['PT_BIRTH_DTE'])
     df_demo['PT_DEATH_DTE'] = pd.to_datetime(df_demo['PT_DEATH_DTE'])
@@ -51,14 +58,15 @@ def compute_age_at_sequencing(
     df_demo['OS_DTE'] = df_demo['PT_DEATH_DTE'].fillna(df_demo['PLA_LAST_CONTACT_DTE'])
 
     ## Load pathology report table
-    col_keep = ['MRN', 'DTE_TUMOR_SEQUENCING', 'DMP_ID', 'SAMPLE_ID']
-    obj = obj_minio.load_obj(path_object=fname_samples)
-    df_path1 = pd.read_csv(obj, sep='\t', usecols=col_keep, low_memory=False)
+    col_keep_samples = ['MRN', 'DTE_TUMOR_SEQUENCING', 'DMP_ID', 'SAMPLE_ID']
+    cols_str_samples = ', '.join(col_keep_samples)
+    sql_samples = f"SELECT {cols_str_samples} FROM {table_samples}"
+    df_path1 = obj_db.query_from_sql(sql=sql_samples)
     df_path = df_path1.dropna()
     df_path = mrn_zero_pad(df=df_path, col_mrn='MRN')
 
     ## Load anchor dates
-    df_archor_dates = get_anchor_dates(minio_env)
+    df_archor_dates = get_anchor_dates(databricks_env, table_pathology=table_samples)
     list_sample_ids_used = list(set(df_archor_dates['DMP_ID']))
 
     # Clean and Combine data
@@ -114,11 +122,25 @@ def compute_age_at_sequencing(
     cols_keep = ['DMP_ID', 'SAMPLE_ID', 'AGE_AT_SEQUENCING_YEARS']
     df_f = df_f[cols_keep]
 
-    # Save dataframe
-    obj_minio.save_obj(
+    # Save dataframe to Databricks
+    # Prepare table info dictionary if table name provided
+    dict_database_table_info = None
+    if table_save_age_at_seq and catalog and schema:
+        dict_database_table_info = {
+            'catalog': catalog,
+            'schema': schema,
+            'table': table_save_age_at_seq,
+            'volume_path': volume_path_save_age_at_seq,
+            'sep': '\t'
+        }
+        print(f'Creating table: {catalog}.{schema}.{table_save_age_at_seq}')
+
+    obj_db.write_db_obj(
         df=df_f,
-        path_object=fname_save_age_at_seq,
-        sep='\t'
+        volume_path=volume_path_save_age_at_seq,
+        sep='\t',
+        overwrite=True,
+        dict_database_table_info=dict_database_table_info
     )
 
     return df_f

@@ -1,15 +1,17 @@
 """
 cmd-cbioportal-summary-creator.py
 
-Create summary files and corresponding headers from CDM data, 
+Create summary files and corresponding headers from CDM data,
 then combine into a single file to be pushed to cbioportal
 
 """
 import argparse
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from cdm_cbioportal_etl.summary import cbioportalSummaryFileCombiner
-from cdm_cbioportal_etl.summary import RedcapToCbioportalFormat
-from cdm_cbioportal_etl.utils import cbioportal_update_config
+from lib.summary import cbioportalSummaryFileCombiner, RedcapToCbioportalFormat
+from lib.utils import cbioportal_update_config
 
 
 def create_cbioportal_summary(
