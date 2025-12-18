@@ -54,7 +54,15 @@ if __name__ == "__main__":
 
     # Local header template files (static config files)
     # Config lives at repo_root/config/cbioportal_headers, so move up two levels from utils/
-    config_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'config', 'cbioportal_headers')
+    config_dir = os.path.abspath(
+        os.path.join(
+            os.path.dirname(__file__),
+            '..',
+            '..',
+            'config',
+            'cbioportal_headers'
+        )
+    )
     fname_header_patient = os.path.join(config_dir, 'cbioportal_summary_header_patient.tsv')
     fname_header_sample = os.path.join(config_dir, 'cbioportal_summary_header_sample.tsv')
 
