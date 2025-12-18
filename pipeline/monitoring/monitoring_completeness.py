@@ -107,7 +107,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     obj_yaml = cbioportal_update_config(fname_yaml_config=args.config_yaml)
-    dict_files_to_copy = obj_yaml.return_dict_datahub_to_minio(path_datahub=args.path_datahub, path_minio=args.databricks_env)
+    dict_files_to_copy = obj_yaml.return_dict_datahub_to_databricks(path_datahub=args.path_datahub, path_databricks=args.databricks_env)
 
     # Create Databricks API object
     obj_db = DatabricksAPI(fname_databricks_env=args.databricks_env)

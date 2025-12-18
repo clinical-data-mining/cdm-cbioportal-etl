@@ -80,17 +80,6 @@ class CbioportalUpdateConfig(object):
 
         return None
 
-    def return_credential_filename(self):
-        """
-        Retrieve the credential filename from the YAML configuration.
-
-        Returns:
-            str: Path to the MinIO environment credential file.
-        """
-        config = self._config
-        env_minio = config.get('inputs', {}).get('env_minio')
-        return env_minio
-
     def return_sample_list_filename(self):
         """
         Retrieve the sample list filename from the YAML configuration.
@@ -145,11 +134,11 @@ class CbioportalUpdateConfig(object):
         Retrieve the intermediate folder path for CBio summary files from the YAML configuration.
 
         Returns:
-            str: Path to the intermediate summary folder on MinIO.
+            str: Path to the intermediate summary folder on Databricks volume.
         """
         config = self._config
-        path_minio_cbio_summary_intermediate = config.get('inputs', {}).get('path_minio_cbio_summary_intermediate')
-        return path_minio_cbio_summary_intermediate
+        volume_path_intermediate = config.get('inputs_databricks', {}).get('volume_path_intermediate')
+        return volume_path_intermediate
 
     def return_production_or_test_indicator(self):
         config = self._config
@@ -171,12 +160,12 @@ class CbioportalUpdateConfig(object):
 
         return template_files
 
-    def return_dict_datahub_to_minio(self, path_datahub, path_minio):
+    def return_dict_datahub_to_databricks(self, path_datahub, path_databricks):
         """
-        Map DataHub and MinIO filenames and return a dictionary of the mapped paths.
+        Map DataHub and Databricks filenames and return a dictionary of the mapped paths.
 
         Returns:
-            dict: A dictionary with DataHub paths as keys and corresponding MinIO paths as values.
+            dict: A dictionary with DataHub paths as keys and corresponding Databricks paths as values.
         """
         config = self._config
         codebook_table = self._df_codebook_table
@@ -185,11 +174,11 @@ class CbioportalUpdateConfig(object):
         list_deid_files = deid_filenames + list_timeline_files
 
         list_deid_files_datahub = [os.path.join(path_datahub,x) for x in list_deid_files]
-        list_deid_files_minio = [os.path.join(path_minio,x) for x in list_deid_files]
+        list_deid_files_databricks = [os.path.join(path_databricks,x) for x in list_deid_files]
 
-        dict_datahub_to_minio = dict(zip(list_deid_files_datahub, list_deid_files_minio))
+        dict_datahub_to_databricks = dict(zip(list_deid_files_datahub, list_deid_files_databricks))
 
-        return dict_datahub_to_minio
+        return dict_datahub_to_databricks
 
     def return_dict_phi_to_deid_timeline_production(self, path_datahub) -> dict:
         """

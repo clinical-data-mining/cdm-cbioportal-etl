@@ -1,23 +1,10 @@
 import argparse
-# import sys
-# import os
-
 import sys
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 from lib.summary import cbioportal_template_generator
 from lib.utils import cbioportal_update_config
-# sys.path.insert(0,  os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..')))
-# from variables import (
-#     ENV_MINIO,
-#     PATH_HEADER_SAMPLE,
-#     PATH_HEADER_PATIENT,
-#     FNAME_CBIO_SID,
-#     FNAME_SUMMARY_TEMPLATE_P,
-#     FNAME_SUMMARY_TEMPLATE_S,
-#     FNAME_SAMPLE_REMOVE
-# )
 
 
 if __name__ == "__main__":

@@ -12,19 +12,19 @@ fname_samples = config_cdm.fname_id_map
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Script for creating data for OS")
+    parser = argparse.ArgumentParser(description="Script for creating age at sequencing data")
     parser.add_argument(
-        "--minio_env",
+        "--databricks_env",
         action="store",
-        dest="minio_env",
+        dest="databricks_env",
         required=True,
-        help="--location of Minio environment file",
+        help="--location of Databricks environment file",
     )
     args = parser.parse_args()
 
     print('Generating age at sequencing data')
     compute_age_at_sequencing(
-        minio_env=args.minio_env,
+        databricks_env=args.databricks_env,
         fname_demo=fname_demo,
         fname_samples=fname_samples,
         fname_save_age_at_seq=fname_save_age_at_seq
