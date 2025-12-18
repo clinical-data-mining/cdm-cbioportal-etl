@@ -75,44 +75,20 @@ def cbioportal_template_generator(
     print('Saving patient template to volume: %s' % volume_path_summary_template_p)
 
     # Prepare table info dictionary for patient template if table name provided
-    dict_database_table_info_p = None
-    if table_summary_template_p and catalog and schema:
-        dict_database_table_info_p = {
-            'catalog': catalog,
-            'schema': schema,
-            'table': table_summary_template_p,
-            'volume_path': volume_path_summary_template_p,
-            'sep': '\t'
-        }
-        print(f'Creating patient template table: {catalog}.{schema}.{table_summary_template_p}')
-
     obj_db.write_db_obj(
         df=df_f_p,
         volume_path=volume_path_summary_template_p,
         sep='\t',
-        overwrite=True,
-        dict_database_table_info=dict_database_table_info_p
+        overwrite=True
     )
 
     print('Saving sample template to volume: %s' % volume_path_summary_template_s)
 
     # Prepare table info dictionary for sample template if table name provided
-    dict_database_table_info_s = None
-    if table_summary_template_s and catalog and schema:
-        dict_database_table_info_s = {
-            'catalog': catalog,
-            'schema': schema,
-            'table': table_summary_template_s,
-            'volume_path': volume_path_summary_template_s,
-            'sep': '\t'
-        }
-        print(f'Creating sample template table: {catalog}.{schema}.{table_summary_template_s}')
-
     obj_db.write_db_obj(
         df=df_f_s,
         volume_path=volume_path_summary_template_s,
         sep='\t',
-        overwrite=True,
-        dict_database_table_info=dict_database_table_info_s
+        overwrite=True
     )
 
