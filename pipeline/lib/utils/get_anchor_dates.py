@@ -1,12 +1,10 @@
 import pandas as pd
 
-from msk_cdm.data_classes.epic_ddp_concat import CDMProcessingVariables as c_var
 from msk_cdm.databricks import DatabricksAPI
 from msk_cdm.data_processing import set_debug_console, mrn_zero_pad
 
 # Default table name for pathology data (can be overridden)
-FNAME_PATHOLOGY = c_var.fname_id_map
-TABLE_PATHOLOGY = 'cdsi_prod.cdm_impact_pipeline_prod.t02_epic_ddp_pathology'
+TABLE_PATHOLOGY = 'cdsi_prod.cdm_impact_pipeline_prod.t03_id_mapping_pathology_sample_xml_parsed'
 COLS_PATHOLOGY = [
     'MRN',
     'DTE_TUMOR_SEQUENCING',
