@@ -12,7 +12,7 @@ from lib.utils import cbioportal_update_config, get_anchor_dates
 
 COLS_KEEP = ['MRN', 'AGE_LAST_FOLLOWUP', 'AGE_FIRST_CANCER_DIAGNOSIS', 'AGE_FIRST_SEQUENCING']
 TABLE_DEMO = 'cdsi_prod.cdm_impact_pipeline_prod.t01_epic_ddp_demographics'
-TABLE_DX = 'cdsi_eng_phi.cdm_eng_diagnosis.table_diagnosis_clean'
+TABLE_DX = 'cdsi_prod.cdm_idbw_impact_pipeline_prod.table_dx_impact_summary'
 table_anchor_dates = 'cdsi_eng_phi.cdm_eng_cbioportal_etl.timeline_anchor_dates'
 COL_ANCHOR_DATE = 'DATE_TUMOR_SEQUENCING'
 
