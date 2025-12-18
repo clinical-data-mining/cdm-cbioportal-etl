@@ -13,6 +13,8 @@ from lib.utils import cbioportal_update_config, get_anchor_dates
 COLS_KEEP = ['MRN', 'AGE_LAST_FOLLOWUP', 'AGE_FIRST_CANCER_DIAGNOSIS', 'AGE_FIRST_SEQUENCING']
 TABLE_DEMO = 'cdsi_prod.cdm_impact_pipeline_prod.t01_epic_ddp_demographics'
 TABLE_DX = 'cdsi_prod.cdm_impact_pipeline_prod.table_diagnosis_clean'
+table_anchor_dates = 'cdsi_eng_phi.cdm_eng_cbioportal_etl.timeline_anchor_dates'
+COL_ANCHOR_DATE = 'DATE_TUMOR_SEQUENCING'
 
 
 def convert_col_to_datetime(df, list_cols):
@@ -34,7 +36,9 @@ def _load_data(
     df_demo = df_demo.drop_duplicates()
 
     # Pathology table for sequencing date
-    df_path_g = get_anchor_dates(fname_databricks_env=fname_databricks_env)
+    sql_anchor_dates = f"SELECT * FROM {table_anchor_dates}"
+    df_path_g = obj_db.query_from_sql(sql=sql_anchor_dates)
+    # df_path_g = get_anchor_dates(fname_databricks_env=fname_databricks_env)
 
     # Diagnosis from Databricks table
     print('Loading diagnosis table: %s' % table_dx)
@@ -61,7 +65,7 @@ def _clean_and_merge(
 
     # Clean anchor dates
     df_path_g = mrn_zero_pad(df=df_path_g, col_mrn='MRN')
-    df_path_g = convert_col_to_datetime(df=df_path_g, list_cols=['DTE_TUMOR_SEQUENCING'])
+    df_path_g = convert_col_to_datetime(df=df_path_g, list_cols=[COL_ANCHOR_DATE])
     print(df_path_g.shape)
     print(df_path_g['MRN'].nunique())
     print(df_path_g.head())
@@ -76,9 +80,9 @@ def _clean_and_merge(
 def deidentify_dates(df_f):
     logic1 = df_f['CURRENT_AGE_DEID'] >= 89
     df_f.loc[logic1, 'DATE_AT_FIRST_ICDO_DX'] = pd.NaT
-    df_f.loc[logic1, 'DTE_TUMOR_SEQUENCING'] = pd.NaT
+    df_f.loc[logic1, COL_ANCHOR_DATE] = pd.NaT
 
-    df_f['AGE_FIRST_SEQUENCING'] = ((df_f['DTE_TUMOR_SEQUENCING'] - df_f['PT_BIRTH_DTE']).dt.days / 365.25).fillna(
+    df_f['AGE_FIRST_SEQUENCING'] = ((df_f[COL_ANCHOR_DATE] - df_f['PT_BIRTH_DTE']).dt.days / 365.25).fillna(
         0).astype(int)
     df_f['AGE_FIRST_CANCER_DIAGNOSIS'] = (
                 (df_f['DATE_AT_FIRST_ICDO_DX'] - df_f['PT_BIRTH_DTE']).dt.days / 365.25).fillna(0).astype(int)
