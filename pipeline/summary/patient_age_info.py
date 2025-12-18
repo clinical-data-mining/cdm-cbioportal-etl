@@ -57,6 +57,7 @@ def _clean_and_merge(
     df_demo = mrn_zero_pad(df=df_demo, col_mrn='MRN')
     df_demo = convert_col_to_datetime(df=df_demo, list_cols=['PT_BIRTH_DTE'])
     df_demo_f = df_demo[['MRN', 'PT_BIRTH_DTE', 'CURRENT_AGE_DEID']].copy()
+    df_demo_f['CURRENT_AGE_DEID'] = pd.to_numeric(df_demo_f['CURRENT_AGE_DEID'], errors='coerce')
 
     # Clean diagnosis
     df_dx = mrn_zero_pad(df=df_dx, col_mrn='MRN')
