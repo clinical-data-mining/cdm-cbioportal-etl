@@ -1,4 +1,4 @@
-name: cdm-cbioportal-etl-test
+name: cdm-cbioportal-etl
 channels:
   - conda-forge
   - bioconda
@@ -9,5 +9,5 @@ dependencies:
   - pyzmq=25.1.2
   - pip
   - pip:
-      - git+https://github.com/clinical-data-mining/msk_cdm.git
-      - git+https://github.com/clinical-data-mining/cdm-cbioportal-etl.git
+      - git+https://github.com/callachennault/msk_cdm.git@python-refactor
+      - git+https://github.com/clinical-data-mining/cdm-cbioportal-etl.git@config-file
