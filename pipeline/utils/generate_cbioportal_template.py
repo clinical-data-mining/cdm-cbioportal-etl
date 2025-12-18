@@ -53,7 +53,8 @@ if __name__ == "__main__":
     volume_path_intermediate = databricks_config.get('volume_path_intermediate')
 
     # Local header template files (static config files)
-    config_dir = os.path.join(os.path.dirname(__file__), '..', 'config', 'cbioportal_headers')
+    # Config lives at repo_root/config/cbioportal_headers, so move up two levels from utils/
+    config_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'config', 'cbioportal_headers')
     fname_header_patient = os.path.join(config_dir, 'cbioportal_summary_header_patient.tsv')
     fname_header_sample = os.path.join(config_dir, 'cbioportal_summary_header_sample.tsv')
 
