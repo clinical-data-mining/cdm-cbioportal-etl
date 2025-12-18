@@ -4,31 +4,25 @@ codebook:
   fname_tables: "CDM-Codebook - tables.csv"
   fname_project: "CDM-Codebook - project.csv"
 
-inputs:
-  # Data manifest files (MinIO)
-  fname_manifest_patient: "epic_ddp_concat/cbioportal/summary_manifests/mskimpact/summary_manifest_patient.csv"
-  fname_manifest_sample: "epic_ddp_concat/cbioportal/summary_manifests/mskimpact/summary_manifest_sample.csv"
-  # Intermediate summary file and header location on minio
-  path_minio_cbio_summary_intermediate: "epic_ddp_concat/cbioportal/intermediate_files/mskimpact/"
-  # folder path for final deid files
-  path_minio_cbio: "epic_ddp_concat/cbioportal/mskimpact/"
-
 inputs_databricks:
   overwrite: True
   catalog: "cdsi_prod"
   schema: "cdsi_data_deid"
   volume: "cdsi_data_deid_volume"
   sep: "\t"
+  # Data manifest files (relative paths under volume)
+  volume_path_manifest_patient: "cbioportal/summary_manifests/mskimpact/summary_manifest_patient.csv"
+  volume_path_manifest_sample: "cbioportal/summary_manifests/mskimpact/summary_manifest_sample.csv"
+  # Intermediate summary file location (relative path under volume)
+  volume_path_intermediate: "cbioportal/intermediate_files/mskimpact/"
+  # Folder path for final deid files (relative path under volume)
+  volume_path_final: "cbioportal/mskimpact/"
 
 template_files:
-  # Header template for patient summary file
-  fname_cbio_header_template_p: "cbioportal/cbioportal_summary_header_patient.tsv"
-  # Header template for sample summary file
-  fname_cbio_header_template_s: "cbioportal/cbioportal_summary_header_sample.tsv"
   # Patient ID list in the cbioportal format. Additional patient summary information is appended to this. Derived from `inputs.fname_cbio_sid`
-  fname_p_sum_template_cdsi: "epic_ddp_concat/cbioportal/intermediate_files/mskimpact/data_clinical_patient_template_cdsi.txt"
+  fname_p_sum_template_cdsi: "data_clinical_patient_template_cdsi.txt"
   # Sample ID list in the cbioportal format. Additional patient summary information is appended to this. Derived from `inputs.fname_cbio_sid`
-  fname_s_sum_template_cdsi: "epic_ddp_concat/cbioportal/intermediate_files/mskimpact/data_clinical_sample_template_cdsi.txt"
+  fname_s_sum_template_cdsi: "data_clinical_sample_template_cdsi.txt"
 
 # File names
 deid_filenames:

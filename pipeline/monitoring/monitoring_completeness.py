@@ -6,6 +6,7 @@ from datetime import date
 
 import pandas as pd
 
+from msk_cdm.databricks import DatabricksAPI
 from lib.utils import cbioportal_update_config
 
 
@@ -20,27 +21,33 @@ today = date.today()
 
 def monitor_completeness(
         dict_files_to_copy,
-        incomplete_fields_csv
+        incomplete_fields_csv,
+        obj_db
 ):
     list_files = list(dict_files_to_copy.keys())
     list_files_timeline = [x for x in list_files if 'timeline' in x]
     list_files_summary = list(set.difference(set(list_files), set(list_files_timeline)))
-    
+
     ## Test for empty columns in summary tables
     test = []
     for fname in list_files_summary:
-        df_sum = pd.read_csv(fname, sep='\t', header=4)
+        # Read from Databricks volume
+        df_full = obj_db.read_db_obj(volume_path=fname, sep='\t')
+        # Skip first 4 header rows for summary files
+        df_sum = df_full.iloc[4:].reset_index(drop=True)
+        df_sum.columns = df_full.iloc[3]  # Use 4th row as column names
         cols_test = list(set(df_sum.columns) - set(cols_fixed))
         any_empty = df_sum[cols_test].isnull().all()
         test.append(any_empty)
 
     test_for_empty_summary = pd.concat(test, axis=0)
-    
+
     ## Test for empty columns in timeline tables
     test = []
     for fname in list_files_timeline:
         # print('Loading %s' % fname)
-        df_sum = pd.read_csv(fname, sep='\t', header=0)
+        # Read from Databricks volume (timeline files have header at row 0)
+        df_sum = obj_db.read_db_obj(volume_path=fname, sep='\t')
         cols_test = list(set(df_sum.columns) - set(cols_fixed))
         any_empty = df_sum[cols_test].isnull().all()
         # print(sum(any_empty))
@@ -90,19 +97,24 @@ if __name__ == "__main__":
         help="Path to datahub",
     )
     parser.add_argument(
-        "--path_minio",
+        "--databricks_env",
         action="store",
-        dest="path_minio_cbio",
-        help="Path to minio",
+        dest="databricks_env",
+        required=True,
+        help="Path to Databricks environment file",
     )
 
     args = parser.parse_args()
 
     obj_yaml = cbioportal_update_config(fname_yaml_config=args.config_yaml)
-    dict_files_to_copy = obj_yaml.return_dict_datahub_to_minio(path_datahub=args.path_datahub, path_minio=args.path_minio_cbio)
+    dict_files_to_copy = obj_yaml.return_dict_datahub_to_minio(path_datahub=args.path_datahub, path_minio=args.databricks_env)
+
+    # Create Databricks API object
+    obj_db = DatabricksAPI(fname_databricks_env=args.databricks_env)
 
     test = monitor_completeness(
         incomplete_fields_csv=args.incomplete_fields_csv,
-        dict_files_to_copy=dict_files_to_copy
+        dict_files_to_copy=dict_files_to_copy,
+        obj_db=obj_db
     )
     

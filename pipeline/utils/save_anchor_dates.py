@@ -1,7 +1,7 @@
 """
 save_anchor_dates.py
 
-This script will compute the anchor dates and save the file to MinIO and Databricks
+This script will compute the anchor dates and save the file to Databricks
 """
 import os
 import sys
@@ -9,58 +9,35 @@ import argparse
 
 import pandas as pd
 
-from msk_cdm.minio import MinioAPI
 from msk_cdm.databricks import DatabricksAPI
-import sys
-import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 from lib.utils import get_anchor_dates, cbioportal_update_config
 
-FNAME_SAVE_ANCHOR_DATES = 'epic_ddp_concat/cbioportal/timeline_anchor_dates.tsv'
-# Databricks configurations
-catalog = 'cdsi_prod'
-schema = 'cdm_idbw_impact_pipeline_prod'
-volume_path = '/Volumes/cdsi_prod/cdm_idbw_impact_pipeline_prod/epic_testing/timeline_anchor_dates.tsv'
-table = 'timeline_anchor_dates'
-sep = '\t'
-overwrite = True
 
-
-def save_anchor_dates(fname_minio_env, fname_databricks_env, fname_save):
-
-    obj_minio = MinioAPI(fname_minio_env=fname_minio_env)
-
-    # Anchor dates
-    df_path_g = get_anchor_dates(fname_minio_env)
-
-    print('Saving anchor dates to MinIO: %s' % fname_save)
-    # Save dataframe to MinIO
-    obj_minio.save_obj(
-        df=df_path_g,
-        path_object=fname_save,
-        sep='\t'
-    )
+def save_anchor_dates(fname_databricks_env, volume_path_save, catalog, schema, table_name):
+    # Compute anchor dates
+    df_path_g = get_anchor_dates(fname_databricks_env)
 
     # Create dictionary for table info
     dict_database_table_info = {
         'catalog': catalog,
         'schema': schema,
-        'volume_path': volume_path,
-        'table': table,
-        'sep': sep
+        'volume_path': volume_path_save,
+        'table': table_name,
+        'sep': '\t'
     }
 
-    print(f'Saving anchor dates to Databricks: {volume_path}')
-    print(f'Creating table: {catalog}.{schema}.{table}')
+    print(f'Saving anchor dates to Databricks: {volume_path_save}')
+    print(f'Creating table: {catalog}.{schema}.{table_name}')
 
     # Save to Databricks volume and create table
     obj_db = DatabricksAPI(fname_databricks_env=fname_databricks_env)
     obj_db.write_db_obj(
         df=df_path_g,
-        volume_path=volume_path,
-        sep=sep,
-        overwrite=overwrite,
+        volume_path=volume_path_save,
+        sep='\t',
+        overwrite=True,
         dict_database_table_info=dict_database_table_info
     )
 
@@ -76,13 +53,6 @@ if __name__ == "__main__":
         help="Yaml file containing run parameters and necessary file locations.",
     )
     parser.add_argument(
-        "--minio_env",
-        action="store",
-        dest="minio_env",
-        required=True,
-        help="--location of Minio environment file",
-    )
-    parser.add_argument(
         "--databricks_env",
         action="store",
         dest="databricks_env",
@@ -92,10 +62,20 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     obj_yaml = cbioportal_update_config(fname_yaml_config=args.config_yaml)
-    fname_save = FNAME_SAVE_ANCHOR_DATES
+    databricks_config = obj_yaml.config_dict.get('inputs_databricks', {})
+    catalog = databricks_config.get('catalog', 'cdsi_prod')
+    schema = databricks_config.get('schema', 'cdsi_data_deid')
+    volume = databricks_config.get('volume', 'cdsi_data_deid_volume')
+    volume_path_intermediate = databricks_config.get('volume_path_intermediate', 'cbioportal/intermediate_files/')
+
+    # Construct paths
+    volume_path_save = f"/Volumes/{catalog}/{schema}/{volume}/{volume_path_intermediate}timeline_anchor_dates.tsv"
+    table_name = "timeline_anchor_dates"
 
     save_anchor_dates(
-        fname_minio_env=args.minio_env,
         fname_databricks_env=args.databricks_env,
-        fname_save=fname_save
+        volume_path_save=volume_path_save,
+        catalog=catalog,
+        schema=schema,
+        table_name=table_name
     )

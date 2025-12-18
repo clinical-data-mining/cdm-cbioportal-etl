@@ -10,37 +10,37 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 import pandas as pd
 
-from msk_cdm.minio import MinioAPI
-from msk_cdm.data_classes.legacy import CDMProcessingVariables as config_cdm
-from msk_cdm.data_classes.epic_ddp_concat import CDMProcessingVariables as config_cdm_epic
+from msk_cdm.databricks import DatabricksAPI
 from lib.utils import cbioportal_update_config
 
 
-FNAME_SEQ_DATA = config_cdm_epic.fname_id_map
-FNAME_SAVE_TIMELINE_SEQ = config_cdm.fname_path_sequencing_cbio_timeline
+# Table and column constants
+TABLE_ID_MAP = 'cdsi_prod.cdm_impact_pipeline_prod.t02_epic_ddp_id_mapping_pathology'
 COL_DTE_SEQ = 'DTE_TUMOR_SEQUENCING'
 COL_ORDER_SEQ = [
-    'MRN', 
-    'START_DATE', 
-    'STOP_DATE', 
-    'EVENT_TYPE', 
+    'MRN',
+    'START_DATE',
+    'STOP_DATE',
+    'EVENT_TYPE',
     'SUBTYPE',
     'SAMPLE_ID'
 ]
 
 
-def sequencing_timeline(fname_minio_env):
-    obj_minio = MinioAPI(fname_minio_env=fname_minio_env)
-    
-    print('Loading %s' % FNAME_SEQ_DATA)
-    obj = obj_minio.load_obj(path_object=FNAME_SEQ_DATA)
-    df_path = pd.read_csv(
-        obj, 
-        header=0, 
-        low_memory=False, 
-        sep='\t'
-    )
-    
+def sequencing_timeline(
+        fname_databricks_env,
+        table_id_map,
+        volume_path_save,
+        catalog=None,
+        schema=None,
+        table_name=None
+):
+    obj_db = DatabricksAPI(fname_databricks_env=fname_databricks_env)
+
+    print('Loading ID mapping table: %s' % table_id_map)
+    sql = f"SELECT * FROM {table_id_map}"
+    df_path = obj_db.query_from_sql(sql=sql)
+
     df_path = df_path.dropna().copy()
     df_path[COL_DTE_SEQ] = pd.to_datetime(
         df_path[COL_DTE_SEQ],
@@ -56,18 +56,31 @@ def sequencing_timeline(fname_minio_env):
     df_path_filt = df_path_filt.assign(STOP_DATE='')
     df_path_filt = df_path_filt.assign(EVENT_TYPE='Sequencing')
     df_path_filt = df_path_filt.assign(SUBTYPE='')
-    
+
     # Reorder columns
     df_samples_seq_f = df_path_filt[COL_ORDER_SEQ]
-    
+
     df_samples_seq_f = df_samples_seq_f.dropna()
-    
-    # Save timeline
-    print('Saving: %s' % FNAME_SAVE_TIMELINE_SEQ)
-    obj_minio.save_obj(
+
+    # Save timeline to Databricks volume
+    print('Saving to: %s' % volume_path_save)
+
+    dict_database_table_info = None
+    if catalog and schema and table_name:
+        dict_database_table_info = {
+            'catalog': catalog,
+            'schema': schema,
+            'table': table_name,
+            'volume_path': volume_path_save,
+            'sep': '\t'
+        }
+
+    obj_db.write_db_obj(
         df=df_samples_seq_f,
-        path_object=FNAME_SAVE_TIMELINE_SEQ,
-        sep='\t'
+        volume_path=volume_path_save,
+        sep='\t',
+        overwrite=True,
+        dict_database_table_info=dict_database_table_info
     )
 
     return df_samples_seq_f
@@ -75,16 +88,40 @@ def sequencing_timeline(fname_minio_env):
 def main():
     parser = argparse.ArgumentParser(description="Script for creating timeline file for sequencing dates")
     parser.add_argument(
-        "--minio_env",
+        "--databricks_env",
         action="store",
-        dest="minio_env",
+        dest="databricks_env",
         required=True,
-        help="--location of Minio environment file",
+        help="--location of Databricks environment file",
+    )
+    parser.add_argument(
+        "--config_yaml",
+        action="store",
+        dest="config_yaml",
+        help="Yaml file containing run parameters and necessary file locations.",
     )
     args = parser.parse_args()
-    minio_env = args.minio_env
 
-    df_seq_timeline = sequencing_timeline(fname_minio_env=minio_env)
+    # Get configuration
+    obj_yaml = cbioportal_update_config(fname_yaml_config=args.config_yaml)
+    databricks_config = obj_yaml.config_dict.get('inputs_databricks', {})
+    catalog = databricks_config.get('catalog', 'cdsi_prod')
+    schema = databricks_config.get('schema', 'cdsi_data_deid')
+    volume = databricks_config.get('volume', 'cdsi_data_deid_volume')
+    volume_path_intermediate = databricks_config.get('volume_path_intermediate', 'cbioportal/intermediate_files/')
+
+    # Construct paths
+    volume_path_save = f"/Volumes/{catalog}/{schema}/{volume}/{volume_path_intermediate}data_timeline_sequencing.tsv"
+    table_name = "data_timeline_sequencing"
+
+    df_seq_timeline = sequencing_timeline(
+        fname_databricks_env=args.databricks_env,
+        table_id_map=TABLE_ID_MAP,
+        volume_path_save=volume_path_save,
+        catalog=catalog,
+        schema=schema,
+        table_name=table_name
+    )
     print(df_seq_timeline.sample())
     
 

@@ -72,9 +72,9 @@ def analyze_databricks_timeline_files(fname_dbx, volume_file_paths, reference_fi
     # Initialize Databricks connection
     obj_dbx = DatabricksAPI(fname_databricks_env=fname_dbx)
 
-    # Load reference file
+    # Load reference file from Databricks volume
     try:
-        ref_df = pd.read_csv(reference_file_path, sep='\t', low_memory=False)
+        ref_df = obj_dbx.read_db_obj(volume_path=reference_file_path, sep='\t')
         ref_patients = set(ref_df['PATIENT_ID'].dropna()) if 'PATIENT_ID' in ref_df.columns else set()
         ref_samples = set(ref_df['SAMPLE_ID'].dropna()) if 'SAMPLE_ID' in ref_df.columns else set()
         print(f"Reference file loaded: {len(ref_patients)} unique patients, {len(ref_samples)} unique samples\n")

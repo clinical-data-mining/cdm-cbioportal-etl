@@ -7,11 +7,11 @@ import numpy as np
 import pandas as pd
 
 from lib.utils import cbioportal_update_config
-from msk_cdm.minio import MinioAPI
-from msk_cdm.data_classes.epic_ddp_concat import CDMProcessingVariables as cdm_files
+from msk_cdm.databricks import DatabricksAPI
 
 
 ## Constants
+TABLE_DEMO = 'cdsi_prod.cdm_impact_pipeline_prod.t01_epic_ddp_demographics'
 col_keep = ['MRN', 'MRN_CREATE_DTE', 'PLA_LAST_CONTACT_DTE', 'PT_DEATH_DTE']
 col_order = ['MRN', 'START_DATE', 'STOP_DATE', 'EVENT_TYPE', 'SUBTYPE', 'SOURCE']
 rep_dict = {
@@ -24,19 +24,23 @@ rep_dict = {
 
 def cbioportal_timeline_follow_up(
         yaml_config,
-        fname_demo,
-        fname_save,
-        fname_minio_env
+        table_demo,
+        volume_path_save,
+        fname_databricks_env,
+        catalog=None,
+        schema=None,
+        table_name=None
 ):
     print('Parsing config file %s' % yaml_config)
     obj_yaml = cbioportal_update_config(fname_yaml_config=yaml_config)
+    obj_db = DatabricksAPI(fname_databricks_env=fname_databricks_env)
 
     ## Create timeline file for follow-up
-    ### Load data
-    print('Loading %s' % fname_demo)
-    obj_minio = MinioAPI(fname_minio_env=fname_minio_env)
-    obj = obj_minio.load_obj(path_object=fname_demo)
-    df_demo = pd.read_csv(obj, sep='\t', usecols=col_keep)
+    ### Load data from Databricks table
+    print('Loading demographics table: %s' % table_demo)
+    cols_str = ', '.join(col_keep)
+    sql = f"SELECT {cols_str} FROM {table_demo}"
+    df_demo = obj_db.query_from_sql(sql=sql)
 
     df_demo_f = df_demo.copy()
     # Remove last contact date if patient is deceased
@@ -64,18 +68,31 @@ def cbioportal_timeline_follow_up(
     df_os_ = df_os_[col_order]
     df_os_ = df_os_.replace(rep_dict)
 
-    ### Save data
-    print('Saving %s to MinIO' % fname_save)
-    obj_minio.save_obj(
+    ### Save data to Databricks volume
+    print('Saving to Databricks volume: %s' % volume_path_save)
+
+    dict_database_table_info = None
+    if catalog and schema and table_name:
+        dict_database_table_info = {
+            'catalog': catalog,
+            'schema': schema,
+            'table': table_name,
+            'volume_path': volume_path_save,
+            'sep': '\t'
+        }
+
+    obj_db.write_db_obj(
         df=df_os_,
-        path_object=fname_save,
-        sep='\t'
+        volume_path=volume_path_save,
+        sep='\t',
+        overwrite=True,
+        dict_database_table_info=dict_database_table_info
     )
 
     return None
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Script for creating a template of patient and sample IDs for summary and timeline files")
+    parser = argparse.ArgumentParser(description="Script for creating timeline file for follow-up")
     parser.add_argument(
         "--config_yaml",
         action="store",
@@ -83,20 +100,32 @@ if __name__ == "__main__":
         help="Yaml file containing run parameters and necessary file locations.",
     )
     parser.add_argument(
-        "--minio_env",
+        "--databricks_env",
         action="store",
-        dest="minio_env",
+        dest="databricks_env",
         required=True,
-        help="--location of Minio environment file",
+        help="--location of Databricks environment file",
     )
     args = parser.parse_args()
 
-    fname_demo = cdm_files.fname_demo
-    fname_fu_save = cdm_files.fname_timeline_fu
+    # Get configuration
+    obj_yaml = cbioportal_update_config(fname_yaml_config=args.config_yaml)
+    databricks_config = obj_yaml.config_dict.get('inputs_databricks', {})
+    catalog = databricks_config.get('catalog', 'cdsi_prod')
+    schema = databricks_config.get('schema', 'cdsi_data_deid')
+    volume = databricks_config.get('volume', 'cdsi_data_deid_volume')
+    volume_path_intermediate = databricks_config.get('volume_path_intermediate', 'cbioportal/intermediate_files/')
+
+    # Construct paths
+    volume_path_save = f"/Volumes/{catalog}/{schema}/{volume}/{volume_path_intermediate}data_timeline_follow_up.tsv"
+    table_name = "data_timeline_follow_up"
 
     cbioportal_timeline_follow_up(
         yaml_config=args.config_yaml,
-        fname_demo=fname_demo,
-        fname_save=fname_fu_save,
-        fname_minio_env=args.minio_env
+        table_demo=TABLE_DEMO,
+        volume_path_save=volume_path_save,
+        fname_databricks_env=args.databricks_env,
+        catalog=catalog,
+        schema=schema,
+        table_name=table_name
     )

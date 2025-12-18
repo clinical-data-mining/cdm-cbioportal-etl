@@ -23,8 +23,8 @@ def _remove_cases(df, fname_sample_rmv):
     
 def cbioportal_template_generator(
         env_databricks,
-        table_header_sample,
-        table_header_patient,
+        fname_header_sample,
+        fname_header_patient,
         fname_cbio_sid,
         fname_sample_rmv,
         volume_path_summary_template_p,
@@ -38,14 +38,12 @@ def cbioportal_template_generator(
         fname_databricks_env=env_databricks
     )
 
-    print('Loading header templates')
-    print('Sample header table: %s' % table_header_sample)
-    sql_sample = f"SELECT * FROM {table_header_sample}"
-    df_header_template_s = obj_db.query_from_sql(sql=sql_sample)
+    print('Loading header templates from local files')
+    print('Sample header file: %s' % fname_header_sample)
+    df_header_template_s = pd.read_csv(fname_header_sample, sep='\t', header=0)
 
-    print('Patient header table: %s' % table_header_patient)
-    sql_patient = f"SELECT * FROM {table_header_patient}"
-    df_header_template_p = obj_db.query_from_sql(sql=sql_patient)
+    print('Patient header file: %s' % fname_header_patient)
+    df_header_template_p = pd.read_csv(fname_header_patient, sep='\t', header=0)
 
     # Load most current IDs -- 2024/01/22 moved to getting sample/patient IDs from msk-impact datahub. Expect at least a one day lag.
     print('Loading current IMPACT IDs %s' % fname_cbio_sid)

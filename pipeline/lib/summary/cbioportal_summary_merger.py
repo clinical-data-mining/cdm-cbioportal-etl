@@ -94,24 +94,32 @@ class cBioPortalSummaryMergeTool(object):
     def _summary_loader(self, fname):
         print('Loading %s' % fname)
 
-        # Load from Databricks volume path (fname should be full volume path)
-        df_data = pd.read_csv(fname, header=NROWS_HEADER, sep='\t', dtype=str)
-        df_header = pd.read_csv(fname, header=0, sep='\t', nrows=NROWS_HEADER)
+        # Load from Databricks volume path using DatabricksAPI
+        df_full = self._obj_db.read_db_obj(volume_path=fname, sep='\t')
+
+        # Split into header and data portions
+        df_header = df_full.iloc[:NROWS_HEADER].copy()
+        df_data = df_full.iloc[NROWS_HEADER:].reset_index(drop=True).copy()
+
+        # Ensure data is string type
+        df_data = df_data.astype(str)
 
         return df_header, df_data
 
     def add_annotation_loader(
-        self, 
-        fname_header, 
+        self,
+        fname_header,
         fname_data
     ):
         print('Loading %s' % fname_data)
-        # Load from Databricks volume path (fname_data should be full volume path)
-        df_data = pd.read_csv(fname_data, header=0, sep=',', dtype=str)
+        # Load from Databricks volume path using DatabricksAPI
+        df_data = self._obj_db.read_db_obj(volume_path=fname_data, sep=',')
+        df_data = df_data.astype(str)
         print(df_data.sample(1))
-        print('Loading %s' % fname_header)        
-        # Load from Databricks volume path (fname_header should be full volume path)
-        df_header = pd.read_csv(fname_header, header=0, sep=',', dtype=str)
+        print('Loading %s' % fname_header)
+        # Load from Databricks volume path using DatabricksAPI
+        df_header = self._obj_db.read_db_obj(volume_path=fname_header, sep=',')
+        df_header = df_header.astype(str)
         print(df_header.sample(1))
             
         df_header = df_header[COLS_PRODUCTION]
