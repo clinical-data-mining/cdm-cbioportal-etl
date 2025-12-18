@@ -7,7 +7,7 @@ codebook:
 inputs_databricks:
   overwrite: True
   catalog: "cdsi_eng_phi"
-  schema: "cdm_eng_cbioportal_etl_volume"
+  schema: "cdm_eng_cbioportal_etl"
   volume: "cdm_eng_cbioportal_etl_volume"
   sep: "\t"
   # Data manifest files (relative paths under volume)
