@@ -53,6 +53,8 @@ def get_anchor_dates(fname_databricks_env, table_pathology=TABLE_PATHOLOGY):
     df_path_filt_clean1 = df_path_filt_clean1.sort_values(by=['MRN', COL_SEQ_DATE])
 
     df_path_g = df_path_filt_clean1.groupby(['MRN', 'DMP_ID'])[COL_SEQ_DATE].min().reset_index()
+    # Keep only the date portion to drop time and timezone information
+    df_path_g[COL_SEQ_DATE] = df_path_g[COL_SEQ_DATE].dt.date
 
     # Remove any MRN or DMP-ID in df_path_g_error
     filt_rmv_patients = df_path_g['DMP_ID'].isin(df_path_sample_id_error['DMP_ID']) | \
