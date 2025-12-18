@@ -6,9 +6,9 @@ codebook:
 
 inputs_databricks:
   overwrite: True
-  catalog: "cdsi_prod"
-  schema: "cdsi_data_deid"
-  volume: "cdsi_data_deid_volume"
+  catalog: "cdsi_eng_phi"
+  schema: "cdm_eng_cbioportal_etl_volume"
+  volume: "cdm_eng_cbioportal_etl_volume"
   sep: "\t"
   # Data manifest files (relative paths under volume)
   volume_path_manifest_patient: "cbioportal/summary_manifests/mskimpact_heme/summary_manifest_patient.csv"
