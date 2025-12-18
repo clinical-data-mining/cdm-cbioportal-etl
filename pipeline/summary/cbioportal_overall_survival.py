@@ -16,6 +16,8 @@ from msk_cdm.data_processing import (
 COLS_OS = ['DMP_ID', 'OS_MONTHS', 'OS_STATUS']
 COL_P_ID = 'PATIENT_ID'
 TABLE_DEMO = 'cdsi_prod.cdm_impact_pipeline_prod.t01_epic_ddp_demographics'
+table_anchor_dates = 'cdsi_eng_phi.cdm_eng_cbioportal_etl.timeline_anchor_dates'
+COL_ANCHOR_DATE = 'DATE_TUMOR_SEQUENCING'
 
 def _load_data(
     obj_db,
@@ -29,7 +31,8 @@ def _load_data(
     df_demo = df_demo.drop_duplicates()
 
     # Pathology table for sequencing date (using get_anchor_dates which queries Databricks)
-    df_path_g = get_anchor_dates(fname_databricks_env)
+    sql_anchor_dates = f"SELECT * FROM {table_anchor_dates}"
+    df_path_g = obj_db.query_from_sql(sql=sql_anchor_dates)
     print(df_path_g.head())
 
     print('Data loaded')
@@ -46,8 +49,15 @@ def _clean_and_merge(
     df_demo = mrn_zero_pad(df=df_demo, col_mrn='MRN')
     col_os = ['MRN', 'PT_DEATH_DTE', 'PLA_LAST_CONTACT_DTE']
     df_demo_f = df_demo[col_os].copy()
-    df_demo_f = convert_col_to_datetime(df=df_demo_f, col='PT_DEATH_DTE')
-    df_demo_f = convert_col_to_datetime(df=df_demo_f, col='PLA_LAST_CONTACT_DTE')
+    # Parse dates with coercion to handle None/invalid strings gracefully
+    df_demo_f['PT_DEATH_DTE'] = pd.to_datetime(df_demo_f['PT_DEATH_DTE'], errors='coerce')
+    df_demo_f['PLA_LAST_CONTACT_DTE'] = pd.to_datetime(df_demo_f['PLA_LAST_CONTACT_DTE'], errors='coerce')
+
+    # Clean anchor dates
+    df_path_g = mrn_zero_pad(df=df_path_g, col_mrn='MRN')
+    df_path_g['DTE_TUMOR_SEQUENCING'] = pd.to_datetime(
+        df_path_g['DTE_TUMOR_SEQUENCING'], errors='coerce'
+    )
 
     df_os = df_path_g.merge(right=df_demo_f, how='left', on='MRN')
     
