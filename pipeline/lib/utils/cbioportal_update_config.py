@@ -23,12 +23,14 @@ class CbioportalUpdateConfig(object):
         # Load the YAML configuration file
         with open(fname_yaml_config, 'r') as yaml_file:
             config = yaml.safe_load(yaml_file)
-        self._config = config
+        # Store config for internal use and expose a public dict for callers
+        self._config_dict = config or {}
+        self.config_dict = self._config_dict
         self._load_codebook()
 
     def return_filename_codebook_metadata(self):
         # Load metadata sheet
-        config = self._config
+        config = self._config_dict
         # Codebook path
         path_codebook = config.get('codebook', {}).get('path')
         f = config.get('codebook', {}).get('fname_metadata')
@@ -37,7 +39,7 @@ class CbioportalUpdateConfig(object):
 
     def return_filename_codebook_tables(self):
         # Load metadata sheet
-        config = self._config
+        config = self._config_dict
         # Codebook path
         path_codebook = config.get('codebook', {}).get('path')
         f = config.get('codebook', {}).get('fname_tables')
@@ -46,7 +48,7 @@ class CbioportalUpdateConfig(object):
 
     def return_filename_codebook_projects(self):
         # Load metadata sheet
-        config = self._config
+        config = self._config_dict
         # Codebook path
         path_codebook = config.get('codebook', {}).get('path')
         f = config.get('codebook', {}).get('fname_project')
@@ -59,7 +61,7 @@ class CbioportalUpdateConfig(object):
         from the paths specified in the YAML configuration file.
         """
         # Load the YAML configuration file
-        config = self._config
+        config = self._config_dict
 
         filename = self.return_filename_codebook_metadata()
         # Load the JSON mapping file
@@ -87,7 +89,7 @@ class CbioportalUpdateConfig(object):
         Returns:
             str: Path to the sample ID file.
         """
-        config = self._config
+        config = self._config_dict
         fname_cbio_sid = config.get('inputs', {}).get('fname_cbio_sid')
         return fname_cbio_sid
 
@@ -98,12 +100,12 @@ class CbioportalUpdateConfig(object):
         Returns:
             str: Path to the sample exclusion file.
         """
-        config = self._config
+        config = self._config_dict
         fname_sample_remove = config.get('inputs', {}).get('fname_sample_remove')
         return fname_sample_remove
 
     def return_databricks_configs(self):
-        config = self._config
+        config = self._config_dict
         dict_databricks_configs = config.get('inputs_databricks', {})
         return dict_databricks_configs
 
@@ -114,7 +116,7 @@ class CbioportalUpdateConfig(object):
         Returns:
             str: Path to the patient manifest file.
         """
-        config = self._config
+        config = self._config_dict
         fname_manifest_patient = config.get('inputs', {}).get('fname_manifest_patient')
         return fname_manifest_patient
 
@@ -125,7 +127,7 @@ class CbioportalUpdateConfig(object):
         Returns:
             str: Path to the sample manifest file.
         """
-        config = self._config
+        config = self._config_dict
         fname_manifest_sample = config.get('inputs', {}).get('fname_manifest_sample')
         return fname_manifest_sample
 
@@ -136,12 +138,12 @@ class CbioportalUpdateConfig(object):
         Returns:
             str: Path to the intermediate summary folder on Databricks volume.
         """
-        config = self._config
+        config = self._config_dict
         volume_path_intermediate = config.get('inputs_databricks', {}).get('volume_path_intermediate')
         return volume_path_intermediate
 
     def return_production_or_test_indicator(self):
-        config = self._config
+        config = self._config_dict
         production_or_test = config.get('inputs', {}).get('production_or_test')
         return production_or_test
 
@@ -153,7 +155,7 @@ class CbioportalUpdateConfig(object):
             dict: A dictionary with the template file paths.
         """
         # Load the YAML configuration file
-        config = self._config
+        config = self._config_dict
 
         # Access the filenames in the YAML file
         template_files = config.get('template_files', {})
@@ -167,7 +169,7 @@ class CbioportalUpdateConfig(object):
         Returns:
             dict: A dictionary with DataHub paths as keys and corresponding Databricks paths as values.
         """
-        config = self._config
+        config = self._config_dict
         codebook_table = self._df_codebook_table
         list_timeline_files = list(codebook_table.loc[codebook_table['cbio_timeline_file_production'] == 'x', 'cbio_deid_filename'].dropna())
         deid_filenames = list(config.get('deid_filenames', {}).values())
@@ -195,7 +197,7 @@ class CbioportalUpdateConfig(object):
         Returns:
             dict: A dictionary with the mapped filenames.
         """
-        config = self._config
+        config = self._config_dict
 
         codebook_table = self._df_codebook_table
         df_codebook_timeline_prod = codebook_table[codebook_table['cbio_timeline_file_production'] == 'x'].copy()
@@ -221,7 +223,7 @@ class CbioportalUpdateConfig(object):
         Returns:
             dict: A dictionary with the mapped filenames.
         """
-        config = self._config
+        config = self._config_dict
 
         codebook_table = self._df_codebook_table
         df_codebook_timeline_prod = codebook_table[codebook_table['cbio_timeline_file_testing'] == 'x'].copy()
@@ -233,11 +235,9 @@ class CbioportalUpdateConfig(object):
         return dict_phi_to_deid_timeline
 
     def return_filenames_deid_datahub(self, path_datahub) -> dict:
-        config = self._config
+        config = self._config_dict
 
         files = config.get('deid_filenames', {})
         joined_paths_dict = {key: os.path.join(path_datahub, filename) for key, filename in files.items()}
 
         return joined_paths_dict
-
-
