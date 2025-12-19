@@ -235,25 +235,25 @@ class SummaryConfigProcessor:
 
         if not date_columns:
             print("No date columns to convert")
-            return df_data
+        else:
+            print(f"Converting {len(date_columns)} date columns to intervals")
 
-        print(f"Converting {len(date_columns)} date columns to intervals")
+            # Ensure anchor date is datetime
+            if 'DATE_TUMOR_SEQUENCING' in df_data.columns:
+                df_data['DATE_TUMOR_SEQUENCING'] = pd.to_datetime(
+                    df_data['DATE_TUMOR_SEQUENCING'], errors='coerce'
+                )
 
-        # Ensure anchor date is datetime
+            # Convert each date column
+            for col in date_columns:
+                if col in df_data.columns:
+                    print(f"  Converting {col}")
+                    df_data[col] = pd.to_datetime(df_data[col], errors='coerce')
+                    df_data[col] = (df_data[col] - df_data['DATE_TUMOR_SEQUENCING']).dt.days
+
+        # Always drop anchor date column (regardless of whether we converted dates)
         if 'DATE_TUMOR_SEQUENCING' in df_data.columns:
-            df_data['DATE_TUMOR_SEQUENCING'] = pd.to_datetime(
-                df_data['DATE_TUMOR_SEQUENCING'], errors='coerce'
-            )
-
-        # Convert each date column
-        for col in date_columns:
-            if col in df_data.columns:
-                print(f"  Converting {col}")
-                df_data[col] = pd.to_datetime(df_data[col], errors='coerce')
-                df_data[col] = (df_data[col] - df_data['DATE_TUMOR_SEQUENCING']).dt.days
-
-        # Drop anchor date column
-        if 'DATE_TUMOR_SEQUENCING' in df_data.columns:
+            print("  Dropping DATE_TUMOR_SEQUENCING column")
             df_data = df_data.drop(columns=['DATE_TUMOR_SEQUENCING'])
 
         return df_data
