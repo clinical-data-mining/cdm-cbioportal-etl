@@ -119,7 +119,7 @@ class YamlConfigToCbioportalFormat(object):
         Parameters
         ----------
         table_template : str
-            Table name or volume path to template
+            Table name, volume path, or local file path to template
 
         Returns
         -------
@@ -128,10 +128,18 @@ class YamlConfigToCbioportalFormat(object):
         """
         print(f'Loading template: {table_template}')
 
-        # Check if it's a table name or volume path
-        if table_template.startswith('/Volumes'):
+        # Check if it's a local file, Databricks volume path, or table name
+        if os.path.exists(table_template):
+            # Local file
+            print(f'  Loading from local file system')
+            df_full = pd.read_csv(table_template, sep='\t', dtype=str)
+        elif table_template.startswith('/Volumes'):
+            # Databricks volume path
+            print(f'  Loading from Databricks volume')
             df_full = self._obj_db.read_db_obj(volume_path=table_template, sep='\t')
         else:
+            # Databricks table
+            print(f'  Loading from Databricks table')
             sql = f"SELECT * FROM {table_template}"
             df_full = self._obj_db.query_from_sql(sql=sql)
 

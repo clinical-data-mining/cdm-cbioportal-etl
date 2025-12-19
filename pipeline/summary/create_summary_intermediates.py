@@ -66,7 +66,7 @@ def process_single_summary(args):
     df_template = obj._load_template(args.template)
 
     # Process the single summary
-    manifest_entry = obj.process_single_summary(
+    summary_info = obj.process_single_summary(
         yaml_file=args.yaml_config,
         df_anchor=obj._df_anchor,
         df_template=df_template,
@@ -74,12 +74,15 @@ def process_single_summary(args):
         save_to_table=args.save_to_table
     )
 
-    if manifest_entry:
+    if summary_info:
         print(f"\n{'='*80}")
         print(f"SUCCESS!")
         print(f"{'='*80}")
-        print(f"Summary ID: {manifest_entry['summary_id']}")
-        print(f"Intermediate file: {manifest_entry['data_path']}")
+        print(f"Summary ID: {summary_info['summary_id']}")
+        print(f"Intermediate file: {summary_info['intermediate_path']}")
+        print(f"\nFile contains data only (no header rows)")
+        print(f"Column names are in the first row")
+        print(f"You can inspect this file directly on Databricks")
         print(f"{'='*80}\n")
     else:
         print(f"\n{'='*80}")
@@ -108,33 +111,38 @@ def process_all_summaries(args):
     )
 
     # Process patient summaries
-    if args.template_patient and args.manifest_patient:
+    if args.template_patient:
         print(f"\n{'#'*80}")
         print(f"# PATIENT SUMMARIES")
         print(f"{'#'*80}\n")
 
-        obj.create_summaries_and_headers(
+        processed_patient = obj.create_summaries_and_headers(
             patient_or_sample='patient',
-            fname_manifest=args.manifest_patient,
             table_template=args.template_patient,
             save_to_table=args.save_to_table
         )
 
+        print(f"\n✓ Created {len(processed_patient)} patient intermediate files")
+
     # Process sample summaries
-    if args.template_sample and args.manifest_sample:
+    if args.template_sample:
         print(f"\n{'#'*80}")
         print(f"# SAMPLE SUMMARIES")
         print(f"{'#'*80}\n")
 
-        obj.create_summaries_and_headers(
+        processed_sample = obj.create_summaries_and_headers(
             patient_or_sample='sample',
-            fname_manifest=args.manifest_sample,
             table_template=args.template_sample,
             save_to_table=args.save_to_table
         )
 
+        print(f"\n✓ Created {len(processed_sample)} sample intermediate files")
+
     print(f"\n{'='*80}")
     print(f"ALL SUMMARIES PROCESSED")
+    print(f"{'='*80}")
+    print(f"\nIntermediate files contain data only (no headers)")
+    print(f"Next step: merge these files and create final cBioPortal summary")
     print(f"{'='*80}\n")
 
 
@@ -189,14 +197,6 @@ def main():
         "--template_sample",
         help="Path to sample template file (for batch mode)"
     )
-    parser.add_argument(
-        "--manifest_patient",
-        help="Path to save patient manifest file (for batch mode)"
-    )
-    parser.add_argument(
-        "--manifest_sample",
-        help="Path to save sample manifest file (for batch mode)"
-    )
 
     args = parser.parse_args()
 
@@ -210,10 +210,6 @@ def main():
         # Batch mode
         if not (args.template_patient or args.template_sample):
             parser.error("At least one of --template_patient or --template_sample is required when using --config_dir")
-        if args.template_patient and not args.manifest_patient:
-            parser.error("--manifest_patient is required when using --template_patient")
-        if args.template_sample and not args.manifest_sample:
-            parser.error("--manifest_sample is required when using --template_sample")
         process_all_summaries(args)
     else:
         parser.error("Either --yaml_config or --config_dir must be specified")
