@@ -330,6 +330,14 @@ class SummaryConfigProcessor:
             on=id_column_template
         )
 
+        # Rename to standard cBioPortal column names if needed
+        standard_id_column = 'PATIENT_ID' if patient_or_sample == 'patient' else 'SAMPLE_ID'
+        if id_column_template != standard_id_column:
+            print(f"  Renaming {id_column_template} -> {standard_id_column} for cBioPortal format")
+            df_merged = df_merged.rename(columns={id_column_template: standard_id_column})
+            # Update the stored template ID column to the standard name
+            self.template_id_column = standard_id_column
+
         print(f"  Merged shape: {df_merged.shape}")
         return df_merged
 
