@@ -6,7 +6,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 import pandas as pd
 
 from msk_cdm.databricks import DatabricksAPI
-from lib.utils import cbioportal_update_config, get_anchor_dates
+from lib.utils import cbioportal_update_config
 from msk_cdm.data_processing import (
     mrn_zero_pad,
     convert_col_to_datetime
@@ -55,8 +55,8 @@ def _clean_and_merge(
 
     # Clean anchor dates
     df_path_g = mrn_zero_pad(df=df_path_g, col_mrn='MRN')
-    df_path_g['DTE_TUMOR_SEQUENCING'] = pd.to_datetime(
-        df_path_g['DTE_TUMOR_SEQUENCING'], errors='coerce'
+    df_path_g[COL_ANCHOR_DATE] = pd.to_datetime(
+        df_path_g[COL_ANCHOR_DATE], errors='coerce'
     )
 
     df_os = df_path_g.merge(right=df_demo_f, how='left', on='MRN')
@@ -67,12 +67,12 @@ def _clean_and_merge(
 def _create_os_cols(df_os):
     # Create interval and event data
     df_os['OS_DATE'] = df_os['PT_DEATH_DTE'].fillna(df_os['PLA_LAST_CONTACT_DTE'])
-    df_os['OS_INT'] = (df_os['OS_DATE'] - df_os['DTE_TUMOR_SEQUENCING']).dt.days/30.417
+    df_os['OS_INT'] = (df_os['OS_DATE'] - df_os[COL_ANCHOR_DATE]).dt.days/30.417
     df_os['OS_MONTHS'] = df_os['OS_INT']
     df_os['OS_STATUS'] = df_os['PT_DEATH_DTE'].notnull().replace({True: '1:DECEASED', False:'0:LIVING'})
     OS_INT_ERROR = df_os['OS_INT'] > 150
-    OS_INT_ERROR2a = df_os['PLA_LAST_CONTACT_DTE'] < df_os['DTE_TUMOR_SEQUENCING']
-    OS_INT_ERROR2b = df_os['PT_DEATH_DTE'] < df_os['DTE_TUMOR_SEQUENCING']
+    OS_INT_ERROR2a = df_os['PLA_LAST_CONTACT_DTE'] < df_os[COL_ANCHOR_DATE]
+    OS_INT_ERROR2b = df_os['PT_DEATH_DTE'] < df_os[COL_ANCHOR_DATE]
     OS_INT_ERROR2 = OS_INT_ERROR2a | OS_INT_ERROR2b
     df_os.loc[OS_INT_ERROR2, 'OS_MONTHS'] = 0
     df_os['OS_MONTHS'] = df_os['OS_MONTHS'].astype(str)
