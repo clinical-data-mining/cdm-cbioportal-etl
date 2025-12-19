@@ -68,6 +68,9 @@ class SummaryConfigProcessor:
         self.dest_config = self._get_dest_config()
         self.volume_path = self._build_volume_path()
 
+        # Will be set during processing
+        self.template_id_column = None
+
     def _load_config(self) -> Dict:
         """Load YAML configuration file."""
         with open(self.fname_yaml_config, 'r') as f:
@@ -280,11 +283,39 @@ class SummaryConfigProcessor:
         print("Merging with template")
 
         patient_or_sample = self.config['patient_or_sample']
-        id_column = 'PATIENT_ID' if patient_or_sample == 'patient' else 'SAMPLE_ID'
 
-        # Rename DMP_ID to appropriate ID column
-        if 'DMP_ID' in df_data.columns:
-            df_data = df_data.rename(columns={'DMP_ID': id_column})
+        # Detect the ID column in the template
+        # Templates may have DMP_ID, PATIENT_ID, or SAMPLE_ID
+        template_columns = df_template.columns.tolist()
+
+        if patient_or_sample == 'patient':
+            # Check for patient ID columns in order of preference
+            if 'PATIENT_ID' in template_columns:
+                id_column_template = 'PATIENT_ID'
+            elif 'DMP_ID' in template_columns:
+                id_column_template = 'DMP_ID'
+            else:
+                raise ValueError(f"Template does not have PATIENT_ID or DMP_ID column. Columns: {template_columns}")
+        else:
+            # Sample level
+            if 'SAMPLE_ID' in template_columns:
+                id_column_template = 'SAMPLE_ID'
+            elif 'DMP_ID' in template_columns:
+                id_column_template = 'DMP_ID'
+            else:
+                raise ValueError(f"Template does not have SAMPLE_ID or DMP_ID column. Columns: {template_columns}")
+
+        print(f"  Template ID column: {id_column_template}")
+
+        # Store the template's ID column for use in header creation
+        self.template_id_column = id_column_template
+
+        # Rename DMP_ID in data to match template's ID column
+        if 'DMP_ID' in df_data.columns and id_column_template != 'DMP_ID':
+            df_data = df_data.rename(columns={'DMP_ID': id_column_template})
+        elif 'DMP_ID' not in df_data.columns and id_column_template == 'DMP_ID':
+            # Data doesn't have DMP_ID, keep as is
+            pass
 
         # Upper case all column names
         df_data.columns = [x.upper().replace(' ', '_') for x in df_data.columns]
@@ -296,7 +327,7 @@ class SummaryConfigProcessor:
         df_merged = df_template.merge(
             right=df_data,
             how='left',
-            on=id_column
+            on=id_column_template
         )
 
         print(f"  Merged shape: {df_merged.shape}")
@@ -350,7 +381,13 @@ class SummaryConfigProcessor:
 
         column_metadata = self.config.get('column_metadata', {})
         patient_or_sample = self.config['patient_or_sample']
-        id_column = 'PATIENT_ID' if patient_or_sample == 'patient' else 'SAMPLE_ID'
+
+        # Use the ID column that was detected from the template
+        # Fall back to standard names if template_id_column not set
+        if self.template_id_column:
+            id_column = self.template_id_column
+        else:
+            id_column = 'PATIENT_ID' if patient_or_sample == 'patient' else 'SAMPLE_ID'
 
         # Create header rows
         headers = {
