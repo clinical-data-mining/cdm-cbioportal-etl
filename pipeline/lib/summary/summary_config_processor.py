@@ -111,7 +111,7 @@ class SummaryConfigProcessor:
         self,
         df_anchor: pd.DataFrame,
         df_template: pd.DataFrame
-    ) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    ) -> pd.DataFrame:
         """
         Process the summary file through the complete pipeline.
 
@@ -124,8 +124,8 @@ class SummaryConfigProcessor:
 
         Returns
         -------
-        Tuple[pd.DataFrame, pd.DataFrame]
-            (header_df, data_df) - Header and data portions of the summary
+        pd.DataFrame
+            Processed data with standard column names
         """
         print(f"\n{'='*80}")
         print(f"Processing summary: {self.config['summary_id']}")
@@ -146,16 +146,10 @@ class SummaryConfigProcessor:
         # Step 5: Backfill missing data
         df_backfilled = self._backfill_missing_data(df_final)
 
-        # Step 6: Create header
-        df_header = self._create_header()
-
-        # Step 7: Align columns between header and data
-        df_header_aligned, df_data_aligned = self._align_header_and_data(df_header, df_backfilled)
-
         print(f"✓ Summary processing complete: {self.config['summary_id']}")
-        print(f"  Shape: {df_data_aligned.shape}")
+        print(f"  Shape: {df_backfilled.shape}")
 
-        return df_header_aligned, df_data_aligned
+        return df_backfilled
 
     def _load_and_subset_data(self) -> pd.DataFrame:
         """Load source table and subset to specified columns."""
@@ -376,109 +370,20 @@ class SummaryConfigProcessor:
 
         return df_data
 
-    def _create_header(self) -> pd.DataFrame:
-        """
-        Create header dataframe from column metadata.
-
-        Returns
-        -------
-        pd.DataFrame
-            Header dataframe with 4 rows: label, datatype, comment, heading
-        """
-        print("Creating header")
-
-        column_metadata = self.config.get('column_metadata', {})
-        patient_or_sample = self.config['patient_or_sample']
-
-        # Use the ID column that was detected from the template
-        # Fall back to standard names if template_id_column not set
-        if self.template_id_column:
-            id_column = self.template_id_column
-        else:
-            id_column = 'PATIENT_ID' if patient_or_sample == 'patient' else 'SAMPLE_ID'
-
-        # Create header rows
-        headers = {
-            'label': [],
-            'datatype': [],
-            'comment': [],
-            'heading': []
-        }
-
-        # Add ID column first
-        id_label = '#Patient Identifier' if patient_or_sample == 'patient' else '#Sample Identifier'
-        headers['label'].append(id_label)
-        headers['datatype'].append('STRING')
-        headers['comment'].append(id_column)
-        headers['heading'].append(id_column)
-
-        # Add other columns
-        for col_name, metadata in column_metadata.items():
-            col_upper = col_name.upper()
-
-            headers['label'].append(metadata.get('label', col_upper))
-            headers['datatype'].append(metadata.get('datatype', 'STRING'))
-            headers['comment'].append(metadata.get('comment', col_upper))
-            headers['heading'].append(col_upper)
-
-        # Create dataframe - transpose so each header type is a row
-        df_header = pd.DataFrame(headers)
-        df_header = df_header.T
-
-        print(f"  Header created with {df_header.shape[1]} columns")
-        return df_header
-
-    def _align_header_and_data(
-        self,
-        df_header: pd.DataFrame,
-        df_data: pd.DataFrame
-    ) -> Tuple[pd.DataFrame, pd.DataFrame]:
-        """
-        Align header and data so columns match in order.
-
-        Parameters
-        ----------
-        df_header : pd.DataFrame
-            Header dataframe
-        df_data : pd.DataFrame
-            Data dataframe
-
-        Returns
-        -------
-        Tuple[pd.DataFrame, pd.DataFrame]
-            (aligned_header, aligned_data)
-        """
-        # Get the heading row from header (last row)
-        header_columns = list(df_header.iloc[-1, :])
-
-        # Reorder data columns to match header
-        # Only include columns that exist in both
-        common_columns = [col for col in header_columns if col in df_data.columns]
-
-        # Filter header to only common columns
-        header_col_indices = [i for i, col in enumerate(header_columns) if col in common_columns]
-        df_header_aligned = df_header.iloc[:, header_col_indices]
-
-        # Reorder data
-        df_data_aligned = df_data[common_columns]
-
-        return df_header_aligned, df_data_aligned
 
     def save_intermediate(
         self,
-        df_header: pd.DataFrame,
         df_data: pd.DataFrame,
         save_to_table: bool = False
     ) -> str:
         """
         Save the intermediate file to Databricks volume.
+        Saves just the data with column names (no header metadata rows).
 
         Parameters
         ----------
-        df_header : pd.DataFrame
-            Header dataframe
         df_data : pd.DataFrame
-            Data dataframe
+            Data dataframe with column names
         save_to_table : bool, optional
             Whether to also save to a Databricks table
 
@@ -488,9 +393,6 @@ class SummaryConfigProcessor:
             Path where the file was saved
         """
         print(f"Saving intermediate file: {self.volume_path}")
-
-        # Combine header and data
-        df_combined = pd.concat([df_header, df_data], axis=0, ignore_index=True)
 
         # Prepare table info if needed
         dict_database_table_info = None
@@ -505,9 +407,9 @@ class SummaryConfigProcessor:
                 'sep': '\t'
             }
 
-        # Save to volume
+        # Save to volume (just data, no header rows)
         self.obj_db.write_db_obj(
-            df=df_combined,
+            df=df_data,
             volume_path=self.volume_path,
             sep='\t',
             overwrite=True,

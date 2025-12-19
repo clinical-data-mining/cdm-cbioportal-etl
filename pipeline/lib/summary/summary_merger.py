@@ -5,12 +5,13 @@ Merges multiple intermediate summary files into a single cBioPortal summary file
 
 This module provides simplified functionality for merging intermediate files
 created by SummaryConfigProcessor. It handles:
-- Loading intermediate files (with headers)
-- Merging headers horizontally
+- Loading intermediate data files (no headers in intermediates)
 - Merging data horizontally
+- Creating header from YAML configs
 - Combining header and data into final cBioPortal format
 """
 import pandas as pd
+import numpy as np
 from typing import List, Tuple, Dict
 
 from msk_cdm.databricks import DatabricksAPI
