@@ -1,0 +1,49 @@
+summary_id: demographics
+patient_or_sample: patient
+source_table_prod: cdsi_prod.cdm_impact_pipeline_prod.t01_epic_ddp_demographics
+source_table_dev: cdsi_prod.cdm_impact_pipeline_prod.t01_epic_ddp_demographics
+key_column: MRN
+columns:
+- MRN
+- GENDER
+- RACE
+- ETHNICITY
+- CURRENT_AGE_DEID
+date_columns: []
+dest_prod:
+  catalog: cdsi_eng_phi
+  schema: cdm_eng_cbioportal_etl
+  volume_name: cdm_eng_cbioportal_etl_volume
+  filename: demographics_summary.tsv
+dest_dev:
+  catalog: cdsi_eng_phi
+  schema: cdm_eng_cbioportal_etl
+  volume_name: cdm_eng_cbioportal_etl_volume_dev
+  filename: demographics_summary.tsv
+column_metadata:
+  GENDER:
+    label: Sex
+    datatype: STRING
+    comment: 'Sex ---DESCRIPTION: Gender assigned at birth ---MISSING DATA: Patient
+      did not provide ---SOURCE: IDB (Revenue Management System (RMS))'
+    fill_value: Unknown
+  RACE:
+    label: Race
+    datatype: STRING
+    comment: 'Race ---DESCRIPTION: Race, self-reported ---MISSING DATA: Patient did
+      not provide ---SOURCE: IDB (Revenue Management System (RMS))'
+    fill_value: Unknown
+  ETHNICITY:
+    label: Ethnicity
+    datatype: STRING
+    comment: 'Ethnicity ---DESCRIPTION: Ethnicity, self-reported ---MISSING DATA:
+      Patient did not provide ---SOURCE: IDB (Revenue Management System (RMS))'
+    fill_value: Unknown
+  CURRENT_AGE_DEID:
+    label: Age at Last Follow-up
+    datatype: NUMBER
+    comment: 'Age at Last Follow-up ---DESCRIPTION: Age at Last Follow-up (limit 89).
+      Derived from Birthdate (Revenue Management System (RMS)) ---MISSING DATA: Contact
+      Revenue Management System (RMS) Database Maintainers ---SOURCE: Derived from
+      IDB/Revenue Management System (RMS) dates'
+    fill_value: NA

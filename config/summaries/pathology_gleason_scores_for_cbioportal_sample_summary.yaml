@@ -1,0 +1,29 @@
+summary_id: pathology_gleason_scores_for_cbioportal_sample_summary
+patient_or_sample: sample
+source_table_prod: cdsi_prod.cdm_idbw_impact_pipeline_prod.table_summary_pdl1_patient
+source_table_dev: cdsi_prod.cdm_idbw_impact_pipeline_prod.table_summary_pdl1_patient
+key_column: SAMPLE_ID
+columns:
+- SAMPLE_ID
+- GLEASON_SAMPLE_LEVEL
+date_columns: []
+dest_prod:
+  catalog: cdsi_eng_phi
+  schema: cdm_eng_cbioportal_etl
+  volume_name: cdm_eng_cbioportal_etl_volume
+  filename: pathology_gleason_scores_for_cbioportal_sample_summary_summary.tsv
+dest_dev:
+  catalog: cdsi_eng_phi
+  schema: cdm_eng_cbioportal_etl
+  volume_name: cdm_eng_cbioportal_etl_volume_dev
+  filename: pathology_gleason_scores_for_cbioportal_sample_summary_summary.tsv
+column_metadata:
+  GLEASON_SAMPLE_LEVEL:
+    label: Gleason Score Reported on Sample (NLP)
+    datatype: STRING
+    comment: 'Gleason Score Reported on Sample (NLP) ---DESCRIPTION: Sample summary
+      of the Gleason score reported on the specified sample ID at the time of surgery
+      or biopsy ---MISSING DATA: No reported Gleason Score for patient. Rule-based
+      NLP did not sense the word "gleason" any pathology reports. ---SOURCE: NLP generated
+      from pathology reports'
+    fill_value: NA

@@ -1,0 +1,27 @@
+summary_id: pathology_pd_l1_patient_summary
+patient_or_sample: patient
+source_table_prod: cdsi_prod.cdm_idbw_impact_pipeline_prod.table_summary_pdl1_patient
+source_table_dev: cdsi_prod.cdm_idbw_impact_pipeline_prod.table_summary_pdl1_patient
+key_column: MRN
+columns:
+- MRN
+- HISTORY_OF_PDL1
+date_columns: []
+dest_prod:
+  catalog: cdsi_prod
+  schema: cdsi_data_deid
+  volume_name: cdsi_data_deid_volume
+  filename: pathology_pd_l1_patient_summary_summary.tsv
+dest_dev:
+  catalog: cdsi_prod
+  schema: cdsi_data_deid
+  volume_name: cdsi_data_deid_volume_dev
+  filename: pathology_pd_l1_patient_summary_summary.tsv
+column_metadata:
+  HISTORY_OF_PDL1:
+    label: History for Positive PD-L1 (NLP)
+    datatype: STRING
+    comment: 'History for Positive PD-L1 (NLP) ---DESCRIPTION: History if patient
+      ever had a pathology specimen annotated as PD-L1 positive ---MISSING DATA: Patient
+      not tested for PD-L1 ---SOURCE: NLP generated from pathology reports'
+    fill_value: NA

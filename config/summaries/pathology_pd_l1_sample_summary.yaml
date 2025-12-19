@@ -1,0 +1,27 @@
+summary_id: pathology_pd_l1_sample_summary
+patient_or_sample: sample
+source_table_prod: cdsi_prod.cdm_idbw_impact_pipeline_prod.table_summary_pdl1_sample
+source_table_dev: cdsi_prod.cdm_idbw_impact_pipeline_prod.table_summary_pdl1_sample
+key_column: SAMPLE_ID
+columns:
+- SAMPLE_ID
+- PDL1_POSITIVE
+date_columns: []
+dest_prod:
+  catalog: cdsi_prod
+  schema: cdsi_data_deid
+  volume_name: cdsi_data_deid_volume
+  filename: pathology_pd_l1_sample_summary_summary.tsv
+dest_dev:
+  catalog: cdsi_dev
+  schema: cdsi_data_deid_dev
+  volume_name: cdsi_data_deid_volume_dev
+  filename: pathology_pd_l1_sample_summary_summary.tsv
+column_metadata:
+  PDL1_POSITIVE:
+    label: Sample PD-L1 Positive (NLP)
+    datatype: STRING
+    comment: 'Sample PD-L1 Positive (NLP) ---DESCRIPTION: Indication if specimen was
+      labeled as PD-L1 positive in surgical pathology report ---MISSING DATA: Patient
+      not tested for PD-L1 ---SOURCE: NLP generated from pathology reports'
+    fill_value: NA
