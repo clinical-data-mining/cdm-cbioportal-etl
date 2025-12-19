@@ -142,11 +142,24 @@ class YamlConfigToCbioportalFormat(object):
 
         print(f'  Template shape (with header): {df_full.shape}')
 
+        # Extract the heading row (row index 3, 0-indexed) for column names
+        # Template format has 4 header rows:
+        # Row 0: labels
+        # Row 1: datatype
+        # Row 2: comment
+        # Row 3: heading (actual column names)
+        heading_row = df_full.iloc[NROWS_HEADER - 1]
+
         # Remove first NROWS_HEADER rows to get data only
         df_template = df_full.iloc[NROWS_HEADER:].reset_index(drop=True)
+
+        # Set column names from heading row
+        df_template.columns = heading_row.values
+
         df_template = df_template.astype(str)
 
         print(f'  Template shape (data only): {df_template.shape}')
+        print(f'  Template columns: {list(df_template.columns)}')
 
         return df_template
 
