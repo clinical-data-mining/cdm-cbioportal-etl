@@ -182,7 +182,7 @@ class SummaryConfigProcessor:
         Returns
         -------
         pd.DataFrame
-            Data merged with anchor dates, MRN replaced with DMP_ID
+            Data merged with anchor dates, MRN dropped, DATE_TUMOR_SEQUENCING retained for date conversion
         """
         print("Merging with anchor dates for deidentification")
 
@@ -203,6 +203,10 @@ class SummaryConfigProcessor:
                 left_on='DMP_ID',
                 right_on=key_column
             )
+
+            # Drop the key column if it's not DMP_ID (to avoid duplicate columns)
+            if key_column != 'DMP_ID' and key_column in df_merged.columns:
+                df_merged = df_merged.drop(columns=[key_column])
 
         print(f"  After merge: {df_merged.shape[0]} rows")
         return df_merged
@@ -225,7 +229,7 @@ class SummaryConfigProcessor:
         Returns
         -------
         pd.DataFrame
-            Data with dates converted to day intervals
+            Data with dates converted to day intervals, DATE_TUMOR_SEQUENCING dropped
         """
         date_columns = self.config.get('date_columns', [])
 

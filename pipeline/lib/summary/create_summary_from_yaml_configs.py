@@ -33,10 +33,9 @@ import numpy as np
 from typing import Dict, List, Optional
 
 from msk_cdm.databricks import DatabricksAPI
-from msk_cdm.data_processing import set_debug_console
+from msk_cdm.data_processing import set_debug_console, mrn_zero_pad
 
 from .summary_config_processor import SummaryConfigProcessor
-from ..utils.get_anchor_dates import get_anchor_dates
 from ..utils import constants
 
 set_debug_console()
@@ -44,7 +43,11 @@ set_debug_console()
 COL_SUMMARY_FNAME_SAVE = constants.COL_SUMMARY_FNAME_SAVE
 COL_SUMMARY_HEADER_FNAME_SAVE = constants.COL_SUMMARY_HEADER_FNAME_SAVE
 COL_RPT_NAME = constants.COL_RPT_NAME
+COL_ANCHOR_DATE = constants.COL_ANCHOR_DATE
 NROWS_HEADER = 4
+
+# Anchor dates table location
+TABLE_ANCHOR_DATES = 'cdsi_eng_phi.cdm_eng_cbioportal_etl.timeline_anchor_dates'
 
 
 class YamlConfigToCbioportalFormat(object):
@@ -102,8 +105,18 @@ class YamlConfigToCbioportalFormat(object):
         )
 
         # Load anchor dates for deidentification
-        print('Loading anchor dates...')
-        self._df_anchor = get_anchor_dates(self._fname_databricks_env)
+        print(f'Loading anchor dates: {TABLE_ANCHOR_DATES}')
+        sql = f"SELECT * FROM {TABLE_ANCHOR_DATES}"
+        self._df_anchor = self._obj_db.query_from_sql(sql=sql)
+
+        # Zero-pad MRN
+        self._df_anchor = mrn_zero_pad(df=self._df_anchor, col_mrn='MRN')
+
+        # Convert DATE_TUMOR_SEQUENCING to datetime
+        self._df_anchor[COL_ANCHOR_DATE] = pd.to_datetime(
+            self._df_anchor[COL_ANCHOR_DATE], errors='coerce'
+        )
+
         print(f'  Loaded {self._df_anchor.shape[0]} anchor dates')
 
         return None
