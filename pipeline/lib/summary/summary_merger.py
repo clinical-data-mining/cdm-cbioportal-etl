@@ -10,6 +10,7 @@ created by SummaryConfigProcessor. It handles:
 - Creating header from YAML configs
 - Combining header and data into final cBioPortal format
 """
+import os
 import pandas as pd
 import numpy as np
 from typing import List, Tuple, Dict
@@ -69,45 +70,109 @@ class SummaryMerger:
         self.df_merged_data = None
         self.df_final = None
 
-    def _load_template(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    def _load_template(self) -> pd.DataFrame:
         """
-        Load template file and split into header and data.
+        Load template file (standard CSV format with 1 header row).
 
         Returns
         -------
-        Tuple[pd.DataFrame, pd.DataFrame]
-            (header_df, data_df)
+        pd.DataFrame
+            Template data with ID column only
         """
         print(f"Loading template: {self.fname_template}")
 
-        df_full = self.obj_db.read_db_obj(volume_path=self.fname_template, sep='\t')
-
-        # Split into header and data
-        df_header = df_full.iloc[:NROWS_HEADER].copy()
-        df_data = df_full.iloc[NROWS_HEADER:].reset_index(drop=True).copy()
+        # Check if it's a local file or Databricks path
+        if os.path.exists(self.fname_template):
+            df_template = pd.read_csv(self.fname_template, sep='\t', dtype=str)
+        else:
+            df_template = self.obj_db.read_db_obj(volume_path=self.fname_template, sep='\t')
 
         # Ensure data is string type
-        df_data = df_data.astype(str)
+        df_template = df_template.astype(str)
 
-        print(f"  Template loaded: {df_data.shape[0]} rows, {df_data.shape[1]} columns")
+        # Extract only the ID column
+        if self.id_column in df_template.columns:
+            df_template = df_template[[self.id_column]].copy()
 
-        # Initialize merged with template (just the ID column)
-        self.df_merged_header = df_header[[self.id_column]].copy()
-        self.df_merged_data = df_data[[self.id_column]].copy()
+            # Drop duplicates
+            original_rows = df_template.shape[0]
+            df_template = df_template.drop_duplicates()
 
-        return df_header, df_data
+            if original_rows != df_template.shape[0]:
+                print(f"  Dropped {original_rows - df_template.shape[0]} duplicate rows")
+        else:
+            raise ValueError(f"Template does not have {self.id_column} column. Available: {list(df_template.columns)}")
+
+        print(f"  Template loaded: {df_template.shape[0]} unique {self.id_column} values")
+
+        # Initialize merged data with template (just the ID column)
+        self.df_merged_data = df_template.copy()
+
+        # Initialize merged header with ID column header
+        self.df_merged_header = pd.DataFrame({
+            0: [self.id_label, 'STRING', '1', self.id_column]
+        })
+
+        return df_template
+
+    def _create_header_from_config(self, config: Dict) -> pd.DataFrame:
+        """
+        Create header dataframe from YAML configuration.
+
+        Parameters
+        ----------
+        config : Dict
+            YAML configuration dictionary
+
+        Returns
+        -------
+        pd.DataFrame
+            Header dataframe with 4 rows (label, datatype, comment, heading)
+        """
+        column_metadata = config.get('column_metadata', {})
+        columns_list = config.get('columns', [])
+
+        # Build header rows for each column (excluding key column which becomes ID)
+        key_column = config.get('key_column', 'MRN')
+
+        headers_dict = {}
+        col_idx = 0
+
+        for col in columns_list:
+            # Skip key column (it's replaced by ID column)
+            if col == key_column:
+                continue
+
+            # Get metadata for this column
+            metadata = column_metadata.get(col, {})
+
+            label = metadata.get('label', col)
+            datatype = metadata.get('datatype', 'STRING')
+            comment = metadata.get('comment', '')
+            heading = col.upper().replace(' ', '_')
+
+            headers_dict[col_idx] = [label, datatype, comment, heading]
+            col_idx += 1
+
+        # Create header dataframe
+        df_header = pd.DataFrame(headers_dict)
+
+        return df_header
 
     def load_intermediate_file(
         self,
-        fname_intermediate: str
+        fname_intermediate: str,
+        config: Dict
     ) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """
-        Load an intermediate file and split into header and data.
+        Load an intermediate file (data only) and create header from config.
 
         Parameters
         ----------
         fname_intermediate : str
-            Path to intermediate file
+            Path to intermediate file (data only, no headers)
+        config : Dict
+            YAML configuration dictionary for this summary
 
         Returns
         -------
@@ -116,16 +181,16 @@ class SummaryMerger:
         """
         print(f"Loading intermediate file: {fname_intermediate}")
 
-        df_full = self.obj_db.read_db_obj(volume_path=fname_intermediate, sep='\t')
-
-        # Split into header and data
-        df_header = df_full.iloc[:NROWS_HEADER].copy()
-        df_data = df_full.iloc[NROWS_HEADER:].reset_index(drop=True).copy()
+        # Load data (no headers in intermediate files)
+        df_data = self.obj_db.read_db_obj(volume_path=fname_intermediate, sep='\t')
 
         # Ensure data is string type
         df_data = df_data.astype(str)
 
         print(f"  Loaded: {df_data.shape[0]} rows, {df_data.shape[1]} columns")
+
+        # Create header from YAML config
+        df_header = self._create_header_from_config(config)
 
         return df_header, df_data
 
@@ -185,27 +250,52 @@ class SummaryMerger:
 
         print(f"  Merged summary now has {self.df_merged_data.shape[1]} columns")
 
-    def merge_all_intermediates(self, intermediate_files: List[str]):
+    def merge_all_intermediates(self, processed_summaries: List[Dict]):
         """
         Merge all intermediate files in order.
 
         Parameters
         ----------
-        intermediate_files : List[str]
-            List of paths to intermediate files to merge
+        processed_summaries : List[Dict]
+            List of summary info dicts from YamlConfigToCbioportalFormat.create_summaries_and_headers()
+            Each dict should contain:
+            - 'summary_id': summary identifier
+            - 'intermediate_path': path to intermediate file
+            - 'config': YAML configuration dict
         """
         print(f"\n{'='*80}")
-        print(f"Merging {len(intermediate_files)} intermediate files")
+        print(f"Merging {len(processed_summaries)} intermediate files")
         print(f"{'='*80}\n")
 
-        for idx, fname in enumerate(intermediate_files, 1):
-            print(f"[{idx}/{len(intermediate_files)}] {fname}")
-            df_header, df_data = self.load_intermediate_file(fname)
-            self.merge_intermediate(df_header, df_data)
+        merged_count = 0
+        skipped_count = 0
+
+        for idx, summary_info in enumerate(processed_summaries, 1):
+            summary_id = summary_info['summary_id']
+            fname = summary_info['intermediate_path']
+            config = summary_info['config']
+
+            print(f"[{idx}/{len(processed_summaries)}] {summary_id}")
+            print(f"  File: {fname}")
+
+            try:
+                df_header, df_data = self.load_intermediate_file(fname, config)
+                self.merge_intermediate(df_header, df_data)
+                merged_count += 1
+                print(f"  ✓ Merged successfully")
+            except Exception as e:
+                print(f"  ✗ ERROR: Failed to load or merge file: {str(e)}")
+                skipped_count += 1
+
             print()
 
-        print(f"✓ All intermediate files merged")
-        print(f"  Final shape: {self.df_merged_data.shape}")
+        print(f"{'='*80}")
+        print(f"MERGE SUMMARY")
+        print(f"{'='*80}")
+        print(f"Successfully merged: {merged_count}")
+        print(f"Skipped: {skipped_count}")
+        print(f"Final shape: {self.df_merged_data.shape}")
+        print(f"{'='*80}")
 
     def create_final_summary(self) -> pd.DataFrame:
         """
@@ -390,5 +480,105 @@ def merge_summaries_from_manifest(
         schema=schema,
         table_name=table_name
     )
+
+    return df_final
+
+
+def merge_summaries_from_yaml_configs(
+    fname_databricks_env: str,
+    processed_summaries: List[Dict],
+    fname_template: str,
+    fname_output: str,
+    patient_or_sample: str,
+    save_to_table: bool = False,
+    catalog: str = None,
+    schema: str = None,
+    table_name: str = None
+) -> pd.DataFrame:
+    """
+    Convenience function to merge summaries from YAML config processing.
+
+    This function takes the output from YamlConfigToCbioportalFormat.create_summaries_and_headers()
+    and merges all intermediate files into a final cBioPortal summary.
+
+    Parameters
+    ----------
+    fname_databricks_env : str
+        Path to Databricks environment file
+    processed_summaries : List[Dict]
+        List of summary info dicts from create_summaries_and_headers()
+        Each dict contains: summary_id, intermediate_path, config
+    fname_template : str
+        Path to template file
+    fname_output : str
+        Path to save final summary
+    patient_or_sample : str
+        'patient' or 'sample'
+    save_to_table : bool, optional
+        Whether to save to a Databricks table
+    catalog : str, optional
+        Catalog for table (if save_to_table=True)
+    schema : str, optional
+        Schema for table (if save_to_table=True)
+    table_name : str, optional
+        Table name (if save_to_table=True)
+
+    Returns
+    -------
+    pd.DataFrame
+        Final merged summary
+
+    Example
+    -------
+    >>> from pipeline.lib.summary import YamlConfigToCbioportalFormat, merge_summaries_from_yaml_configs
+    >>>
+    >>> # Create intermediate files
+    >>> obj = YamlConfigToCbioportalFormat(...)
+    >>> processed_summaries = obj.create_summaries_and_headers(
+    ...     patient_or_sample='patient',
+    ...     table_template='/path/to/template.txt'
+    ... )
+    >>>
+    >>> # Merge all intermediates
+    >>> df_final = merge_summaries_from_yaml_configs(
+    ...     fname_databricks_env='/path/to/env',
+    ...     processed_summaries=processed_summaries,
+    ...     fname_template='/path/to/template.txt',
+    ...     fname_output='/Volumes/.../final_summary.txt',
+    ...     patient_or_sample='patient'
+    ... )
+    """
+    print(f"\n{'='*80}")
+    print(f"MERGING SUMMARIES")
+    print(f"{'='*80}\n")
+
+    # Create merger
+    merger = SummaryMerger(
+        fname_databricks_env=fname_databricks_env,
+        fname_template=fname_template,
+        patient_or_sample=patient_or_sample
+    )
+
+    # Merge all intermediates
+    merger.merge_all_intermediates(processed_summaries)
+
+    # Create final summary
+    df_final = merger.create_final_summary()
+
+    # Save
+    merger.save_final_summary(
+        fname_output=fname_output,
+        save_to_table=save_to_table,
+        catalog=catalog,
+        schema=schema,
+        table_name=table_name
+    )
+
+    print(f"\n{'='*80}")
+    print(f"MERGE COMPLETE")
+    print(f"{'='*80}")
+    print(f"Output: {fname_output}")
+    print(f"Shape: {df_final.shape}")
+    print(f"{'='*80}\n")
 
     return df_final

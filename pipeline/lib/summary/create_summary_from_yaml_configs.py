@@ -13,8 +13,7 @@ This replaces the codebook-based approach with a YAML config-based approach:
 Usage:
     obj = YamlConfigToCbioportalFormat(
         fname_databricks_env=fname_databricks_env,
-        config_dir='pipeline/config/summaries',
-        volume_path_summary_intermediate='/Volumes/.../intermediate_files',
+        config_dir='config/summaries',
         production_or_test='production',
         cohort='mskimpact'
     )
@@ -22,8 +21,7 @@ Usage:
     # Process all summaries
     obj.create_summaries_and_headers(
         patient_or_sample='patient',
-        fname_manifest='/Volumes/.../manifest_patient.csv',
-        table_template='cdsi_prod.schema.patient_template'
+        table_template='/path/to/template.txt'
     )
 """
 import os
@@ -65,7 +63,6 @@ class YamlConfigToCbioportalFormat(object):
         self,
         fname_databricks_env: str,
         config_dir: str,
-        volume_path_summary_intermediate: str,
         production_or_test: str = 'production',
         cohort: str = 'mskimpact'
     ):
@@ -78,8 +75,6 @@ class YamlConfigToCbioportalFormat(object):
             Path to Databricks environment file
         config_dir : str
             Directory containing YAML configuration files
-        volume_path_summary_intermediate : str
-            Base path for intermediate files
         production_or_test : str
             'production' or 'test' - determines which source tables to use
         cohort : str
@@ -87,7 +82,6 @@ class YamlConfigToCbioportalFormat(object):
         """
         self._fname_databricks_env = fname_databricks_env
         self._config_dir = config_dir
-        self._volume_path_summary_intermediate = volume_path_summary_intermediate
         self._production_or_test = production_or_test
         self._cohort = cohort
 

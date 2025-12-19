@@ -57,7 +57,6 @@ def process_single_summary(args):
     obj = YamlConfigToCbioportalFormat(
         fname_databricks_env=args.databricks_env,
         config_dir=os.path.dirname(args.yaml_config),
-        volume_path_summary_intermediate='',  # Not used for single file
         production_or_test=args.production_or_test,
         cohort=args.cohort
     )
@@ -105,7 +104,6 @@ def process_all_summaries(args):
     obj = YamlConfigToCbioportalFormat(
         fname_databricks_env=args.databricks_env,
         config_dir=args.config_dir,
-        volume_path_summary_intermediate='',  # Not used
         production_or_test=args.production_or_test,
         cohort=args.cohort
     )
