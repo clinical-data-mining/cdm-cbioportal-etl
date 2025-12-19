@@ -118,7 +118,7 @@ class SummaryConfigProcessor:
         Parameters
         ----------
         df_anchor : pd.DataFrame
-            Anchor dates dataframe with columns: MRN, DMP_ID, DTE_TUMOR_SEQUENCING
+            Anchor dates dataframe with columns: MRN, DMP_ID, DATE_TUMOR_SEQUENCING
         df_template : pd.DataFrame
             Template dataframe with PATIENT_ID or SAMPLE_ID column
 
@@ -177,7 +177,7 @@ class SummaryConfigProcessor:
         df_data : pd.DataFrame
             Source data
         df_anchor : pd.DataFrame
-            Anchor dates with MRN, DMP_ID, DTE_TUMOR_SEQUENCING
+            Anchor dates with MRN, DMP_ID, DATE_TUMOR_SEQUENCING
 
         Returns
         -------
@@ -196,7 +196,7 @@ class SummaryConfigProcessor:
             df_merged = df_merged.drop(columns=['MRN'])
         else:
             # For other keys (like SAMPLE_ID), merge on DMP_ID
-            df_anchor_subset = df_anchor[['DMP_ID', 'DTE_TUMOR_SEQUENCING']].drop_duplicates()
+            df_anchor_subset = df_anchor[['DMP_ID', 'DATE_TUMOR_SEQUENCING']].drop_duplicates()
             df_merged = df_anchor_subset.merge(
                 right=df_data,
                 how='inner',
@@ -236,9 +236,9 @@ class SummaryConfigProcessor:
         print(f"Converting {len(date_columns)} date columns to intervals")
 
         # Ensure anchor date is datetime
-        if 'DTE_TUMOR_SEQUENCING' in df_data.columns:
-            df_data['DTE_TUMOR_SEQUENCING'] = pd.to_datetime(
-                df_data['DTE_TUMOR_SEQUENCING'], errors='coerce'
+        if 'DATE_TUMOR_SEQUENCING' in df_data.columns:
+            df_data['DATE_TUMOR_SEQUENCING'] = pd.to_datetime(
+                df_data['DATE_TUMOR_SEQUENCING'], errors='coerce'
             )
 
         # Convert each date column
@@ -246,11 +246,11 @@ class SummaryConfigProcessor:
             if col in df_data.columns:
                 print(f"  Converting {col}")
                 df_data[col] = pd.to_datetime(df_data[col], errors='coerce')
-                df_data[col] = (df_data[col] - df_data['DTE_TUMOR_SEQUENCING']).dt.days
+                df_data[col] = (df_data[col] - df_data['DATE_TUMOR_SEQUENCING']).dt.days
 
         # Drop anchor date column
-        if 'DTE_TUMOR_SEQUENCING' in df_data.columns:
-            df_data = df_data.drop(columns=['DTE_TUMOR_SEQUENCING'])
+        if 'DATE_TUMOR_SEQUENCING' in df_data.columns:
+            df_data = df_data.drop(columns=['DATE_TUMOR_SEQUENCING'])
 
         return df_data
 
