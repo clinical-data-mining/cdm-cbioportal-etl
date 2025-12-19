@@ -62,8 +62,8 @@ def process_single_summary(args):
         cohort=args.cohort
     )
 
-    # Load template
-    df_template = obj._load_template(args.template)
+    # Load template (subset to relevant ID column)
+    df_template = obj._load_template(args.template, patient_or_sample)
 
     # Process the single summary
     summary_info = obj.process_single_summary(

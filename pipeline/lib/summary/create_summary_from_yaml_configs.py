@@ -112,19 +112,24 @@ class YamlConfigToCbioportalFormat(object):
         """Return the loaded anchor dates dataframe."""
         return self._df_anchor
 
-    def _load_template(self, table_template: str) -> pd.DataFrame:
+    def _load_template(self, table_template: str, patient_or_sample: str = None) -> pd.DataFrame:
         """
         Load template table and extract data portion.
+
+        For patient summaries, extracts only PATIENT_ID column.
+        For sample summaries, extracts only SAMPLE_ID column.
 
         Parameters
         ----------
         table_template : str
             Table name, volume path, or local file path to template
+        patient_or_sample : str, optional
+            'patient' or 'sample' to determine which ID column to keep
 
         Returns
         -------
         pd.DataFrame
-            Template data (without header rows)
+            Template data with only the relevant ID column (deduplicated)
         """
         print(f'Loading template: {table_template}')
 
@@ -163,6 +168,26 @@ class YamlConfigToCbioportalFormat(object):
 
         print(f'  Template shape (data only): {df_template.shape}')
         print(f'  Template columns: {list(df_template.columns)}')
+
+        # Subset to relevant ID column and drop duplicates
+        if patient_or_sample:
+            id_column = 'PATIENT_ID' if patient_or_sample == 'patient' else 'SAMPLE_ID'
+
+            if id_column in df_template.columns:
+                print(f'  Subsetting to {id_column} column only')
+                df_template = df_template[[id_column]].copy()
+
+                # Drop duplicates
+                original_rows = df_template.shape[0]
+                df_template = df_template.drop_duplicates()
+                deduplicated_rows = df_template.shape[0]
+
+                if original_rows != deduplicated_rows:
+                    print(f'  Dropped {original_rows - deduplicated_rows} duplicate rows')
+
+                print(f'  Final template shape: {df_template.shape}')
+            else:
+                raise ValueError(f"Template does not have {id_column} column. Available: {list(df_template.columns)}")
 
         return df_template
 
@@ -338,8 +363,8 @@ class YamlConfigToCbioportalFormat(object):
         # Load anchor dates
         df_anchor = self._df_anchor
 
-        # Load template
-        df_template = self._load_template(table_template)
+        # Load template (subset to relevant ID column and deduplicate)
+        df_template = self._load_template(table_template, patient_or_sample)
 
         # Get all YAML files
         yaml_files = self._get_yaml_files(patient_or_sample)
