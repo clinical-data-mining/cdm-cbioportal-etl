@@ -109,11 +109,12 @@ class SummaryMerger:
         self.df_merged_data = df_template.copy()
 
         # Initialize merged header with ID column header
-        self.df_merged_header = pd.DataFrame({
+        df_header = pd.DataFrame({
             0: [self.id_label, 'STRING', '1', self.id_column]
         })
+        self.df_merged_header = df_header
 
-        return df_template
+        return df_header, df_template
 
     def _create_header_from_config(self, config: Dict) -> pd.DataFrame:
         """
