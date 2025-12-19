@@ -10,13 +10,13 @@ columns:
 date_columns: []
 dest_prod:
   catalog: cdsi_eng_phi
-  schema: cdm_eng_diagnosis
-  volume_name: cdm_eng_diagnosis_volume
+  schema: cdm_eng_cbioportal_etl
+  volume_name: cdm_eng_cbioportal_etl_volume
   filename: cancer_diagnosis_summary_summary.tsv
 dest_dev:
   catalog: cdsi_eng_phi
-  schema: cdm_eng_diagnosis
-  volume_name: cdm_eng_diagnosis_volume
+  schema: cdm_eng_cbioportal_etl
+  volume_name: cdm_eng_cbioportal_etl_volume_dev
   filename: cancer_diagnosis_summary_summary.tsv
 column_metadata:
   STAGE_HIGHEST_RECORDED:
