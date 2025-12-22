@@ -8,14 +8,14 @@ columns:
 - HISTORY_OF_PDL1
 date_columns: []
 dest_prod:
-  catalog: cdsi_prod
-  schema: cdsi_data_deid
-  volume_name: cdsi_data_deid_volume
+  catalog: cdsi_eng_phi
+  schema: cdm_eng_cbioportal_etl
+  volume_name: cdm_eng_cbioportal_etl_volume
   filename: pathology_pd_l1_patient_summary_summary.tsv
 dest_dev:
-  catalog: cdsi_prod
-  schema: cdsi_data_deid
-  volume_name: cdsi_data_deid_volume_dev
+  catalog: cdsi_eng_phi
+  schema: cdm_eng_cbioportal_etl
+  volume_name: cdm_eng_cbioportal_etl_volume_dev
   filename: pathology_pd_l1_patient_summary_summary.tsv
 column_metadata:
   HISTORY_OF_PDL1:
