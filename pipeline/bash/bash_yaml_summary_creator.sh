@@ -8,8 +8,9 @@ CONDA_ENV_NAME=$3
 YAML_CONFIG=$4
 DATABRICKS_ENV=$5
 PATH_DATAHUB=$6
-PROD_OR_TEST=$7
-SAVE_TO_TABLE=${8:-""}  # Optional: --save-to-table flag
+TEMPLATE=$7  # Single template file for both patient and sample
+PROD_OR_TEST=$8
+SAVE_TO_TABLE=${9:-""}  # Optional: --save-to-table flag
 
 test -n "$REPO_LOCATION"
 test -n "$CONDA_INSTALL_PATH"
@@ -17,6 +18,7 @@ test -n "$CONDA_ENV_NAME"
 test -n "$YAML_CONFIG"
 test -n "$DATABRICKS_ENV"
 test -n "$PATH_DATAHUB"
+test -n "$TEMPLATE"
 test -n "$PROD_OR_TEST"
 
 # Activate virtual env
@@ -36,6 +38,7 @@ if [ "$SAVE_TO_TABLE" == "--save-to-table" ]; then
         --config_yaml=$YAML_CONFIG \
         --databricks_env=$DATABRICKS_ENV \
         --path_datahub=$PATH_DATAHUB \
+        --template=$TEMPLATE \
         --production_or_test=$PROD_OR_TEST \
         --save_to_table
 else
@@ -44,5 +47,6 @@ else
         --config_yaml=$YAML_CONFIG \
         --databricks_env=$DATABRICKS_ENV \
         --path_datahub=$PATH_DATAHUB \
+        --template=$TEMPLATE \
         --production_or_test=$PROD_OR_TEST
 fi
