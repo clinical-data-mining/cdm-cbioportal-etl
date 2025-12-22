@@ -169,11 +169,30 @@ class YamlConfigToCbioportalFormat(object):
 
         # Subset to relevant ID column and drop duplicates
         if patient_or_sample:
-            id_column = 'PATIENT_ID' if patient_or_sample == 'patient' else 'SAMPLE_ID'
+            # Check for both standard names and cBioPortal format names (with # prefix)
+            if patient_or_sample == 'patient':
+                id_column_options = ['PATIENT_ID', '#Patient Identifier']
+                standard_name = 'PATIENT_ID'
+            else:
+                id_column_options = ['SAMPLE_ID', '#Sample Identifier']
+                standard_name = 'SAMPLE_ID'
 
-            if id_column in df_template.columns:
+            # Find which column exists
+            id_column = None
+            for col in id_column_options:
+                if col in df_template.columns:
+                    id_column = col
+                    break
+
+            if id_column:
+                print(f'  Found ID column: {id_column}')
                 print(f'  Subsetting to {id_column} column only')
                 df_template = df_template[[id_column]].copy()
+
+                # Rename to standard name if needed
+                if id_column != standard_name:
+                    df_template = df_template.rename(columns={id_column: standard_name})
+                    print(f'  Renamed {id_column} -> {standard_name}')
 
                 # Drop duplicates
                 original_rows = df_template.shape[0]
@@ -185,7 +204,7 @@ class YamlConfigToCbioportalFormat(object):
 
                 print(f'  Final template shape: {df_template.shape}')
             else:
-                raise ValueError(f"Template does not have {id_column} column. Available: {list(df_template.columns)}")
+                raise ValueError(f"Template does not have any ID column. Looking for: {id_column_options}. Available: {list(df_template.columns)}")
 
         return df_template
 

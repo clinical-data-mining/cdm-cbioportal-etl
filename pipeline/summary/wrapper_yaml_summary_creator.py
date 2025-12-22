@@ -234,6 +234,11 @@ def main():
         help="Path to datahub for output files"
     )
     parser.add_argument(
+        "--template",
+        required=True,
+        help="Path to template file containing sample IDs (local file or Databricks path). Used for both patient and sample - different columns are subset and duplicates dropped."
+    )
+    parser.add_argument(
         "--production_or_test",
         required=True,
         choices=["test", "production"],
@@ -263,13 +268,14 @@ def main():
     # Cohort (extract from volume path or hardcode)
     cohort = 'mskimpact'
 
-    # Template paths (from databricks volume intermediate folder)
+    # Template path (same file for both patient and sample)
+    # Patient: extracts PATIENT_ID column and drops duplicates
+    # Sample: extracts SAMPLE_ID column and drops duplicates
+    template_file = args.template
+
+    # Output paths for data and header files (volume)
     volume_intermediate = databricks_config['volume_path_intermediate']
     volume_base_path = f"/Volumes/{catalog}/{schema}/{volume}/{volume_intermediate}"
-
-    template_info = obj_yaml.return_template_info()
-    template_patient = f"{volume_base_path}{template_info['fname_p_sum_template_cdsi']}"
-    template_sample = f"{volume_base_path}{template_info['fname_s_sum_template_cdsi']}"
 
     # Data files (volume + table)
     output_patient_data = f"{volume_base_path}data_clinical_patient_data.txt"
@@ -284,12 +290,12 @@ def main():
     output_patient_combined = output_files['summary_patient']
     output_sample_combined = output_files['summary_sample']
 
-    # Create summaries
+    # Create summaries (using same template file for both patient and sample)
     create_yaml_summary(
         fname_databricks_env=args.databricks_env,
         config_dir=config_dir,
-        template_patient=template_patient,
-        template_sample=template_sample,
+        template_patient=template_file,
+        template_sample=template_file,
         output_patient_data=output_patient_data,
         output_sample_data=output_sample_data,
         output_patient_header=output_patient_header,
