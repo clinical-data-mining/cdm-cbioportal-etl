@@ -36,7 +36,7 @@ def create_cbioportal_summary(
     obj_format_cbio.create_summaries_and_headers(
         patient_or_sample=patient_or_sample,
         fname_manifest=fname_manifest,
-        fname_template=fname_summary_template,
+        table_template=fname_summary_template,
         production_or_test=production_or_test
     )
 
