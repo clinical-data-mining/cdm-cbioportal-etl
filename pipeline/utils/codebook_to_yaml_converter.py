@@ -20,12 +20,12 @@ def convert_codebook_to_yaml_configs(
     fname_metadata: str,
     fname_tables: str,
     output_dir: str,
-    default_catalog_prod: str = 'cdsi_prod',
-    default_schema_prod: str = 'cdsi_data_deid',
-    default_volume_prod: str = 'cdsi_data_deid_volume',
-    default_catalog_dev: str = 'cdsi_dev',
-    default_schema_dev: str = 'cdsi_data_deid_dev',
-    default_volume_dev: str = 'cdsi_data_deid_volume_dev'
+    default_catalog_prod: str,
+    default_schema_prod: str,
+    default_volume_prod: str,
+    default_catalog_dev: str,
+    default_schema_dev: str,
+    default_volume_dev: str
 ):
     """
     Convert codebook CSV files to YAML configuration files.
@@ -246,32 +246,32 @@ if __name__ == '__main__':
     )
     parser.add_argument(
         '--catalog_prod',
-        default='cdsi_prod',
+        default='cdsi_eng_phi',
         help='Production catalog name'
     )
     parser.add_argument(
         '--schema_prod',
-        default='cdsi_data_deid',
+        default='cdm_eng_cbioportal_etl',
         help='Production schema name'
     )
     parser.add_argument(
         '--volume_prod',
-        default='cdsi_data_deid_volume',
+        default='cdm_eng_cbioportal_etl_volume',
         help='Production volume name'
     )
     parser.add_argument(
         '--catalog_dev',
-        default='cdsi_dev',
+        default='cdsi_eng_phi',
         help='Dev catalog name'
     )
     parser.add_argument(
         '--schema_dev',
-        default='cdsi_data_deid_dev',
+        default='cdm_eng_cbioportal_etl',
         help='Dev schema name'
     )
     parser.add_argument(
         '--volume_dev',
-        default='cdsi_data_deid_volume_dev',
+        default='cdm_eng_cbioportal_etl_volume_dev',
         help='Dev volume name'
     )
 
