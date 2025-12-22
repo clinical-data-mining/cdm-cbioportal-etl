@@ -62,12 +62,19 @@ class SummaryMerger:
         # Initialize Databricks API
         self.obj_db = DatabricksAPI(fname_databricks_env=fname_databricks_env)
 
-        # Load template
-        self.df_template_header, self.df_template_data = self._load_template()
+        # Load template and initialize merged structures
+        df_template = self._load_template()
 
-        # Storage for merged results
-        self.df_merged_header = None
-        self.df_merged_data = None
+        # Initialize merged data with template (just the ID column)
+        self.df_merged_data = df_template.copy()
+
+        # Initialize merged header with ID column header
+        df_header = pd.DataFrame({
+            0: [self.id_label, 'STRING', '1', self.id_column]
+        })
+        self.df_merged_header = df_header
+
+        # Storage for final result
         self.df_final = None
 
     def _load_template(self) -> pd.DataFrame:
@@ -105,16 +112,7 @@ class SummaryMerger:
 
         print(f"  Template loaded: {df_template.shape[0]} unique {self.id_column} values")
 
-        # Initialize merged data with template (just the ID column)
-        self.df_merged_data = df_template.copy()
-
-        # Initialize merged header with ID column header
-        df_header = pd.DataFrame({
-            0: [self.id_label, 'STRING', '1', self.id_column]
-        })
-        self.df_merged_header = df_header
-
-        return df_header, df_template
+        return df_template
 
     def _create_header_from_config(self, config: Dict) -> pd.DataFrame:
         """
