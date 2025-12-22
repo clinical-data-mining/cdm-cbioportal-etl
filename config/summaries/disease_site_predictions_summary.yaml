@@ -1,0 +1,109 @@
+summary_id: disease_site_predictions_summary
+patient_or_sample: patient
+source_table_prod: cdsi_prod.cdm_idbw_impact_pipeline_prod.radiology_tumor_site_predictions_full_summary
+source_table_dev: cdsi_prod.cdm_idbw_impact_pipeline_prod.radiology_tumor_site_predictions_full_summary
+key_column: MRN
+columns:
+- MRN
+- adrenal_glands
+- Bone
+- CNS_Brain
+- Intra_Abdominal
+- Liver
+- Lung
+- lymph_nodes
+- Other
+- Pleura
+- Reproductive_Organs
+date_columns: []
+dest_prod:
+  catalog: cdsi_eng_phi
+  schema: cdm_eng_cbioportal_etl
+  volume_name: cdm_eng_cbioportal_etl_volume
+  filename: disease_site_predictions_summary_summary.tsv
+dest_dev:
+  catalog: cdsi_eng_phi
+  schema: cdm_eng_cbioportal_etl
+  volume_name: cdm_eng_cbioportal_etl_volume_dev
+  filename: disease_site_predictions_summary_summary.tsv
+column_metadata:
+  adrenal_glands:
+    label: 'Tumor Site: Adrenal Glands (NLP)'
+    datatype: STRING
+    comment: 'Tumor Site: Adrenal Glands (NLP) ---DESCRIPTION: History of Adrenal
+      Gland as a tumor site as indicated in radiology report impression ---MISSING
+      DATA: No CT/PET/MRI radiology report available for patient. Impression section
+      missing from report. ---SOURCE: NLP generated from radiology reports'
+    fill_value: Unknown
+  Bone:
+    label: 'Tumor Site: Bone (NLP)'
+    datatype: STRING
+    comment: 'Tumor Site: Bone (NLP) ---DESCRIPTION: History of Bone as a tumor site
+      as indicated in radiology report impression ---MISSING DATA: No CT/PET/MRI radiology
+      report available for patient. Impression section missing from report. ---SOURCE:
+      NLP generated from radiology reports'
+    fill_value: Unknown
+  CNS_Brain:
+    label: 'Tumor Site: CNS/Brain (NLP)'
+    datatype: STRING
+    comment: 'Tumor Site: CNS/Brain (NLP) ---DESCRIPTION: History of CNS/Brain as
+      a tumor site as indicated in radiology report impression ---MISSING DATA: No
+      CT/PET/MRI radiology report available for patient. Impression section missing
+      from report. ---SOURCE: NLP generated from radiology reports'
+    fill_value: Unknown
+  Intra_Abdominal:
+    label: 'Tumor Site: Intra-Abdominal (NLP)'
+    datatype: STRING
+    comment: 'Tumor Site: Intra-Abdominal (NLP) ---DESCRIPTION: History of Intra-Abdominal
+      as a tumor site as indicated in radiology report impression ---MISSING DATA:
+      No CT/PET/MRI radiology report available for patient. Impression section missing
+      from report. ---SOURCE: NLP generated from radiology reports'
+    fill_value: Unknown
+  Liver:
+    label: 'Tumor Site: Liver (NLP)'
+    datatype: STRING
+    comment: 'Tumor Site: Liver (NLP) ---DESCRIPTION: History of Liver as a tumor
+      site as indicated in radiology report impression ---MISSING DATA: No CT/PET/MRI
+      radiology report available for patient. Impression section missing from report.
+      ---SOURCE: NLP generated from radiology reports'
+    fill_value: Unknown
+  Lung:
+    label: 'Tumor Site: Lung (NLP)'
+    datatype: STRING
+    comment: 'Tumor Site: Lung (NLP) ---DESCRIPTION: History of Lung as a tumor site
+      as indicated in radiology report impression ---MISSING DATA: No CT/PET/MRI radiology
+      report available for patient. Impression section missing from report. ---SOURCE:
+      NLP generated from radiology reports'
+    fill_value: Unknown
+  lymph_nodes:
+    label: 'Tumor Site: Lymph Node (NLP)'
+    datatype: STRING
+    comment: 'Tumor Site: Lymph Node (NLP) ---DESCRIPTION: History of LN as a tumor
+      site as indicated in radiology report impression ---MISSING DATA: No CT/PET/MRI
+      radiology report available for patient. Impression section missing from report.
+      ---SOURCE: NLP generated from radiology reports'
+    fill_value: Unknown
+  Other:
+    label: 'Tumor Site: Other (NLP)'
+    datatype: STRING
+    comment: 'Tumor Site: Other (NLP) ---DESCRIPTION: History of another site as a
+      tumor site as indicated in radiology report impression ---MISSING DATA: No CT/PET/MRI
+      radiology report available for patient. Impression section missing from report.
+      ---SOURCE: NLP generated from radiology reports'
+    fill_value: Unknown
+  Pleura:
+    label: 'Tumor Site: Pleura (NLP)'
+    datatype: STRING
+    comment: 'Tumor Site: Pleura (NLP) ---DESCRIPTION: History of Pleura as a tumor
+      site as indicated in radiology report impression ---MISSING DATA: No CT/PET/MRI
+      radiology report available for patient. Impression section missing from report.
+      ---SOURCE: NLP generated from radiology reports'
+    fill_value: Unknown
+  Reproductive_Organs:
+    label: 'Tumor Site: Reproductive Organs (NLP)'
+    datatype: STRING
+    comment: 'Tumor Site: Reproductive Organs (NLP) ---DESCRIPTION: History of Reproductive
+      Organs as a tumor site as indicated in radiology report impression ---MISSING
+      DATA: No CT/PET/MRI radiology report available for patient. Impression section
+      missing from report. ---SOURCE: NLP generated from radiology reports'
+    fill_value: Unknown

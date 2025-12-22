@@ -1,0 +1,31 @@
+summary_id: prior_medications_prediction
+patient_or_sample: patient
+source_table_prod: cdsi_prod.cdm_idbw_impact_pipeline_prod.prior_tx_inferences_impact_combined
+source_table_dev: cdsi_prod.cdm_idbw_impact_pipeline_prod.prior_tx_inferences_impact_combined
+key_column: MRN
+columns:
+- MRN
+- PRIOR_MED_TO_MSK
+date_columns: []
+dest_prod:
+  catalog: cdsi_eng_phi
+  schema: cdm_eng_cbioportal_etl
+  volume_name: cdm_eng_cbioportal_etl_volume
+  filename: prior_medications_prediction_summary.tsv
+dest_dev:
+  catalog: cdsi_eng_phi
+  schema: cdm_eng_cbioportal_etl
+  volume_name: cdm_eng_cbioportal_etl_volume_dev
+  filename: prior_medications_prediction_summary.tsv
+column_metadata:
+  PRIOR_MED_TO_MSK:
+    label: Prior Treatment to MSK (NLP)
+    datatype: STRING
+    comment: 'Prior Treatment to MSK (NLP) ---DESCRIPTION: Binary indication if patient
+      recieve anti-cancer medication prior to MSK ---MISSING DATA: Initial consult
+      (IC) notes need to be (1) within a list of acceptable note types, (2) be within
+      90 days of first MSK dates if patients have multiple primaries. Note types consist
+      of medical oncologists, radiation oncologists, surgery, inpatient services and
+      others, as they are most likely to contain information about external treatments
+      prior to MSK. ---SOURCE: NLP generated from medical oncology notes'
+    fill_value: Unknown
