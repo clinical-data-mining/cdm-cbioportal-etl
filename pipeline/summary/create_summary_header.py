@@ -62,28 +62,46 @@ def create_header_from_yamls(
         Header in tall format with columns:
         - column_name
         - display_label
-        - datatype
         - description
+        - datatype
+        - priority
     """
     print(f"\n{'='*80}")
     print(f"CREATING HEADER FROM {len(df_manifest)} YAML CONFIGS")
     print(f"{'='*80}\n")
 
-    # Determine ID column
-    id_column = 'PATIENT_ID' if patient_or_sample == 'patient' else 'SAMPLE_ID'
-    id_label = '#Patient Identifier' if patient_or_sample == 'patient' else '#Sample Identifier'
-
-    # Initialize header with ID column
-    header_rows = [
-        {
-            'column_name': id_column,
-            'display_label': id_label,
-            'datatype': 'STRING',
-            'description': '1'
-        }
-    ]
-
-    print(f"Initialized header with ID column: {id_column}")
+    # Initialize header with ID columns
+    if patient_or_sample == 'patient':
+        # Patient summaries: only PATIENT_ID
+        header_rows = [
+            {
+                'column_name': 'PATIENT_ID',
+                'display_label': '#Patient Identifier',
+                'description': 'Identifier to uniquely specify a patient.',
+                'datatype': 'STRING',
+                'priority': '0'
+            }
+        ]
+        print("Initialized header with ID column: PATIENT_ID")
+    else:
+        # Sample summaries: both SAMPLE_ID and PATIENT_ID
+        header_rows = [
+            {
+                'column_name': 'SAMPLE_ID',
+                'display_label': '#Sample Identifier',
+                'description': 'A unique sample identifier.',
+                'datatype': 'STRING',
+                'priority': '0'
+            },
+            {
+                'column_name': 'PATIENT_ID',
+                'display_label': 'Patient Identifier',
+                'description': 'Identifier to uniquely specify a patient.',
+                'datatype': 'STRING',
+                'priority': '0'
+            }
+        ]
+        print("Initialized header with ID columns: SAMPLE_ID, PATIENT_ID")
 
     # Process each YAML config
     for idx, row in df_manifest.iterrows():
@@ -117,13 +135,15 @@ def create_header_from_yamls(
                 label = metadata.get('label', col)
                 datatype = metadata.get('datatype', 'STRING')
                 comment = metadata.get('comment', '')
+                priority = metadata.get('priority', '1')  # Default to "1" for non-ID columns
 
                 # Add to header rows
                 header_rows.append({
                     'column_name': col.upper(),
                     'display_label': label,
+                    'description': comment,
                     'datatype': datatype,
-                    'description': comment
+                    'priority': priority
                 })
                 added_cols += 1
 

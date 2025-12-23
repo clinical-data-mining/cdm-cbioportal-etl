@@ -50,27 +50,34 @@ def load_template_from_local(fname_template: str, patient_or_sample: str) -> pd.
     # Read from local file
     df_template = pd.read_csv(fname_template, sep='\t', dtype=str)
 
-    # Determine ID column
-    id_column = 'PATIENT_ID' if patient_or_sample == 'patient' else 'SAMPLE_ID'
-
-    # Extract ID column
-    if id_column in df_template.columns:
-        df_template = df_template[[id_column]].copy()
-
-        # Drop duplicates
-        original_rows = df_template.shape[0]
-        df_template = df_template.drop_duplicates()
-        deduplicated_rows = df_template.shape[0]
-
-        if original_rows != deduplicated_rows:
-            print(f"  Dropped {original_rows - deduplicated_rows} duplicate rows")
-
-        print(f"  Loaded {deduplicated_rows} unique {id_column} values")
+    # Determine ID columns to extract
+    if patient_or_sample == 'patient':
+        # Patient summaries: only PATIENT_ID
+        id_columns = ['PATIENT_ID']
     else:
+        # Sample summaries: both SAMPLE_ID and PATIENT_ID
+        id_columns = ['SAMPLE_ID', 'PATIENT_ID']
+
+    # Check all required columns exist
+    missing_columns = [col for col in id_columns if col not in df_template.columns]
+    if missing_columns:
         raise ValueError(
-            f"Template missing {id_column} column. "
+            f"Template missing required column(s): {missing_columns}. "
             f"Available columns: {list(df_template.columns)}"
         )
+
+    # Extract ID columns
+    df_template = df_template[id_columns].copy()
+
+    # Drop duplicates
+    original_rows = df_template.shape[0]
+    df_template = df_template.drop_duplicates()
+    deduplicated_rows = df_template.shape[0]
+
+    if original_rows != deduplicated_rows:
+        print(f"  Dropped {original_rows - deduplicated_rows} duplicate rows")
+
+    print(f"  Loaded {deduplicated_rows} unique rows with columns: {id_columns}")
 
     return df_template
 
@@ -105,10 +112,13 @@ def merge_intermediates(
     print(f"{'='*80}\n")
 
     # Initialize with template
-    id_column = 'PATIENT_ID' if patient_or_sample == 'patient' else 'SAMPLE_ID'
+    # Merge key is always the primary ID for this level
+    merge_key = 'PATIENT_ID' if patient_or_sample == 'patient' else 'SAMPLE_ID'
     df_merged = df_template.copy()
 
-    print(f"Starting with template: {df_merged.shape[0]} rows, {df_merged.shape[1]} column ({id_column})")
+    template_columns = ', '.join(df_template.columns)
+    print(f"Starting with template: {df_merged.shape[0]} rows, {df_merged.shape[1]} column(s) ({template_columns})")
+    print(f"Merge key: {merge_key}")
 
     # Merge each intermediate
     for idx, row in df_manifest.iterrows():
@@ -123,9 +133,9 @@ def merge_intermediates(
             df_intermediate = obj_db.read_db_obj(volume_path=data_path, sep='\t')
             print(f"  Loaded: {df_intermediate.shape}")
 
-            # Ensure ID column exists
-            if id_column not in df_intermediate.columns:
-                print(f"  ⚠ WARNING: {id_column} not found in intermediate. Skipping.")
+            # Ensure merge key exists
+            if merge_key not in df_intermediate.columns:
+                print(f"  ⚠ WARNING: {merge_key} not found in intermediate. Skipping.")
                 continue
 
             # Merge (left join from template)
@@ -133,7 +143,7 @@ def merge_intermediates(
             df_merged = df_merged.merge(
                 right=df_intermediate,
                 how='left',
-                on=id_column
+                on=merge_key
             )
             after_cols = df_merged.shape[1]
             new_cols = after_cols - before_cols

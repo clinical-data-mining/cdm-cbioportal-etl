@@ -39,25 +39,29 @@ def transpose_header_to_wide(df_header_tall: pd.DataFrame) -> pd.DataFrame:
     Transpose tall-format header to cBioPortal wide format.
 
     Input (tall):
-        column_name | display_label | datatype | description
-        PATIENT_ID  | #Patient Identifier | STRING | 1
-        AGE         | Age at Sequencing | NUMBER | Age in years
+        column_name | display_label | description | datatype | priority
+        PATIENT_ID  | #Patient Identifier | Identifier to... | STRING | 0
+        AGE         | Age at Sequencing | Age in years | NUMBER | 1
 
     Output (wide):
-        PATIENT_ID              | AGE
-        #Patient Identifier     | Age at Sequencing
-        STRING                  | NUMBER
-        1                       | Age in years
+        PATIENT_ID                        | AGE
+        #Patient Identifier               | Age at Sequencing
+        #Identifier to...                 | Age in years
+        #STRING                           | NUMBER
+        #0                                | 1
+        PATIENT_ID                        | AGE
+
+    Note: First column values in rows 0-3 get "#" prefix (cBioPortal convention)
 
     Parameters
     ----------
     df_header_tall : pd.DataFrame
-        Header in tall format (4 columns × N rows)
+        Header in tall format (5 columns × N rows)
 
     Returns
     -------
     pd.DataFrame
-        Header in wide format (4 rows × N columns)
+        Header in wide format (5 rows × N columns)
     """
     print(f"\n{'='*80}")
     print(f"TRANSPOSING HEADER TO CBIOPORTAL WIDE FORMAT")
@@ -66,13 +70,37 @@ def transpose_header_to_wide(df_header_tall: pd.DataFrame) -> pd.DataFrame:
 
     # Build wide format dictionary
     header_dict = {}
-    for _, row in df_header_tall.iterrows():
-        col_name = row['column_name']
+    first_column = True
+
+    for idx, row_data in df_header_tall.iterrows():
+        col_name = row_data['column_name']
+
+        # Get values for this column
+        display_label = row_data['display_label']
+        description = row_data['description']
+        datatype = row_data['datatype']
+        priority = row_data['priority']
+
+        # For the first column, add # prefix to rows 0-3
+        # (cBioPortal convention: metadata rows in first column start with #)
+        if first_column:
+            # Only add # if not already present
+            if not display_label.startswith('#'):
+                display_label = '#' + display_label
+            if not description.startswith('#'):
+                description = '#' + description
+            if not datatype.startswith('#'):
+                datatype = '#' + datatype
+            if not priority.startswith('#'):
+                priority = '#' + priority
+            first_column = False
+
         header_dict[col_name] = [
-            row['display_label'],  # Row 0
-            row['datatype'],       # Row 1
-            row['description'],    # Row 2
-            row['column_name']     # Row 3
+            display_label,   # Row 0: Display label
+            description,     # Row 1: Description
+            datatype,        # Row 2: Datatype
+            priority,        # Row 3: Priority
+            col_name         # Row 4: Column name
         ]
 
     # Create wide DataFrame
@@ -94,14 +122,14 @@ def combine_header_and_data(
     Parameters
     ----------
     df_header_wide : pd.DataFrame
-        Header in wide format (4 rows × N columns)
+        Header in wide format (5 rows × N columns)
     df_data : pd.DataFrame
         Data (M rows × N columns)
 
     Returns
     -------
     pd.DataFrame
-        Combined file (4 + M rows × N columns)
+        Combined file (5 + M rows × N columns)
     """
     print(f"\n{'='*80}")
     print(f"COMBINING HEADER AND DATA")
@@ -119,7 +147,7 @@ def combine_header_and_data(
     df_combined = pd.concat([df_header_wide, df_data], axis=0, ignore_index=True)
 
     print(f"\nCombined shape: {df_combined.shape}")
-    print(f"  Header rows: 4")
+    print(f"  Header rows: 5")
     print(f"  Data rows:   {df_data.shape[0]}")
     print(f"  Total rows:  {df_combined.shape[0]}")
 
@@ -285,7 +313,7 @@ def main():
     print(f"Databricks: {args.output_volume_path}")
     print(f"Local:      {args.output_local_path}")
     print(f"Shape:      {df_combined.shape[0]} rows × {df_combined.shape[1]} columns")
-    print(f"            (4 header rows + {df_data.shape[0]} data rows)")
+    print(f"            (5 header rows + {df_data.shape[0]} data rows)")
     print(f"{'#'*80}\n")
 
 

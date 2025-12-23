@@ -93,27 +93,34 @@ def load_template_from_local(fname_template: str, patient_or_sample: str) -> pd.
     # Read from local file
     df_template = pd.read_csv(fname_template, sep='\t', dtype=str)
 
-    # Determine ID column
-    id_column = 'PATIENT_ID' if patient_or_sample == 'patient' else 'SAMPLE_ID'
-
-    # Extract ID column
-    if id_column in df_template.columns:
-        df_template = df_template[[id_column]].copy()
-
-        # Drop duplicates
-        original_rows = df_template.shape[0]
-        df_template = df_template.drop_duplicates()
-        deduplicated_rows = df_template.shape[0]
-
-        if original_rows != deduplicated_rows:
-            print(f"  Dropped {original_rows - deduplicated_rows} duplicate rows")
-
-        print(f"  Loaded {deduplicated_rows} unique {id_column} values")
+    # Determine ID columns to extract
+    if patient_or_sample == 'patient':
+        # Patient summaries: only PATIENT_ID
+        id_columns = ['PATIENT_ID']
     else:
+        # Sample summaries: both SAMPLE_ID and PATIENT_ID
+        id_columns = ['SAMPLE_ID', 'PATIENT_ID']
+
+    # Check all required columns exist
+    missing_columns = [col for col in id_columns if col not in df_template.columns]
+    if missing_columns:
         raise ValueError(
-            f"Template missing {id_column} column. "
+            f"Template missing required column(s): {missing_columns}. "
             f"Available columns: {list(df_template.columns)}"
         )
+
+    # Extract ID columns
+    df_template = df_template[id_columns].copy()
+
+    # Drop duplicates
+    original_rows = df_template.shape[0]
+    df_template = df_template.drop_duplicates()
+    deduplicated_rows = df_template.shape[0]
+
+    if original_rows != deduplicated_rows:
+        print(f"  Dropped {original_rows - deduplicated_rows} duplicate rows")
+
+    print(f"  Loaded {deduplicated_rows} unique rows with columns: {id_columns}")
 
     return df_template
 
