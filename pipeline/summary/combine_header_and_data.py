@@ -75,11 +75,11 @@ def transpose_header_to_wide(df_header_tall: pd.DataFrame) -> pd.DataFrame:
     for idx, row_data in df_header_tall.iterrows():
         col_name = row_data['column_name']
 
-        # Get values for this column
-        display_label = row_data['display_label']
-        description = row_data['description']
-        datatype = row_data['datatype']
-        priority = row_data['priority']
+        # Get values for this column and ensure they are strings
+        display_label = str(row_data['display_label'])
+        description = str(row_data['description'])
+        datatype = str(row_data['datatype'])
+        priority = str(row_data['priority'])
 
         # For the first column, add # prefix to rows 0-3
         # (cBioPortal convention: metadata rows in first column start with #)
