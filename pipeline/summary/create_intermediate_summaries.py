@@ -30,8 +30,46 @@ import pandas as pd
 from typing import List, Dict
 
 from lib.summary.summary_config_processor import SummaryConfigProcessor
-from lib.utils import get_anchor_dates
 from msk_cdm.databricks import DatabricksAPI
+from msk_cdm.data_processing import mrn_zero_pad
+
+
+def load_anchor_dates(
+    table_name: str,
+    obj_db: DatabricksAPI
+) -> pd.DataFrame:
+    """
+    Load anchor dates from Databricks table.
+
+    Parameters
+    ----------
+    table_name : str
+        Databricks table name (e.g., 'catalog.schema.table')
+    obj_db : DatabricksAPI
+        Databricks API object
+
+    Returns
+    -------
+    pd.DataFrame
+        Anchor dates with columns: MRN, DMP_ID, DATE_TUMOR_SEQUENCING
+    """
+    print(f"Loading anchor dates from table: {table_name}")
+
+    sql = f"SELECT * FROM {table_name}"
+    df_anchor = obj_db.query_from_sql(sql=sql)
+
+    # Zero-pad MRN
+    df_anchor = mrn_zero_pad(df=df_anchor, col_mrn='MRN')
+
+    # Convert DATE_TUMOR_SEQUENCING to datetime
+    if 'DATE_TUMOR_SEQUENCING' in df_anchor.columns:
+        df_anchor['DATE_TUMOR_SEQUENCING'] = pd.to_datetime(
+            df_anchor['DATE_TUMOR_SEQUENCING'], errors='coerce'
+        )
+
+    print(f"  Loaded {df_anchor.shape[0]} anchor dates")
+
+    return df_anchor
 
 
 def load_template_from_local(fname_template: str, patient_or_sample: str) -> pd.DataFrame:
@@ -249,6 +287,11 @@ def main():
         help="Path to Databricks environment file"
     )
     parser.add_argument(
+        "--anchor_dates",
+        required=True,
+        help="Databricks table name for anchor dates (e.g., 'catalog.schema.table_name')"
+    )
+    parser.add_argument(
         "--template",
         required=True,
         help="Local filesystem path to template file"
@@ -282,6 +325,7 @@ def main():
     print(f"# INTERMEDIATE SUMMARY CREATOR")
     print(f"{'#'*80}")
     print(f"Config directory:    {args.config_dir}")
+    print(f"Anchor dates table:  {args.anchor_dates}")
     print(f"Template:            {args.template}")
     print(f"Patient/Sample:      {args.patient_or_sample}")
     print(f"Production/Test:     {args.production_or_test}")
@@ -293,9 +337,11 @@ def main():
     obj_db = DatabricksAPI(fname_databricks_env=args.databricks_env)
 
     # Load anchor dates
-    print("Loading anchor dates for deidentification...")
-    df_anchor = get_anchor_dates(args.databricks_env)
-    print(f"  Loaded {df_anchor.shape[0]} anchor dates\n")
+    df_anchor = load_anchor_dates(
+        table_name=args.anchor_dates,
+        obj_db=obj_db
+    )
+    print()
 
     # Load template from local filesystem
     df_template = load_template_from_local(
