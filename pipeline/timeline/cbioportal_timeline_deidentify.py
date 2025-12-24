@@ -110,13 +110,13 @@ def compute_os_date(fname_dbx, fname_demo):
     )
 
     df_demo = mrn_zero_pad(df=df_demo, col_mrn=COL_ID)
-    df_demo['PLA_LAST_CONTACT_DTE'] = pd.to_datetime(df_demo['PLA_LAST_CONTACT_DTE'], errors='coerce')
-    df_demo['PT_DEATH_DTE'] = pd.to_datetime(df_demo['PT_DEATH_DTE'], errors='coerce')
+    df_demo['PLA_LAST_CONTACT_DTE'] = pd.to_datetime(df_demo['PLA_LAST_CONTACT_DTE'], errors='coerce', format='mixed')
+    df_demo['PT_DEATH_DTE'] = pd.to_datetime(df_demo['PT_DEATH_DTE'], errors='coerce', format='mixed')
 
     # Remove timezone info to ensure dates are tz-naive
-    if pd.api.types.is_datetime64tz_dtype(df_demo['PLA_LAST_CONTACT_DTE']):
+    if isinstance(df_demo['PLA_LAST_CONTACT_DTE'].dtype, pd.DatetimeTZDtype):
         df_demo['PLA_LAST_CONTACT_DTE'] = df_demo['PLA_LAST_CONTACT_DTE'].dt.tz_localize(None)
-    if pd.api.types.is_datetime64tz_dtype(df_demo['PT_DEATH_DTE']):
+    if isinstance(df_demo['PT_DEATH_DTE'].dtype, pd.DatetimeTZDtype):
         df_demo['PT_DEATH_DTE'] = df_demo['PT_DEATH_DTE'].dt.tz_localize(None)
 
     df_demo[COL_OS_DATE] = df_demo['PT_DEATH_DTE'].fillna(df_demo['PLA_LAST_CONTACT_DTE'])
@@ -365,10 +365,10 @@ def main():
     print(f'\nLoading anchor dates: {args.fname_deid}')
     df_anchor = load_dbx_table(fname_dbx=args.fname_dbx, table_name=args.fname_deid)
     df_anchor = mrn_zero_pad(df=df_anchor, col_mrn='MRN')
-    df_anchor[COL_ANCHOR_DATE] = pd.to_datetime(df_anchor[COL_ANCHOR_DATE], errors='coerce')
+    df_anchor[COL_ANCHOR_DATE] = pd.to_datetime(df_anchor[COL_ANCHOR_DATE], errors='coerce', format='mixed')
 
     # Remove timezone info to ensure dates are tz-naive
-    if pd.api.types.is_datetime64tz_dtype(df_anchor[COL_ANCHOR_DATE]):
+    if isinstance(df_anchor[COL_ANCHOR_DATE].dtype, pd.DatetimeTZDtype):
         df_anchor[COL_ANCHOR_DATE] = df_anchor[COL_ANCHOR_DATE].dt.tz_localize(None)
 
     # =========================================================================
@@ -388,13 +388,13 @@ def main():
         df_timeline_raw['STOP_DATE'] = pd.NaT
 
     # Parse dates and validate
-    df_timeline_raw['START_DATE_FORMATTED'] = pd.to_datetime(df_timeline_raw['START_DATE'], errors='coerce')
-    df_timeline_raw['STOP_DATE_FORMATTED'] = pd.to_datetime(df_timeline_raw['STOP_DATE'], errors='coerce')
+    df_timeline_raw['START_DATE_FORMATTED'] = pd.to_datetime(df_timeline_raw['START_DATE'], errors='coerce', format='mixed')
+    df_timeline_raw['STOP_DATE_FORMATTED'] = pd.to_datetime(df_timeline_raw['STOP_DATE'], errors='coerce', format='mixed')
 
     # Remove timezone info to ensure all dates are tz-naive
-    if pd.api.types.is_datetime64tz_dtype(df_timeline_raw['START_DATE_FORMATTED']):
+    if isinstance(df_timeline_raw['START_DATE_FORMATTED'].dtype, pd.DatetimeTZDtype):
         df_timeline_raw['START_DATE_FORMATTED'] = df_timeline_raw['START_DATE_FORMATTED'].dt.tz_localize(None)
-    if pd.api.types.is_datetime64tz_dtype(df_timeline_raw['STOP_DATE_FORMATTED']):
+    if isinstance(df_timeline_raw['STOP_DATE_FORMATTED'].dtype, pd.DatetimeTZDtype):
         df_timeline_raw['STOP_DATE_FORMATTED'] = df_timeline_raw['STOP_DATE_FORMATTED'].dt.tz_localize(None)
 
     validate_date_parsing(df_timeline_raw)
