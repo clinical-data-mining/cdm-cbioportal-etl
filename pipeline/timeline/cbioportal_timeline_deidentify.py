@@ -233,7 +233,7 @@ def report_deidentification_stats(df, anchor_col='ANCHOR_DATE', os_col=COL_OS_DA
     """
     ids_with_missing_os_dates = df.loc[df[os_col].isnull(), 'PATIENT_ID'].drop_duplicates()
     ids_with_missing_mrns = df.loc[df['MRN'].isnull(), 'PATIENT_ID'].drop_duplicates()
-    ids_with_missing_seq_date = df.loc[df['DTE_TUMOR_SEQUENCING'].isnull(), 'PATIENT_ID'].drop_duplicates()
+    ids_with_missing_seq_date = df.loc[df[COL_ANCHOR_DATE].isnull(), 'PATIENT_ID'].drop_duplicates()
     ids_with_missing_timeline_data = df.loc[df['START_DATE'].isnull(), 'PATIENT_ID'].drop_duplicates()
     timepoints_missing_start = df.loc[df['START_DATE_DEID'].isnull(), 'PATIENT_ID'].drop_duplicates()
 
