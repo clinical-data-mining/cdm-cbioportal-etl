@@ -145,7 +145,7 @@ def combine_header_and_data(
 
     # Combine vertically
     df_combined = pd.concat([df_header_wide, df_data], axis=0, ignore_index=True)
-
+    print(f"\nColumns: {list(df_combined.columns)}")
     print(f"\nCombined shape: {df_combined.shape}")
     print(f"  Header rows: 5")
     print(f"  Data rows:   {df_data.shape[0]}")
