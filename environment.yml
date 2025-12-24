@@ -1,4 +1,4 @@
-name: cdm-cbioportal-etl
+name: cdm-cbioportal-etl-test
 channels:
   - conda-forge
   - bioconda
