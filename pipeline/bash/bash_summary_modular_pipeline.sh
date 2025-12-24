@@ -62,12 +62,12 @@ echo "==========================================================================
 source $CONDA_INSTALL_PATH/etc/profile.d/conda.sh
 conda activate "$CONDA_ENV_NAME"
 
-# Change to repo directory
-cd "$ROOT_PATH_REPO"
+# Change to cdm-cbioportal-etl directory (wrapper uses relative paths)
+cd "$ROOT_PATH_REPO/cdm-cbioportal-etl"
 
 # Build full script path
-SCRIPT_PATH="cdm-cbioportal-etl/pipeline/summary/wrapper_modular_summary_pipeline.py"
-SCRIPT_FULL_PATH="$ROOT_PATH_REPO/$SCRIPT_PATH"
+SCRIPT_PATH="pipeline/summary/wrapper_modular_summary_pipeline.py"
+SCRIPT_FULL_PATH="$ROOT_PATH_REPO/cdm-cbioportal-etl/$SCRIPT_PATH"
 
 echo "Script path: $SCRIPT_FULL_PATH"
 
