@@ -40,12 +40,16 @@ def sequencing_timeline(
     print('Loading ID mapping table: %s' % table_id_map)
     sql = f"SELECT * FROM {table_id_map}"
     df_path = obj_db.query_from_sql(sql=sql)
+    print('After loading')
+    print(df_path.head())
 
     df_path = df_path.dropna().copy()
     df_path[COL_DTE_SEQ] = pd.to_datetime(
         df_path[COL_DTE_SEQ],
         errors='coerce'
     )
+    print('After datetime')
+    print(df_path.head())
     log1 = df_path['SAMPLE_ID'].notnull()
     log2 = df_path['SAMPLE_ID'].str.contains('T')
     log3 = df_path[COL_DTE_SEQ].notnull()  # Drop samples without sequencing date
@@ -61,6 +65,9 @@ def sequencing_timeline(
     df_samples_seq_f = df_path_filt[COL_ORDER_SEQ]
 
     df_samples_seq_f = df_samples_seq_f.dropna()
+
+    print('After cleaning')
+    print(df_samples_seq_f.head())
 
     # Save timeline to Databricks volume
     print('Saving to: %s' % volume_path_save)
