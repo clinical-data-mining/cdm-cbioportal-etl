@@ -1,0 +1,51 @@
+timeline_id: mmr
+source_table_prod: cdsi_prod.cdm_idbw_impact_pipeline_prod.table_timeline_mmr_calls
+source_table_dev: cdsi_prod.cdm_idbw_impact_pipeline_prod.table_timeline_mmr_calls
+output_filename: data_timeline_mmr
+patient_or_sample: patient
+table_metadata:
+  form_name: Mismatch Repair Deficiency
+  cdm_source_table: epic_ddp_concat/pathology/table_timeline_mmr_calls.tsv
+  table_description: NLP-derived dMMR calls from pathology reports
+  cbio_timeline_reason_for_missing_data: No reported dMMR for patient. Rule-based
+    NLP did not sense strings MLH1|PMS2|MSH2|MSH6 in any pathology report for patient.
+  cbio_timeline_data_source: NLP generated (Rule-based NLP) from surgical pathology
+    reports.
+  cbio_data_source_link: https://github.mskcc.org/cdsi/msk-impact/blob/master/msk_solid_heme/data_timeline_mmr.txt
+  for_docs_site_timeline: true
+columns:
+  PATIENT_ID:
+    field_name: PATIENT_ID
+    field_label: PATIENT_ID
+    field_note: Medical Record Number
+    nlp_derived: false
+  START_DATE:
+    field_name: START_DATE
+    field_label: Date of Pathology Report where MMR is reported
+    field_note: Date of report dMMR measured
+    nlp_derived: false
+  STOP_DATE:
+    field_name: STOP_DATE
+    field_label: Date of pathology report (DNU)
+    field_note: DNU
+    nlp_derived: false
+  EVENT_TYPE:
+    field_name: EVENT_TYPE
+    field_label: Event Type for dMMR
+    field_note: Data source, Pathology reports
+    nlp_derived: false
+  SUBTYPE:
+    field_name: SUBTYPE
+    field_label: Subtype for dMMR
+    field_note: Subtype, dMMR
+    nlp_derived: false
+  SOURCE:
+    field_name: SOURCE
+    field_label: Source of dMMR
+    field_note: Source of output, CDM group
+    nlp_derived: false
+  MMR:
+    field_name: MMR
+    field_label: MMR deficiency
+    field_note: MMR deficiency status (deficient/proficient)
+    nlp_derived: true

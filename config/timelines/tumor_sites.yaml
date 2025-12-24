@@ -1,0 +1,69 @@
+timeline_id: tumor_sites
+source_table_prod: cdsi_eng_phi.cdm_eng_rad_tumor_sites.table_timeline_radiology_tumor_sites_predictions
+source_table_dev: cdsi_eng_phi.cdm_eng_rad_tumor_sites.table_timeline_radiology_tumor_sites_predictions
+output_filename: data_timeline_tumor_sites
+patient_or_sample: patient
+table_metadata:
+  form_name: Tumor Sites from Radiology Reports
+  cdm_source_table: radiology/tumor_sites/impact/table_timeline_tumor_sites.tsv
+  table_description: 'Indication of disease at a specified site via radiology reports.
+    Caveats when working with the NLP Tumor Site data: (1) Model cannot differentiate
+    between primary and metastatic sites. (2) Lymph nodes do not differentiate between
+    Local and Distant. (3) If a patient has more than one primary tumor, the disease
+    sites are not specific to one primary, both will be present if available.'
+  cbio_timeline_reason_for_missing_data: No CT/PET/MRI radiology report available
+    for patient. Impression section missing from report.
+  cbio_timeline_data_source: NLP generated  from radiology report impressions
+  cbio_data_source_link: https://github.mskcc.org/cdsi/msk-impact/blob/master/msk_solid_heme/data_timeline_tumor_sites.txt
+  for_docs_site_timeline: true
+columns:
+  PATIENT_ID:
+    field_name: PATIENT_ID
+    field_label: PATIENT_ID
+    field_note: Medical Record Number
+    nlp_derived: false
+  START_DATE:
+    field_name: START_DATE
+    field_label: Date of Tumor Indication
+    field_note: Date tumor site was indicated via SOURCE
+    nlp_derived: false
+  STOP_DATE:
+    field_name: STOP_DATE
+    field_label: Date of Tumor Indication (Stop Date)
+    field_note: All should be blank (Used for cbioportal etl purposes)
+    nlp_derived: false
+  EVENT_TYPE:
+    field_name: EVENT_TYPE
+    field_label: Event Type (Diagnosis)
+    field_note: All should be under Diagnosis (portal track)
+    nlp_derived: false
+  SUBTYPE:
+    field_name: SUBTYPE
+    field_label: Subtype (All Tumors)
+    field_note: All should be Tumor Sites (portal sub track)
+    nlp_derived: false
+  SOURCE:
+    field_name: SOURCE
+    field_label: Source (All Tumors)
+    field_note: General source of data -- Radiolgy report impressions
+    nlp_derived: false
+  SOURCE_SPECIFIC:
+    field_name: SOURCE_SPECIFIC
+    field_label: Source Specific (All Tumors)
+    field_note: Radiology report including CT, MRI, or PET scans
+    nlp_derived: false
+  TUMOR_SITE:
+    field_name: TUMOR_SITE
+    field_label: Tumor Site
+    field_note: TUMOR_SITE description not available in codebook
+    nlp_derived: false
+  RADIOLOGY_PROCEDURE_NAME:
+    field_name: RADIOLOGY_PROCEDURE_NAME
+    field_label: Radiology Procedure Name
+    field_note: RADIOLOGY_PROCEDURE_NAME description not available in codebook
+    nlp_derived: false
+  STYLE_COLOR:
+    field_name: STYLE_COLOR
+    field_label: Style Color
+    field_note: STYLE_COLOR description not available in codebook
+    nlp_derived: false

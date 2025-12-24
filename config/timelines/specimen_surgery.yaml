@@ -1,0 +1,47 @@
+timeline_id: specimen_surgery
+source_table_prod: cdsi_prod.cdm_idbw_impact_pipeline_prod.table_timeline_specimen_surgery
+source_table_dev: cdsi_prod.cdm_idbw_impact_pipeline_prod.table_timeline_specimen_surgery
+output_filename: data_timeline_specimen_surgery
+patient_or_sample: sample
+table_metadata:
+  form_name: Sample Acquisition
+  cdm_source_table: epic_ddp_concat/pathology/table_timeline_specimen_surgery.tsv
+  table_description: Timeline for surgical procedure of sequenced specimens
+  cbio_timeline_reason_for_missing_data: 'Date not provided in molecular pathology
+    report or corresponding surgical pathology report. Date incorrectly entered in
+    pathology report. '
+  cbio_timeline_data_source: NLP generated (Rule-based NLP) from surgical pathology
+    reports. Dates cross referenced with IR and surgical data.
+  cbio_data_source_link: https://github.mskcc.org/cdsi/msk-impact/blob/master/msk_solid_heme/data_timeline_specimen_surgery.txt
+  for_docs_site_timeline: true
+columns:
+  PATIENT_ID:
+    field_name: PATIENT_ID
+    field_label: PATIENT_ID
+    field_note: Medical Record Number
+    nlp_derived: false
+  START_DATE:
+    field_name: START_DATE
+    field_label: Date of Sample Acquisition
+    field_note: Date that sample was acquired for sequencing
+    nlp_derived: false
+  STOP_DATE:
+    field_name: STOP_DATE
+    field_label: Date of Sample Acquisition (DNU)
+    field_note: Do not use
+    nlp_derived: false
+  EVENT_TYPE:
+    field_name: EVENT_TYPE
+    field_label: Event Type (Sample Acquisition)
+    field_note: Track for event type in cbioportal
+    nlp_derived: false
+  SUBTYPE:
+    field_name: SUBTYPE
+    field_label: Subtype
+    field_note: SUBTYPE description not available in codebook
+    nlp_derived: false
+  SAMPLE_ID:
+    field_name: SAMPLE_ID
+    field_label: Sample ID
+    field_note: MSK-IMPACT Sample ID
+    nlp_derived: false

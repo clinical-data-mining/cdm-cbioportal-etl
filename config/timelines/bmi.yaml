@@ -1,0 +1,55 @@
+timeline_id: bmi
+source_table_prod: cdsi_prod.cdm_impact_pipeline_prod.t33_epic_ddp_bmi
+source_table_dev: cdsi_prod.cdm_impact_pipeline_prod.t33_epic_ddp_bmi
+output_filename: data_timeline_bmi
+patient_or_sample: patient
+table_metadata:
+  form_name: Body Mass Index (BMI)
+  cdm_source_table: epic_ddp_concat/measurements/impact/t33_epic_ddp_bmi.tsv
+  table_description: Timeline of body mass index (BMI) measurements
+  cbio_timeline_reason_for_missing_data: No data in clindoc vital signs section noting
+    BMI information
+  cbio_timeline_data_source: Derived from clindoc notes
+  cbio_data_source_link: https://github.mskcc.org/cdsi/msk-impact/blob/master/msk_solid_heme/data_timeline_bmi.txt
+  for_docs_site_timeline: true
+columns:
+  PATIENT_ID:
+    field_name: PATIENT_ID
+    field_label: PATIENT_ID
+    field_note: Medical Record Number
+    nlp_derived: false
+  START_DATE:
+    field_name: START_DATE
+    field_label: Start of BMI measurement
+    field_note: 'Date of BMI measurement '
+    nlp_derived: false
+  STOP_DATE:
+    field_name: STOP_DATE
+    field_label: End of BMI measurement, null
+    field_note: Do not use
+    nlp_derived: false
+  EVENT_TYPE:
+    field_name: EVENT_TYPE
+    field_label: Event Type for BMI, lab test
+    field_note: cbioportal column for placement. Will be LAB_TEST
+    nlp_derived: false
+  SUBTYPE:
+    field_name: SUBTYPE
+    field_label: Subtype
+    field_note: SUBTYPE description not available in codebook
+    nlp_derived: false
+  SOURCE:
+    field_name: SOURCE
+    field_label: Source of bmi measurement, medical oncology reports
+    field_note: Source of BMI Measurement (Medical Oncology Reports/ Clindoc)
+    nlp_derived: false
+  TEST:
+    field_name: TEST
+    field_label: Name of test, BMI
+    field_note: 'Body Mass Index (BMI) '
+    nlp_derived: false
+  RESULT:
+    field_name: RESULT
+    field_label: Result of BMI measurement, float
+    field_note: Body Mass Index (BMI) Value
+    nlp_derived: false
