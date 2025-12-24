@@ -48,6 +48,8 @@ def sequencing_timeline(
         df_path[COL_DTE_SEQ],
         errors='coerce'
     )
+    if isinstance(df_path[COL_DTE_SEQ].dtype, pd.DatetimeTZDtype):
+        df_path[COL_DTE_SEQ] = df_path[COL_DTE_SEQ].dt.tz_localize(None)
     print('After datetime')
     print(df_path.head())
     log1 = df_path['SAMPLE_ID'].notnull()
