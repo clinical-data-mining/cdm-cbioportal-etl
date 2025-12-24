@@ -67,7 +67,7 @@ def load_timeline_configs(config_dir, production_or_test):
     return configs
 
 
-def run_timeline_deidentification(config_dir, production_or_test, fname_dbx, fname_sample, volume_base_path, gpfs_output_path, cohort_name):
+def run_timeline_deidentification(config_dir, production_or_test, fname_dbx, anchor_dates, fname_sample, volume_base_path, gpfs_output_path, cohort_name):
     """
     Run timeline deidentification for all configured timeline files.
 
@@ -79,6 +79,8 @@ def run_timeline_deidentification(config_dir, production_or_test, fname_dbx, fna
         'production' or 'test' - determines which source_table to use
     fname_dbx : str
         Path to Databricks environment file
+    anchor_dates : str
+        Databricks table name for anchor dates (e.g., catalog.schema.table)
     fname_sample : str
         Path to sample list file
     volume_base_path : str
@@ -109,6 +111,7 @@ def run_timeline_deidentification(config_dir, production_or_test, fname_dbx, fna
     print(f"Production/Test: {production_or_test}")
     print(f"Total timeline files to process: {len(timeline_configs)}")
     print(f"Databricks env: {fname_dbx}")
+    print(f"Anchor dates: {anchor_dates}")
     print(f"Sample list: {fname_sample}")
     print(f"Volume base path: {volume_path_full}")
     print(f"GPFS output path: {gpfs_output_path}")
@@ -141,6 +144,7 @@ def run_timeline_deidentification(config_dir, production_or_test, fname_dbx, fna
             "python",
             str(deidentify_script),
             f"--fname_dbx={fname_dbx}",
+            f"--fname_deid={anchor_dates}",
             f"--fname_timeline={source_table}",
             f"--fname_sample={fname_sample}",
             f"--fname_output_volume={fname_output_volume}",
@@ -228,6 +232,13 @@ if __name__ == "__main__":
         help="Path to Databricks environment file"
     )
     parser.add_argument(
+        "--anchor_dates",
+        action="store",
+        dest="anchor_dates",
+        required=True,
+        help="Databricks table name for anchor dates (e.g., catalog.schema.table)"
+    )
+    parser.add_argument(
         "--fname_sample",
         action="store",
         dest="fname_sample",
@@ -262,6 +273,7 @@ if __name__ == "__main__":
         config_dir=args.config_dir,
         production_or_test=args.production_or_test,
         fname_dbx=args.fname_dbx,
+        anchor_dates=args.anchor_dates,
         fname_sample=args.fname_sample,
         volume_base_path=args.volume_base_path,
         gpfs_output_path=args.gpfs_output_path,

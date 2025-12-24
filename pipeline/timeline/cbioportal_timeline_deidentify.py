@@ -261,6 +261,13 @@ def main():
         help="Path to Databricks environment file"
     )
     parser.add_argument(
+        "--fname_deid",
+        action="store",
+        dest="fname_deid",
+        default=FNAME_DEID,
+        help=f"Databricks table name for anchor dates (default: {FNAME_DEID})"
+    )
+    parser.add_argument(
         "--fname_timeline",
         action="store",
         dest="fname_timeline",
@@ -355,8 +362,8 @@ def main():
     # =========================================================================
     # 3. Load anchor dates
     # =========================================================================
-    print(f'\nLoading anchor dates: {FNAME_DEID}')
-    df_anchor = load_dbx_table(fname_dbx=args.fname_dbx, table_name=FNAME_DEID)
+    print(f'\nLoading anchor dates: {args.fname_deid}')
+    df_anchor = load_dbx_table(fname_dbx=args.fname_dbx, table_name=args.fname_deid)
     df_anchor = mrn_zero_pad(df=df_anchor, col_mrn='MRN')
     df_anchor[COL_ANCHOR_DATE] = pd.to_datetime(df_anchor[COL_ANCHOR_DATE], errors='coerce')
 
