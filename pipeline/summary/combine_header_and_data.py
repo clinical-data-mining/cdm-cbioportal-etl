@@ -294,6 +294,8 @@ def main():
     # Combine header + data
     df_combined = combine_header_and_data(df_header_wide, df_data)
 
+    print(df_combined.head())
+
     # Save to Databricks volume
     save_to_databricks(
         df_combined=df_combined,
