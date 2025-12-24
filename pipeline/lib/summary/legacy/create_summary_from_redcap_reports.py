@@ -27,8 +27,8 @@ import numpy as np
 from msk_cdm.databricks import DatabricksAPI
 from msk_cdm.data_processing import mrn_zero_pad, set_debug_console
 
-from ..utils.get_anchor_dates import get_anchor_dates
-from ..utils import constants
+from pipeline.lib.utils.get_anchor_dates import get_anchor_dates
+from pipeline.lib.utils import constants
 
 set_debug_console()
 

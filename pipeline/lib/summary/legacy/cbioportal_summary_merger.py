@@ -7,7 +7,7 @@ Object requires the path to the original sample/patient file, and for new/replac
 import pandas as pd
 
 from msk_cdm.databricks import DatabricksAPI
-from ..utils import constants
+from pipeline.lib.utils import constants
 
 COLS_PRODUCTION = constants.COLS_PRODUCTION
 NROWS_HEADER = 4

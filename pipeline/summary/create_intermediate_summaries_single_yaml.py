@@ -1,31 +1,19 @@
 """
-create_summary_intermediates.py
+create_intermediate_summaries_single_yaml.py
 
 Script to create intermediate summary files from YAML configurations.
 This processes individual summaries and creates intermediate files with headers.
 
-Can be used to:
-1. Process a single summary (--yaml_config)
-2. Process all summaries in a directory (--config_dir)
+Can be used to process a single summary (--yaml_config)
 
 Usage for single summary:
-    python pipeline/summary/create_summary_intermediates.py \
+    python pipeline/summary/create_intermediate_summaries_single_yaml.py \
         --yaml_config config/summaries/cancer_diagnosis_summary.yaml \
         --databricks_env /path/to/databricks.env \
-        --template /Volumes/.../patient_template.tsv \
+        --template /Volumes/.../template.tsv \
         --production_or_test production \
         --cohort mskimpact
 
-Usage for all summaries:
-    python pipeline/summary/create_summary_intermediates.py \
-        --config_dir config/summaries \
-        --databricks_env /path/to/databricks.env \
-        --template_patient /Volumes/.../patient_template.tsv \
-        --template_sample /Volumes/.../sample_template.tsv \
-        --manifest_patient /Volumes/.../manifest_patient.csv \
-        --manifest_sample /Volumes/.../manifest_sample.csv \
-        --production_or_test production \
-        --cohort mskimpact
 """
 import argparse
 import sys
@@ -90,60 +78,6 @@ def process_single_summary(args):
         sys.exit(1)
 
 
-def process_all_summaries(args):
-    """Process all YAML configs in a directory."""
-    print(f"\n{'='*80}")
-    print(f"PROCESSING ALL SUMMARIES")
-    print(f"{'='*80}")
-    print(f"Config dir: {args.config_dir}")
-    print(f"Mode: {args.production_or_test}")
-    print(f"Cohort: {args.cohort}")
-    print(f"{'='*80}\n")
-
-    # Create processor object
-    obj = YamlConfigToCbioportalFormat(
-        fname_databricks_env=args.databricks_env,
-        config_dir=args.config_dir,
-        production_or_test=args.production_or_test,
-        cohort=args.cohort
-    )
-
-    # Process patient summaries
-    if args.template_patient:
-        print(f"\n{'#'*80}")
-        print(f"# PATIENT SUMMARIES")
-        print(f"{'#'*80}\n")
-
-        processed_patient = obj.create_summaries_and_headers(
-            patient_or_sample='patient',
-            table_template=args.template_patient,
-            save_to_table=args.save_to_table
-        )
-
-        print(f"\n✓ Created {len(processed_patient)} patient intermediate files")
-
-    # Process sample summaries
-    if args.template_sample:
-        print(f"\n{'#'*80}")
-        print(f"# SAMPLE SUMMARIES")
-        print(f"{'#'*80}\n")
-
-        processed_sample = obj.create_summaries_and_headers(
-            patient_or_sample='sample',
-            table_template=args.template_sample,
-            save_to_table=args.save_to_table
-        )
-
-        print(f"\n✓ Created {len(processed_sample)} sample intermediate files")
-
-    print(f"\n{'='*80}")
-    print(f"ALL SUMMARIES PROCESSED")
-    print(f"{'='*80}")
-    print(f"\nIntermediate files contain data only (no headers)")
-    print(f"Next step: merge these files and create final cBioPortal summary")
-    print(f"{'='*80}\n")
-
-
 def main():
     parser = argparse.ArgumentParser(
         description="Create intermediate summary files from YAML configurations"
@@ -179,21 +113,7 @@ def main():
     )
     parser.add_argument(
         "--template",
-        help="Path to template file (for single file mode)"
-    )
-
-    # Batch mode
-    parser.add_argument(
-        "--config_dir",
-        help="Directory containing YAML config files (for batch mode)"
-    )
-    parser.add_argument(
-        "--template_patient",
-        help="Path to patient template file (for batch mode)"
-    )
-    parser.add_argument(
-        "--template_sample",
-        help="Path to sample template file (for batch mode)"
+        help="Path to template file supplied by cbioportal backend"
     )
 
     args = parser.parse_args()
@@ -204,11 +124,6 @@ def main():
         if not args.template:
             parser.error("--template is required when using --yaml_config")
         process_single_summary(args)
-    elif args.config_dir:
-        # Batch mode
-        if not (args.template_patient or args.template_sample):
-            parser.error("At least one of --template_patient or --template_sample is required when using --config_dir")
-        process_all_summaries(args)
     else:
         parser.error("Either --yaml_config or --config_dir must be specified")
 

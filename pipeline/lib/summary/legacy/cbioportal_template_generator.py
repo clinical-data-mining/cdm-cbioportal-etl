@@ -1,7 +1,7 @@
 import pandas as pd
 
 from msk_cdm.databricks import DatabricksAPI
-from ..utils import constants
+from pipeline.lib.utils import constants
 
 #Constants defined in python package for manifest file column names
 COL_P_ID = constants.COL_P_ID_CBIO

@@ -11,7 +11,7 @@ import pandas as pd
 
 from msk_cdm.databricks import DatabricksAPI
 from .cbioportal_summary_merger import cBioPortalSummaryMergeTool
-from ..utils import constants
+from pipeline.lib.utils import constants
 
 #Constants defined in python package for manifest file column names
 COL_SUMMARY_FNAME_SAVE = constants.COL_SUMMARY_FNAME_SAVE
