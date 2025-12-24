@@ -1,0 +1,51 @@
+timeline_id: gleason
+source_table_prod: cdsi_prod.cdm_idbw_impact_pipeline_prod.table_timeline_gleason_scores
+source_table_dev: cdsi_prod.cdm_idbw_impact_pipeline_prod.table_timeline_gleason_scores
+output_filename: data_timeline_gleason
+patient_or_sample: patient
+table_metadata:
+  form_name: Gleason Score
+  cdm_source_table: epic_ddp_concat/pathology/table_timeline_gleason_scores.tsv
+  table_description: NLP-derived Gleason Scores from pathology reports
+  cbio_timeline_reason_for_missing_data: No reported Gleason Score for patient. Rule-based
+    NLP did not sense the word "gleason" any pathology reports.
+  cbio_timeline_data_source: NLP generated (Rule-based NLP) from surgical pathology
+    reports
+  cbio_data_source_link: https://github.mskcc.org/cdsi/msk-impact/blob/master/msk_solid_heme/data_timeline_gleason.txt
+  for_docs_site_timeline: true
+columns:
+  PATIENT_ID:
+    field_name: PATIENT_ID
+    field_label: PATIENT_ID
+    field_note: Medical Record Number
+    nlp_derived: false
+  START_DATE:
+    field_name: START_DATE
+    field_label: Date of Gleason Score
+    field_note: Date of report Gleason Score taken
+    nlp_derived: false
+  STOP_DATE:
+    field_name: STOP_DATE
+    field_label: Date of Gleason Score (End, DNU)
+    field_note: Do not use
+    nlp_derived: false
+  EVENT_TYPE:
+    field_name: EVENT_TYPE
+    field_label: Event Type for Gleason Score
+    field_note: cbioportal column for place. Will be Diagnosis but will change
+    nlp_derived: false
+  SUBTYPE:
+    field_name: SUBTYPE
+    field_label: Subtype for Gleason Score
+    field_note: cbioportal column for place. Will be Gleason but will change
+    nlp_derived: false
+  SOURCE:
+    field_name: SOURCE
+    field_label: Source of Gleason Score
+    field_note: cbioportal column for place. Will be CDM but will change
+    nlp_derived: false
+  GLEASON_SCORE:
+    field_name: GLEASON_SCORE
+    field_label: Gleason Score
+    field_note: Gleason score extracted from surgical pathology reports
+    nlp_derived: true

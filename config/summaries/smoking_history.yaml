@@ -1,0 +1,29 @@
+summary_id: smoking_history
+patient_or_sample: patient
+source_table_prod: cdsi_prod.cdm_impact_pipeline_prod.t13_epic_ddp_smoking
+source_table_dev: cdsi_prod.cdm_idbw_impact_pipeline_prod.smoking_status_predictions
+key_column: MRN
+columns:
+- MRN
+- smoking_predictions_3_classes
+date_columns: []
+dest_prod:
+  catalog: cdsi_eng_phi
+  schema: cdm_eng_cbioportal_etl
+  volume_name: cdm_eng_cbioportal_etl_volume
+  filename: smoking_history_summary.tsv
+dest_dev:
+  catalog: cdsi_eng_phi
+  schema: cdm_eng_cbioportal_etl
+  volume_name: cdm_eng_cbioportal_etl_volume_dev
+  filename: smoking_history_summary.tsv
+column_metadata:
+  smoking_predictions_3_classes:
+    label: Smoking History (NLP)
+    datatype: STRING
+    comment: 'Smoking History (NLP) ---DESCRIPTION: Inferred smoking history. Classes:
+      Current/Former, Never, Unknown ---MISSING DATA: The patient might not have had
+      a ''Smoking Status'' section in their Clindoc note.  Potential factor for older
+      notes, if the formatting of the section has changed; majority are from 2015-->present.
+      ---SOURCE: NLP generated from medical oncology notes'
+    fill_value: Unknown

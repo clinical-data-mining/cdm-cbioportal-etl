@@ -1,0 +1,5 @@
+#Patient Identifier
+#Identifier to uniquely specify a patient.
+#STRING
+#0
+PATIENT_ID
