@@ -15,8 +15,8 @@ from lib.utils import cbioportal_update_config
 
 
 # Table and column constants
-TABLE_ID_MAP = 'cdsi_prod.cdm_impact_pipeline_prod.t02_epic_ddp_id_mapping_pathology'
-COL_DTE_SEQ = 'DTE_TUMOR_SEQUENCING'
+TABLE_ID_MAP = 'cdsi_prod.cdm_impact_pipeline_prod.t03_id_mapping_pathology_sample_xml_parsed'
+COL_DTE_SEQ = 'DATE_TUMOR_SEQUENCING'
 COL_ORDER_SEQ = [
     'MRN',
     'START_DATE',
