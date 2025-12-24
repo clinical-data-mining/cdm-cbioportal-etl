@@ -138,6 +138,21 @@ def merge_intermediates(
                 print(f"  ⚠ WARNING: {merge_key} not found in intermediate. Skipping.")
                 continue
 
+            # Drop redundant ID columns from intermediate (keep only merge key + summary columns)
+            # For sample summaries: drop PATIENT_ID if present (it's already in template)
+            # For patient summaries: no additional IDs to drop
+            redundant_id_cols = []
+            if patient_or_sample == 'sample':
+                # Sample level: template has SAMPLE_ID + PATIENT_ID
+                # Intermediate should only contribute SAMPLE_ID + summary columns
+                # Drop PATIENT_ID if it exists in intermediate
+                if 'PATIENT_ID' in df_intermediate.columns:
+                    redundant_id_cols.append('PATIENT_ID')
+
+            if redundant_id_cols:
+                print(f"  Dropping redundant ID column(s) from intermediate: {redundant_id_cols}")
+                df_intermediate = df_intermediate.drop(columns=redundant_id_cols)
+
             # Merge (left join from template)
             before_cols = df_merged.shape[1]
             df_merged = df_merged.merge(
