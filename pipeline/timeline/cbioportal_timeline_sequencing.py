@@ -38,7 +38,7 @@ def sequencing_timeline(
     obj_db = DatabricksAPI(fname_databricks_env=fname_databricks_env)
 
     print('Loading ID mapping table: %s' % table_id_map)
-    sql = f"SELECT * FROM {table_id_map}"
+    sql = f"SELECT MRN, DMP_ID, SAMPLE_ID, {COL_DTE_SEQ} FROM {table_id_map}"
     df_path = obj_db.query_from_sql(sql=sql)
     print('After loading')
     print(df_path.head())
