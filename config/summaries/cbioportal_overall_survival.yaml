@@ -1,0 +1,41 @@
+summary_id: cbioportal_overall_survival
+patient_or_sample: patient
+source_table_prod: cdsi_eng_phi.cdm_eng_cbioportal_etl.data_overall_survival
+source_table_dev: cdsi_eng_phi.cdm_eng_cbioportal_etl.data_overall_survival
+key_column: DMP_ID
+columns:
+- DMP_ID
+- OS_MONTHS
+- OS_STATUS
+date_columns: []
+dest_prod:
+  catalog: cdsi_eng_phi
+  schema: cdm_eng_cbioportal_etl
+  volume_name: cdm_eng_cbioportal_etl_volume
+  filename: cbioportal_overall_survival_summary.tsv
+dest_dev:
+  catalog: cdsi_eng_phi
+  schema: cdm_eng_cbioportal_etl
+  volume_name: cdm_eng_cbioportal_etl_volume_dev
+  filename: cbioportal_overall_survival_summary.tsv
+column_metadata:
+  OS_MONTHS:
+    label: Overall Survival (Months)
+    datatype: STRING
+    comment: 'Overall Survival (Months) ---DESCRIPTION: Overall survival from date
+      of first sequenced sample to date of death or last contact.  If patient died
+      before first sequencing, overall survival in months is set to ''0''. If patient
+      is alive and last contact date is before date of sequencing,overall survival
+      in months is set to ''NA''. Derived from PT_DEATH_DTE, PLA_LAST_CONTACT_DTE
+      and date of sequencing for first specimen sequenced for patient. ---MISSING
+      DATA: Last contact date, sequencing date missing in Revenue Management System
+      (RMS) ---SOURCE: Derived from IDB/Revenue Management System (RMS) dates'
+    fill_value: NA
+  OS_STATUS:
+    label: Overall Survival Status
+    datatype: STRING
+    comment: 'Overall Survival Status ---DESCRIPTION: The patient''s survival status;
+      is the patient alive or deceased. ---MISSING DATA: Last contact date, sequencing
+      date missing in Revenue Management System (RMS) ---SOURCE: Derived from IDB/Revenue
+      Management System (RMS) dates'
+    fill_value: NA

@@ -1,10 +1,11 @@
 import argparse
 import os
+import sys
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from datetime import date
+from pathlib import Path
 
 import pandas as pd
-
-from cdm_cbioportal_etl.utils import cbioportal_update_config
 
 
 cols_fixed = [
@@ -16,91 +17,142 @@ cols_fixed = [
 today = date.today()
 
 
-def monitor_completeness(
-        dict_files_to_copy,
-        incomplete_fields_csv
-):
-    list_files = list(dict_files_to_copy.keys())
-    list_files_timeline = [x for x in list_files if 'timeline' in x]
-    list_files_summary = list(set.difference(set(list_files), set(list_files_timeline)))
-    
+def monitor_completeness(path_datahub):
+    """
+    Monitor completeness of cBioPortal data files.
+
+    Parameters
+    ----------
+    path_datahub : str
+        Path to directory containing cBioPortal data files
+
+    Returns
+    -------
+    bool
+        True if all completeness checks pass
+
+    Raises
+    ------
+    ValueError
+        If any required fields are completely empty
+    """
+    # Find all summary and timeline files
+    datahub_path = Path(path_datahub)
+
+    all_files = list(datahub_path.glob('*.txt'))
+    list_files_timeline = [str(f) for f in all_files if f.name.startswith('data_timeline_')]
+    list_files_summary = [str(f) for f in all_files if f.name.startswith('data_clinical_')]
+
+    print(f"Found {len(list_files_summary)} summary files and {len(list_files_timeline)} timeline files")
+    print(f"Summary files: {[Path(f).name for f in list_files_summary]}")
+    print(f"Timeline files: {[Path(f).name for f in list_files_timeline]}")
+
     ## Test for empty columns in summary tables
-    test = []
+    print("\n" + "="*80)
+    print("SUMMARY FILES - Completeness Check")
+    print("="*80)
+
+    summary_results = []
     for fname in list_files_summary:
-        df_sum = pd.read_csv(fname, sep='\t', header=4)
+        filename = Path(fname).name
+        print(f'\n[{filename}]')
+        # Read from local filesystem
+        df_full = pd.read_csv(fname, sep='\t', header=None, dtype=str)
+        # Skip first 4 header rows for summary files
+        df_sum = df_full.iloc[4:].reset_index(drop=True)
+        df_sum.columns = df_full.iloc[3]  # Use 4th row as column names
         cols_test = list(set(df_sum.columns) - set(cols_fixed))
         any_empty = df_sum[cols_test].isnull().all()
-        test.append(any_empty)
 
-    test_for_empty_summary = pd.concat(test, axis=0)
-    
+        # Create per-file result
+        empty_cols = any_empty[any_empty].index.tolist() if any_empty.any() else []
+        has_empty = len(empty_cols) > 0
+
+        print(f'  Total columns checked: {len(cols_test)}')
+        print(f'  Empty columns found: {len(empty_cols)}')
+        print(f'  Status: {"❌ FAIL" if has_empty else "✅ PASS"}')
+
+        if has_empty:
+            print(f'  Empty column names: {empty_cols}')
+            summary_results.append({
+                'file': filename,
+                'empty_columns': empty_cols
+            })
+
     ## Test for empty columns in timeline tables
-    test = []
+    print("\n" + "="*80)
+    print("TIMELINE FILES - Completeness Check")
+    print("="*80)
+
+    timeline_results = []
     for fname in list_files_timeline:
-        # print('Loading %s' % fname)
-        df_sum = pd.read_csv(fname, sep='\t', header=0)
+        filename = Path(fname).name
+        print(f'\n[{filename}]')
+        # Read from local filesystem (timeline files have header at row 0)
+        df_sum = pd.read_csv(fname, sep='\t', dtype=str)
         cols_test = list(set(df_sum.columns) - set(cols_fixed))
         any_empty = df_sum[cols_test].isnull().all()
-        # print(sum(any_empty))
-        test.append(any_empty)
-    
-    test_for_empty_timeline = pd.concat(test, axis=0)
-    
-    ## Combine error tests from timeline and summary
-    test_for_empty_all = pd.concat([test_for_empty_timeline, test_for_empty_summary], axis=0).reset_index()
 
-    print('------------------------------')
-    print(test_for_empty_all)
-    print('------------------------------')
-    
-    if test_for_empty_all[0].any():
-        print('Monitoring test FAILED.')
-        
-        return True
-    
+        # Create per-file result
+        empty_cols = any_empty[any_empty].index.tolist() if any_empty.any() else []
+        has_empty = len(empty_cols) > 0
+
+        print(f'  Total columns checked: {len(cols_test)}')
+        print(f'  Empty columns found: {len(empty_cols)}')
+        print(f'  Status: {"❌ FAIL" if has_empty else "✅ PASS"}')
+
+        if has_empty:
+            print(f'  Empty column names: {empty_cols}')
+            timeline_results.append({
+                'file': filename,
+                'empty_columns': empty_cols
+            })
+
+    ## Final summary
+    print("\n" + "="*80)
+    print("OVERALL COMPLETENESS SUMMARY")
+    print("="*80)
+
+    all_failed_files = summary_results + timeline_results
+
+    if len(all_failed_files) > 0:
+        print(f"\n❌ FAILED: {len(all_failed_files)} file(s) have completely empty columns\n")
+        for result in all_failed_files:
+            print(f"  • {result['file']}")
+            print(f"    Empty columns: {result['empty_columns']}\n")
+
+        error_msg = f"Data completeness check FAILED. {len(all_failed_files)} files have empty columns."
+        raise ValueError(error_msg)
     else:
-        print('Monitoring test passed. Writing results to log: %s' % incomplete_fields_csv)
-        os.makedirs(os.path.dirname(incomplete_fields_csv), exist_ok=True)
-        test_for_empty_all.to_csv(incomplete_fields_csv, sep=',')
-        
-        return False
+        total_files = len(list_files_summary) + len(list_files_timeline)
+        print(f"\n✅ PASSED: All {total_files} files have complete data")
+        print(f"  • {len(list_files_summary)} summary files checked")
+        print(f"  • {len(list_files_timeline)} timeline files checked")
+        print("\nData completeness check PASSED. All required fields contain data.")
+        return True
 
-    
+
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Script for monitoring completeness of data elements")
-    parser.add_argument(
-        "--incomplete_fields_csv",
-        action="store",
-        dest="incomplete_fields_csv",
-        required=True,
-        help="Log to indicate data is complete and can be pushed to datahub."
-    )
-    parser.add_argument(
-        "--config_yaml",
-        action="store",
-        dest="config_yaml",
-        help="Yaml file containing run parameters and necessary file locations.",
+    parser = argparse.ArgumentParser(
+        description="Monitor completeness of cBioPortal data files",
+        formatter_class=argparse.RawDescriptionHelpFormatter
     )
     parser.add_argument(
         "--path_datahub",
-        action="store",
-        dest="path_datahub",
-        help="Path to datahub",
-    )
-    parser.add_argument(
-        "--path_minio",
-        action="store",
-        dest="path_minio_cbio",
-        help="Path to minio",
+        required=True,
+        help="Path to directory containing cBioPortal data files (data_clinical_*.txt and data_timeline_*.txt)",
     )
 
     args = parser.parse_args()
 
-    obj_yaml = cbioportal_update_config(fname_yaml_config=args.config_yaml)
-    dict_files_to_copy = obj_yaml.return_dict_datahub_to_minio(path_datahub=args.path_datahub, path_minio=args.path_minio_cbio)
+    # Validate path exists
+    if not os.path.exists(args.path_datahub):
+        raise FileNotFoundError(f"Path does not exist: {args.path_datahub}")
 
-    test = monitor_completeness(
-        incomplete_fields_csv=args.incomplete_fields_csv,
-        dict_files_to_copy=dict_files_to_copy
-    )
+    if not os.path.isdir(args.path_datahub):
+        raise NotADirectoryError(f"Path is not a directory: {args.path_datahub}")
+
+    # Run monitoring - will raise ValueError if checks fail
+    monitor_completeness(path_datahub=args.path_datahub)
     

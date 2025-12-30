@@ -1,0 +1,76 @@
+timeline_id: progression
+source_table_prod: cdsi_eng_phi.cdm_eng_rad_progression.table_timeline_radiology_cancer_progression_predictions
+source_table_dev: cdsi_eng_phi.cdm_eng_rad_progression.table_timeline_radiology_cancer_progression_predictions
+output_filename: data_timeline_progression
+patient_or_sample: patient
+table_metadata:
+  form_name: Cancer Progression from Radiology Reports
+  cdm_source_table: radiology/progression/impact/table_timeline_radiology_cancer_progression_predictions.tsv
+  table_description: Inference results of cancer progression mentioned in CT, PET,
+    and MRI radiology report impressions
+  cbio_timeline_reason_for_missing_data: No CT/PET/MRI radiology report available
+    for patient. Impression section missing from report.
+  cbio_timeline_data_source: NLP generated  from radiology report impressions
+  cbio_data_source_link: https://github.mskcc.org/cdsi/msk-impact/blob/master/msk_solid_heme/data_timeline_progression.txt
+  for_docs_site_timeline: true
+columns:
+  PATIENT_ID:
+    field_name: PATIENT_ID
+    field_label: PATIENT_ID
+    field_note: Medical Record Number
+    nlp_derived: false
+  START_DATE:
+    field_name: START_DATE
+    field_label: Progression Date
+    field_note: 'Date when progression was inferred '
+    nlp_derived: false
+  STOP_DATE:
+    field_name: STOP_DATE
+    field_label: Progression Stop Date for cBioPortal (DNU)
+    field_note: Required file for cBioPortal. DNU.
+    nlp_derived: false
+  EVENT_TYPE:
+    field_name: EVENT_TYPE
+    field_label: Event Type (Progression)
+    field_note: All should be under Diagnosis (portal track)
+    nlp_derived: false
+  SUBTYPE:
+    field_name: SUBTYPE
+    field_label: Subtype (Progession)
+    field_note: All should be Primary (portal sub track)
+    nlp_derived: false
+  SOURCE:
+    field_name: SOURCE
+    field_label: Source (Progession)
+    field_note: General source of data -- Radiolgy report impressions
+    nlp_derived: false
+  SOURCE_SPECIFIC:
+    field_name: SOURCE_SPECIFIC
+    field_label: Source Specific (Progession)
+    field_note: Radiology report including CT, MRI, or PET scans
+    nlp_derived: false
+  RADIOLOGY_PROCEDURE_NAME:
+    field_name: RADIOLOGY_PROCEDURE_NAME
+    field_label: Radiology Procedure Name
+    field_note: RADIOLOGY_PROCEDURE_NAME description not available in codebook
+    nlp_derived: false
+  PROGRESSION:
+    field_name: PROGRESSION
+    field_label: 'Cancer Progression '
+    field_note: 'Binary indication if progression is present in radiology report impression
+      (''Progressing or Mixed'' or ''Improving or Stable''). Note: patients are predicted
+      to have progression if the ''prog_probability'' is greater than 0.5, however
+      patients with a higher progression probability (closer to 1) are more likely
+      to have progression.'
+    nlp_derived: true
+  PROGRESSION_PROBABILITY:
+    field_name: PROGRESSION_PROBABILITY
+    field_label: Progression Score
+    field_note: Probability that progression is present in radiology report impression
+    nlp_derived: true
+  STYLE_COLOR:
+    field_name: STYLE_COLOR
+    field_label: 'Style Color (Progression) '
+    field_note: Hex color for progression. Green indicates 'Improving or Stable' and
+      red indicates 'Progressing or Mixed'
+    nlp_derived: false

@@ -1,0 +1,80 @@
+timeline_id: ca_125_labs
+source_table_prod: cdsi_prod.cdm_impact_pipeline_prod.t35_epic_ddp_ca_125_labs
+source_table_dev: cdsi_prod.cdm_impact_pipeline_prod.t35_epic_ddp_ca_125_labs
+output_filename: data_timeline_ca_125_labs
+patient_or_sample: patient
+table_metadata:
+  form_name: Cancer Antigen Labs (CA_125)
+  cdm_source_table: epic_ddp_concat/labs/impact/t35_epic_ddp_ca_125_labs.tsv
+  table_description: Timeline of cancer antigen labs (CA_125)
+  cbio_timeline_reason_for_missing_data: No labs available or result was non-numeric
+  cbio_timeline_data_source: Derived from lab results
+  cbio_data_source_link: .nan
+  for_docs_site_timeline: true
+columns:
+  PATIENT_ID:
+    field_name: PATIENT_ID
+    field_label: PATIENT_ID
+    field_note: Medical Record Number
+    nlp_derived: false
+  START_DATE:
+    field_name: START_DATE
+    field_label: Start date of lab test
+    field_note: The date the test was performed
+    nlp_derived: false
+  STOP_DATE:
+    field_name: STOP_DATE
+    field_label: 'End date of lab test '
+    field_note: End of lab measurement, null
+    nlp_derived: false
+  EVENT_TYPE:
+    field_name: EVENT_TYPE
+    field_label: Event type
+    field_note: Event Type for lab test
+    nlp_derived: false
+  SUBTYPE:
+    field_name: SUBTYPE
+    field_label: Test subtype
+    field_note: Subtype of test, null
+    nlp_derived: false
+  SOURCE:
+    field_name: SOURCE
+    field_label: Test Source
+    field_note: Source of test, lab results
+    nlp_derived: false
+  TEST:
+    field_name: TEST
+    field_label: Test name
+    field_note: Name of test, CA_125
+    nlp_derived: false
+  LR_ABNORMALITY_CD:
+    field_name: LR_ABNORMALITY_CD
+    field_label: Lab abnormality code
+    field_note: The level of abnormality of the result (1 if the result was higher
+      than normal range, otherwise 0)
+    nlp_derived: false
+  LR_TEST_UP_LIMIT:
+    field_name: LR_TEST_UP_LIMIT
+    field_label: Upper test limit (normal)
+    field_note: The upper limit of the reference value
+    nlp_derived: false
+  LR_TEST_LOW_LIMIT:
+    field_name: LR_TEST_LOW_LIMIT
+    field_label: Lower test limit (normal)
+    field_note: The lower limit of the reference value
+    nlp_derived: false
+  LR_UNIT_MEASURE:
+    field_name: LR_UNIT_MEASURE
+    field_label: 'Test unit of measure '
+    field_note: The unit of measure for the result
+    nlp_derived: false
+  RESULT:
+    field_name: RESULT
+    field_label: Lab result value
+    field_note: The result value for the test (CA_125)
+    nlp_derived: false
+  LR_ABNORMALITY_CD_TEXT:
+    field_name: LR_ABNORMALITY_CD_TEXT
+    field_label: Lr Abnormality Cd Text
+    field_note: LR_ABNORMALITY_CD_TEXT description not available in codebook
+    nlp_derived: false

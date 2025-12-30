@@ -1,0 +1,61 @@
+timeline_id: radiation
+source_table_prod: cdsi_prod.cdm_idbw_impact_pipeline_prod.table_timeline_radiation
+source_table_dev: cdsi_prod.cdm_idbw_impact_pipeline_prod.table_timeline_radiation
+output_filename: data_timeline_radiation
+patient_or_sample: patient
+table_metadata:
+  form_name: Radiation Oncology
+  cdm_source_table: epic_ddp_concat/radonc/table_timeline_radiation.tsv
+  table_description: Timeline of treatments via radiation oncology
+  cbio_timeline_reason_for_missing_data: No radonc procedures performed at MSK
+  cbio_timeline_data_source: ARIA, Radiation Oncology information system
+  cbio_data_source_link: https://github.mskcc.org/cdsi/msk-impact/blob/master/msk_solid_heme/data_timeline_radiation.txt
+  for_docs_site_timeline: true
+columns:
+  PATIENT_ID:
+    field_name: PATIENT_ID
+    field_label: PATIENT_ID
+    field_note: Medical Record Number
+    nlp_derived: false
+  START_DATE:
+    field_name: START_DATE
+    field_label: Start Date (Radiation)
+    field_note: The date of the first treatment.
+    nlp_derived: false
+  STOP_DATE:
+    field_name: STOP_DATE
+    field_label: Stop Date
+    field_note: STOP_DATE description not available in codebook
+    nlp_derived: false
+  EVENT_TYPE:
+    field_name: EVENT_TYPE
+    field_label: Event Type
+    field_note: cBioPortal Formatting scheme. All TREATMENT
+    nlp_derived: false
+  SUBTYPE:
+    field_name: SUBTYPE
+    field_label: Subtype
+    field_note: cBioPortal Formatting scheme. All Radiation Therapy
+    nlp_derived: false
+  PLAN:
+    field_name: PLAN
+    field_label: Plan Name
+    field_note: Name of the reference point that describes a specific body area where
+      the radiation treatment was administered.
+    nlp_derived: false
+  DELIVERED_DOSE:
+    field_name: DELIVERED_DOSE
+    field_label: Delivered Dose
+    field_note: Total prescribed dose of radiation for this reference point.
+    nlp_derived: false
+  PLANNED_FRACTIONS:
+    field_name: PLANNED_FRACTIONS
+    field_label: Planned Fractions
+    field_note: Total number of fractions (radiation treatments) administered within
+      a single course of treatment for a given reference point.
+    nlp_derived: false
+  REFERENCE_POINT:
+    field_name: REFERENCE_POINT
+    field_label: Reference Point
+    field_note: Primary reference point.
+    nlp_derived: false
