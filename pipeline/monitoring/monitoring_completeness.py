@@ -48,9 +48,14 @@ def monitor_completeness(path_datahub):
     print(f"Timeline files: {[Path(f).name for f in list_files_timeline]}")
 
     ## Test for empty columns in summary tables
-    test = []
+    print("\n" + "="*80)
+    print("SUMMARY FILES - Completeness Check")
+    print("="*80)
+
+    summary_results = []
     for fname in list_files_summary:
-        print(f'Processing summary file: {Path(fname).name}')
+        filename = Path(fname).name
+        print(f'\n[{filename}]')
         # Read from local filesystem
         df_full = pd.read_csv(fname, sep='\t', header=None, dtype=str)
         # Skip first 4 header rows for summary files
@@ -58,46 +63,72 @@ def monitor_completeness(path_datahub):
         df_sum.columns = df_full.iloc[3]  # Use 4th row as column names
         cols_test = list(set(df_sum.columns) - set(cols_fixed))
         any_empty = df_sum[cols_test].isnull().all()
-        print(f'  Has completely empty columns: {any_empty.any()}')
-        if any_empty.any():
-            empty_cols = any_empty[any_empty].index.tolist()
-            print(f'  Empty columns: {empty_cols}')
-        test.append(any_empty)
 
-    test_for_empty_summary = pd.concat(test, axis=0) if test else pd.Series(dtype=bool)
+        # Create per-file result
+        empty_cols = any_empty[any_empty].index.tolist() if any_empty.any() else []
+        has_empty = len(empty_cols) > 0
+
+        print(f'  Total columns checked: {len(cols_test)}')
+        print(f'  Empty columns found: {len(empty_cols)}')
+        print(f'  Status: {"❌ FAIL" if has_empty else "✅ PASS"}')
+
+        if has_empty:
+            print(f'  Empty column names: {empty_cols}')
+            summary_results.append({
+                'file': filename,
+                'empty_columns': empty_cols
+            })
 
     ## Test for empty columns in timeline tables
-    test = []
+    print("\n" + "="*80)
+    print("TIMELINE FILES - Completeness Check")
+    print("="*80)
+
+    timeline_results = []
     for fname in list_files_timeline:
-        print(f'Processing timeline file: {Path(fname).name}')
+        filename = Path(fname).name
+        print(f'\n[{filename}]')
         # Read from local filesystem (timeline files have header at row 0)
         df_sum = pd.read_csv(fname, sep='\t', dtype=str)
         cols_test = list(set(df_sum.columns) - set(cols_fixed))
         any_empty = df_sum[cols_test].isnull().all()
-        print(f'  Has completely empty columns: {any_empty.any()}')
-        if any_empty.any():
-            empty_cols = any_empty[any_empty].index.tolist()
-            print(f'  Empty columns: {empty_cols}')
-        test.append(any_empty)
 
-    test_for_empty_timeline = pd.concat(test, axis=0) if test else pd.Series(dtype=bool)
+        # Create per-file result
+        empty_cols = any_empty[any_empty].index.tolist() if any_empty.any() else []
+        has_empty = len(empty_cols) > 0
 
-    ## Combine error tests from timeline and summary
-    test_for_empty_all = pd.concat([test_for_empty_timeline, test_for_empty_summary], axis=0).reset_index()
+        print(f'  Total columns checked: {len(cols_test)}')
+        print(f'  Empty columns found: {len(empty_cols)}')
+        print(f'  Status: {"❌ FAIL" if has_empty else "✅ PASS"}')
 
-    print('------------------------------')
-    print(test_for_empty_all)
-    print('------------------------------')
+        if has_empty:
+            print(f'  Empty column names: {empty_cols}')
+            timeline_results.append({
+                'file': filename,
+                'empty_columns': empty_cols
+            })
 
-    if test_for_empty_all[0].any():
-        # Get the list of fields that are completely empty
-        empty_fields = test_for_empty_all[test_for_empty_all[0] == True]['index'].tolist()
-        error_msg = f"Data completeness check FAILED. The following fields are completely empty: {empty_fields}"
-        print(error_msg)
+    ## Final summary
+    print("\n" + "="*80)
+    print("OVERALL COMPLETENESS SUMMARY")
+    print("="*80)
+
+    all_failed_files = summary_results + timeline_results
+
+    if len(all_failed_files) > 0:
+        print(f"\n❌ FAILED: {len(all_failed_files)} file(s) have completely empty columns\n")
+        for result in all_failed_files:
+            print(f"  • {result['file']}")
+            print(f"    Empty columns: {result['empty_columns']}\n")
+
+        error_msg = f"Data completeness check FAILED. {len(all_failed_files)} files have empty columns."
         raise ValueError(error_msg)
-
     else:
-        print('Data completeness check PASSED. All required fields contain data.')
+        total_files = len(list_files_summary) + len(list_files_timeline)
+        print(f"\n✅ PASSED: All {total_files} files have complete data")
+        print(f"  • {len(list_files_summary)} summary files checked")
+        print(f"  • {len(list_files_timeline)} timeline files checked")
+        print("\nData completeness check PASSED. All required fields contain data.")
         return True
 
 
