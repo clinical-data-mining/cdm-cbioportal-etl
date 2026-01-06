@@ -45,12 +45,15 @@ Sample-level timeline (e.g., sequencing data):
 """
 
 import argparse
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 import pandas as pd
 
 from msk_cdm.databricks import DatabricksAPI
 from msk_cdm.data_processing import mrn_zero_pad
-from cdm_cbioportal_etl.utils import constants
+from lib.utils import constants
 
 COLS_ORDER_GENERAL = constants.COLS_ORDER_GENERAL
 COL_ANCHOR_DATE = constants.COL_ANCHOR_DATE
@@ -107,13 +110,13 @@ def compute_os_date(fname_dbx, fname_demo):
     )
 
     df_demo = mrn_zero_pad(df=df_demo, col_mrn=COL_ID)
-    df_demo['PLA_LAST_CONTACT_DTE'] = pd.to_datetime(df_demo['PLA_LAST_CONTACT_DTE'], errors='coerce')
-    df_demo['PT_DEATH_DTE'] = pd.to_datetime(df_demo['PT_DEATH_DTE'], errors='coerce')
+    df_demo['PLA_LAST_CONTACT_DTE'] = pd.to_datetime(df_demo['PLA_LAST_CONTACT_DTE'], errors='coerce', format='mixed')
+    df_demo['PT_DEATH_DTE'] = pd.to_datetime(df_demo['PT_DEATH_DTE'], errors='coerce', format='mixed')
 
     # Remove timezone info to ensure dates are tz-naive
-    if pd.api.types.is_datetime64tz_dtype(df_demo['PLA_LAST_CONTACT_DTE']):
+    if isinstance(df_demo['PLA_LAST_CONTACT_DTE'].dtype, pd.DatetimeTZDtype):
         df_demo['PLA_LAST_CONTACT_DTE'] = df_demo['PLA_LAST_CONTACT_DTE'].dt.tz_localize(None)
-    if pd.api.types.is_datetime64tz_dtype(df_demo['PT_DEATH_DTE']):
+    if isinstance(df_demo['PT_DEATH_DTE'].dtype, pd.DatetimeTZDtype):
         df_demo['PT_DEATH_DTE'] = df_demo['PT_DEATH_DTE'].dt.tz_localize(None)
 
     df_demo[COL_OS_DATE] = df_demo['PT_DEATH_DTE'].fillna(df_demo['PLA_LAST_CONTACT_DTE'])
@@ -230,7 +233,7 @@ def report_deidentification_stats(df, anchor_col='ANCHOR_DATE', os_col=COL_OS_DA
     """
     ids_with_missing_os_dates = df.loc[df[os_col].isnull(), 'PATIENT_ID'].drop_duplicates()
     ids_with_missing_mrns = df.loc[df['MRN'].isnull(), 'PATIENT_ID'].drop_duplicates()
-    ids_with_missing_seq_date = df.loc[df['DTE_TUMOR_SEQUENCING'].isnull(), 'PATIENT_ID'].drop_duplicates()
+    ids_with_missing_seq_date = df.loc[df[COL_ANCHOR_DATE].isnull(), 'PATIENT_ID'].drop_duplicates()
     ids_with_missing_timeline_data = df.loc[df['START_DATE'].isnull(), 'PATIENT_ID'].drop_duplicates()
     timepoints_missing_start = df.loc[df['START_DATE_DEID'].isnull(), 'PATIENT_ID'].drop_duplicates()
 
@@ -256,6 +259,13 @@ def main():
         dest="fname_dbx",
         required=True,
         help="Path to Databricks environment file"
+    )
+    parser.add_argument(
+        "--fname_deid",
+        action="store",
+        dest="fname_deid",
+        default=FNAME_DEID,
+        help=f"Databricks table name for anchor dates (default: {FNAME_DEID})"
     )
     parser.add_argument(
         "--fname_timeline",
@@ -352,13 +362,13 @@ def main():
     # =========================================================================
     # 3. Load anchor dates
     # =========================================================================
-    print(f'\nLoading anchor dates: {FNAME_DEID}')
-    df_anchor = load_dbx_table(fname_dbx=args.fname_dbx, table_name=FNAME_DEID)
+    print(f'\nLoading anchor dates: {args.fname_deid}')
+    df_anchor = load_dbx_table(fname_dbx=args.fname_dbx, table_name=args.fname_deid)
     df_anchor = mrn_zero_pad(df=df_anchor, col_mrn='MRN')
-    df_anchor[COL_ANCHOR_DATE] = pd.to_datetime(df_anchor[COL_ANCHOR_DATE], errors='coerce')
+    df_anchor[COL_ANCHOR_DATE] = pd.to_datetime(df_anchor[COL_ANCHOR_DATE], errors='coerce', format='mixed')
 
     # Remove timezone info to ensure dates are tz-naive
-    if pd.api.types.is_datetime64tz_dtype(df_anchor[COL_ANCHOR_DATE]):
+    if isinstance(df_anchor[COL_ANCHOR_DATE].dtype, pd.DatetimeTZDtype):
         df_anchor[COL_ANCHOR_DATE] = df_anchor[COL_ANCHOR_DATE].dt.tz_localize(None)
 
     # =========================================================================
@@ -378,13 +388,13 @@ def main():
         df_timeline_raw['STOP_DATE'] = pd.NaT
 
     # Parse dates and validate
-    df_timeline_raw['START_DATE_FORMATTED'] = pd.to_datetime(df_timeline_raw['START_DATE'], errors='coerce')
-    df_timeline_raw['STOP_DATE_FORMATTED'] = pd.to_datetime(df_timeline_raw['STOP_DATE'], errors='coerce')
+    df_timeline_raw['START_DATE_FORMATTED'] = pd.to_datetime(df_timeline_raw['START_DATE'], errors='coerce', format='mixed')
+    df_timeline_raw['STOP_DATE_FORMATTED'] = pd.to_datetime(df_timeline_raw['STOP_DATE'], errors='coerce', format='mixed')
 
     # Remove timezone info to ensure all dates are tz-naive
-    if pd.api.types.is_datetime64tz_dtype(df_timeline_raw['START_DATE_FORMATTED']):
+    if isinstance(df_timeline_raw['START_DATE_FORMATTED'].dtype, pd.DatetimeTZDtype):
         df_timeline_raw['START_DATE_FORMATTED'] = df_timeline_raw['START_DATE_FORMATTED'].dt.tz_localize(None)
-    if pd.api.types.is_datetime64tz_dtype(df_timeline_raw['STOP_DATE_FORMATTED']):
+    if isinstance(df_timeline_raw['STOP_DATE_FORMATTED'].dtype, pd.DatetimeTZDtype):
         df_timeline_raw['STOP_DATE_FORMATTED'] = df_timeline_raw['STOP_DATE_FORMATTED'].dt.tz_localize(None)
 
     validate_date_parsing(df_timeline_raw)

@@ -1,0 +1,30 @@
+summary_id: comorbidities_socioeconomic_yost_index
+patient_or_sample: patient
+source_table_prod: cdsi_prod.cdm_epic_impact_pipeline_prod.t16_epic_ddp_yost_index
+source_table_dev: cdsi_prod.cdm_epic_impact_pipeline_prod.t16_epic_ddp_yost_index
+key_column: MRN
+columns:
+- MRN
+- yost_index_imputed_median
+date_columns: []
+dest_prod:
+  catalog: cdsi_eng_phi
+  schema: cdm_eng_cbioportal_etl
+  volume_name: cdm_eng_cbioportal_etl_volume
+  filename: comorbidities_socioeconomic_yost_index_summary.tsv
+dest_dev:
+  catalog: cdsi_eng_phi
+  schema: cdm_eng_cbioportal_etl
+  volume_name: cdm_eng_cbioportal_etl_volume_dev
+  filename: comorbidities_socioeconomic_yost_index_summary.tsv
+column_metadata:
+  yost_index_imputed_median:
+    label: Yost Index (Socioeconomic Status; Imputed, Median)
+    datatype: STRING
+    comment: 'Yost Index (Socioeconomic Status; Imputed, Median) ---DESCRIPTION: Patient
+      Yost Index /Socioeconomic Status (SES), with null values imputed using yost_index_zipcode_median
+      (median value for all patients in zipcode) column. Imputed for approximately
+      26 percent of patients. The index ranges from 1 (highest SES) to 100 (lowest
+      SES). ---MISSING DATA: Patient is international or address could not be matched
+      ---SOURCE: Imputed using patient geolocation'
+    fill_value: NA

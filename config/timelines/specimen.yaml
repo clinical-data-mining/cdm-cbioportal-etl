@@ -1,0 +1,45 @@
+timeline_id: specimen
+source_table_prod: cdsi_prod.cdm_idbw_impact_pipeline_prod.table_timeline_sequencing
+source_table_dev:  cdsi_eng_phi.cdm_eng_cbioportal_etl.table_timeline_sequencing
+output_filename: data_timeline_specimen
+patient_or_sample: sample
+table_metadata:
+  form_name: Sample Sequencing
+  cdm_source_table: pathology/table_timeline_sequencing.tsv
+  table_description: Timeline for which patient specimens were sequenced
+  cbio_timeline_reason_for_missing_data: 'Each IMPACT patient should have at least
+    one specimen sequenced. Please report. '
+  cbio_timeline_data_source: IDB (Via CoPath) molecular pathology reports
+  cbio_data_source_link: https://github.mskcc.org/cdsi/msk-impact/blob/master/msk_solid_heme/data_timeline_specimen.txt
+  for_docs_site_timeline: true
+columns:
+  PATIENT_ID:
+    field_name: PATIENT_ID
+    field_label: PATIENT_ID
+    field_note: Medical Record Number
+    nlp_derived: false
+  START_DATE:
+    field_name: START_DATE
+    field_label: Date of Sequencing
+    field_note: Date that sample was sequenced
+    nlp_derived: false
+  STOP_DATE:
+    field_name: STOP_DATE
+    field_label: Date of Sequencing (DNU)
+    field_note: Do not use
+    nlp_derived: false
+  EVENT_TYPE:
+    field_name: EVENT_TYPE
+    field_label: Event Type (Sequencing)
+    field_note: Track for event type in cbioportal
+    nlp_derived: false
+  SUBTYPE:
+    field_name: SUBTYPE
+    field_label: Subtype
+    field_note: SUBTYPE description not available in codebook
+    nlp_derived: false
+  SAMPLE_ID:
+    field_name: SAMPLE_ID
+    field_label: Sample ID
+    field_note: MSK-IMPACT Sample ID
+    nlp_derived: false

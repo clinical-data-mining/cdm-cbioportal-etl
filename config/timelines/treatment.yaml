@@ -1,0 +1,61 @@
+timeline_id: treatment
+source_table_prod: cdsi_prod.cdm_idbw_impact_pipeline_prod.table_timeline_medications
+source_table_dev: cdsi_eng_phi.cdm_eng_treatments.table_timeline_medications
+output_filename: data_timeline_treatment
+patient_or_sample: patient
+table_metadata:
+  form_name: Anti-Cancer Medications
+  cdm_source_table: medications/table_timeline_medications.tsv
+  table_description: Timeline of medications administered at MSK.
+  cbio_timeline_reason_for_missing_data: No medications administered at MSK. Approx.
+    25% of patients will be missing treatment information due to lack of connectivity
+    to cross-institutional EMR systems.
+  cbio_timeline_data_source: 'IDB, Antineoplastics patient medications table '
+  cbio_data_source_link: https://github.mskcc.org/cdsi/msk-impact/blob/master/msk_solid_heme/data_timeline_treatment.txt
+  for_docs_site_timeline: true
+columns:
+  PATIENT_ID:
+    field_name: PATIENT_ID
+    field_label: PATIENT_ID
+    field_note: Medical Record Number
+    nlp_derived: false
+  START_DATE:
+    field_name: START_DATE
+    field_label: Start Date (Medication)
+    field_note: Earliest date this medication was taken
+    nlp_derived: false
+  STOP_DATE:
+    field_name: STOP_DATE
+    field_label: End Date (Medication)
+    field_note: Latest date this medication was taken
+    nlp_derived: false
+  EVENT_TYPE:
+    field_name: EVENT_TYPE
+    field_label: Event Type
+    field_note: cBioPortal Formatting scheme. All TREATMENT
+    nlp_derived: false
+  TREATMENT_TYPE:
+    field_name: TREATMENT_TYPE
+    field_label: Subtype
+    field_note: cBioPortal Formatting scheme. All Medical Therapy
+    nlp_derived: false
+  AGENT:
+    field_name: AGENT
+    field_label: Generic Drug Name
+    field_note: Generic MULTUM name for formulary drugs or keyword for non-formulary.
+    nlp_derived: false
+  SUBTYPE:
+    field_name: SUBTYPE
+    field_label: Medication Type
+    field_note: Type of anti-cancer medication. Possible therapy types are 'Chemo'
+      (Chemotherapy), 'Hormone', 'Targeted', 'Biologic', 'Immuno' (Immunotherapy),
+      'Bone Therapy' (Bone Agents), 'Other', or 'Investigational' (Any of the previous,
+      censored by clinical trial). All investigational drugs durations are censored
+      to one day (start date).  Medication types have been classified by MSK's clinical
+      informatics division using hemonc.org designation for drug classifcations.
+    nlp_derived: false
+  RX_INVESTIGATIVE:
+    field_name: RX_INVESTIGATIVE
+    field_label: Medication Flag Investigative
+    field_note: Investigative Drug Flag
+    nlp_derived: false
