@@ -1,7 +1,7 @@
 summary_id: cancer_diagnosis_summary
 patient_or_sample: patient
 source_table_prod: cdsi_prod.cdm_impact_pipeline_prod.table_dx_impact_summary
-source_table_dev: cdsi_prod.cdm_idbw_impact_pipeline_prod.table_dx_impact_summary
+source_table_dev: cdsi_eng_phi.cdm_eng_diagnosis.table_dx_impact_summary
 key_column: MRN
 columns:
 - MRN

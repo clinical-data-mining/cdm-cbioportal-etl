@@ -117,8 +117,9 @@ if __name__ == "__main__":
     volume_path_intermediate = databricks_config.get('volume_path_intermediate', 'cbioportal/intermediate_files/')
 
     # Construct paths
-    volume_path_save = f"/Volumes/{catalog}/{schema}/{volume}/{volume_path_intermediate}data_timeline_follow_up.tsv"
-    table_name = "data_timeline_follow_up"
+    table_name = "table_timeline_follow_up"
+    volume_path_save = f"/Volumes/{catalog}/{schema}/{volume}/{volume_path_intermediate}{table_name}.tsv"
+
 
     cbioportal_timeline_follow_up(
         yaml_config=args.config_yaml,

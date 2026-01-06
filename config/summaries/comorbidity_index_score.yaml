@@ -1,7 +1,7 @@
 summary_id: comorbidity_index_score
 patient_or_sample: patient
 #source_table_prod: cdsi_prod.cdm_idbw_impact_pipeline_prod.ddp_comorbidities_index_summary
-source_table_dev: cdsi_prod.cdm_idbw_impact_pipeline_prod.ddp_comorbidities_index_summary
+source_table_dev: cdsi_eng_phi.cdm_eng_comorbidities.ddp_comorbidities_index_summary
 key_column: MRN
 columns:
 - MRN

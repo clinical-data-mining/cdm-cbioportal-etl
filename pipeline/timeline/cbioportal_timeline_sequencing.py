@@ -120,8 +120,9 @@ def main():
     volume_path_intermediate = databricks_config.get('volume_path_intermediate', 'cbioportal/intermediate_files/')
 
     # Construct paths
-    volume_path_save = f"/Volumes/{catalog}/{schema}/{volume}/{volume_path_intermediate}data_timeline_sequencing.tsv"
-    table_name = "data_timeline_sequencing"
+    table_name = "table_timeline_sequencing"
+    volume_path_save = f"/Volumes/{catalog}/{schema}/{volume}/{volume_path_intermediate}{table_name}.tsv"
+
 
     df_seq_timeline = sequencing_timeline(
         fname_databricks_env=args.databricks_env,

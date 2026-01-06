@@ -1,6 +1,6 @@
 timeline_id: specimen_surgery
 source_table_prod: cdsi_prod.cdm_idbw_impact_pipeline_prod.table_timeline_specimen_surgery
-source_table_dev: cdsi_prod.cdm_idbw_impact_pipeline_prod.table_timeline_specimen_surgery
+source_table_dev: cdsi_eng_phi.cdm_eng_pathology_report_segmentation.table_timeline_specimen_surgery
 output_filename: data_timeline_specimen_surgery
 patient_or_sample: sample
 table_metadata:

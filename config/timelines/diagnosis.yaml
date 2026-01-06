@@ -1,6 +1,6 @@
 timeline_id: diagnosis
 source_table_prod: cdsi_prod.cdm_idbw_impact_pipeline_prod.table_dx_timeline_primary
-source_table_dev: cdsi_prod.cdm_idbw_impact_pipeline_prod.table_dx_timeline_primary
+source_table_dev: cdsi_eng_phi.cdm_eng_diagnosis.table_dx_timeline_primary
 output_filename: data_timeline_diagnosis
 patient_or_sample: patient
 table_metadata:

@@ -1,6 +1,6 @@
 timeline_id: specimen
 source_table_prod: cdsi_prod.cdm_idbw_impact_pipeline_prod.table_timeline_sequencing
-source_table_dev: cdsi_prod.cdm_idbw_impact_pipeline_prod.table_timeline_sequencing
+source_table_dev:  cdsi_eng_phi.cdm_eng_cbioportal_etl.table_timeline_sequencing
 output_filename: data_timeline_specimen
 patient_or_sample: sample
 table_metadata:

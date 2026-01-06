@@ -1,6 +1,6 @@
 timeline_id: mmr
 source_table_prod: cdsi_prod.cdm_idbw_impact_pipeline_prod.table_timeline_mmr_calls
-source_table_dev: cdsi_prod.cdm_idbw_impact_pipeline_prod.table_timeline_mmr_calls
+source_table_dev: cdsi_eng_phi.cdm_eng_pathology_report_segmentation.table_timeline_mmr_calls
 output_filename: data_timeline_mmr
 patient_or_sample: patient
 table_metadata:

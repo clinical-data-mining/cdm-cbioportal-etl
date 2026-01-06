@@ -1,7 +1,7 @@
 summary_id: pathology_gleason_scores_for_cbioportal_patient_summary
 patient_or_sample: patient
 source_table_prod: cdsi_prod.cdm_idbw_impact_pipeline_prod.table_summary_gleason_patient
-source_table_dev: cdsi_prod.cdm_idbw_impact_pipeline_prod.table_summary_gleason_patient
+source_table_dev: cdsi_eng_phi.cdm_eng_pathology_report_segmentation.table_summary_gleason_patient
 key_column: MRN
 columns:
 - MRN

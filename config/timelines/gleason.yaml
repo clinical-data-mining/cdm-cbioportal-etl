@@ -1,6 +1,6 @@
 timeline_id: gleason
 source_table_prod: cdsi_prod.cdm_idbw_impact_pipeline_prod.table_timeline_gleason_scores
-source_table_dev: cdsi_prod.cdm_idbw_impact_pipeline_prod.table_timeline_gleason_scores
+source_table_dev: cdsi_eng_phi.cdm_eng_pathology_report_segmentation.table_timeline_gleason_scores
 output_filename: data_timeline_gleason
 patient_or_sample: patient
 table_metadata:
