@@ -1,0 +1,52 @@
+timeline_id: cancer_presence
+source_table_prod: cdsi_eng_phi.cdm_eng_rad_cancer_presence.table_timeline_cancer_presence
+source_table_dev: cdsi_eng_phi.cdm_eng_rad_cancer_presence.table_timeline_cancer_presence
+output_filename: data_timeline_cancer_presence
+patient_or_sample: patient
+table_metadata:
+  form_name: Disease-Free Status
+  cdm_source_table: radiology/cancer_presence/impact/table_timeline_cancer_presence.tsv
+  table_description: Inference results for windows of disease-free status mentioned
+    in CT, PET, and MRI radiology report impressions. Minimum window for disease-free
+    status windows are 6 months long.
+  cbio_timeline_reason_for_missing_data: No CT/PET/MRI radiology report available
+    for patient. Impression section missing from report.
+  cbio_timeline_data_source: NLP generated  from radiology report impressions
+  cbio_data_source_link: https://github.mskcc.org/cdsi/msk-impact/blob/master/msk_solid_heme/data_timeline_cancer_presence.txt
+  for_docs_site_timeline: true
+columns:
+  PATIENT_ID:
+    field_name: PATIENT_ID
+    field_label: PATIENT_ID
+    field_note: Medical Record Number
+    nlp_derived: false
+  START_DATE:
+    field_name: START_DATE
+    field_label: Start of disease-free status
+    field_note: Start date of disease-free time window
+    nlp_derived: false
+  STOP_DATE:
+    field_name: STOP_DATE
+    field_label: End of disease-free status
+    field_note: End date of disease-free time window
+    nlp_derived: false
+  EVENT_TYPE:
+    field_name: EVENT_TYPE
+    field_label: Event Type for DFS, diagnosis
+    field_note: Event type, diagnosis
+    nlp_derived: false
+  SUBTYPE:
+    field_name: SUBTYPE
+    field_label: Event Type for the section, disease-free status
+    field_note: Subtype, disease-free status
+    nlp_derived: false
+  SOURCE:
+    field_name: SOURCE
+    field_label: Source of disease-free status, radiology reports
+    field_note: Source of output, CT, MRI, and PET radiology report impressions
+    nlp_derived: false
+  CANCER_PRESENT:
+    field_name: CANCER_PRESENT
+    field_label: Indication if patient is free of cancer during START_DATE and STOP_DATE
+    field_note: Indication if patient is free of cancer during START_DATE and STOP_DATE
+    nlp_derived: true

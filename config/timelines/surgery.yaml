@@ -1,0 +1,46 @@
+timeline_id: surgery
+source_table_prod: cdsi_prod.cdm_idbw_impact_pipeline_prod.table_timeline_surgery
+source_table_dev: cdsi_eng_phi.cdm_eng_treatments.table_timeline_surgery
+output_filename: data_timeline_surgery
+patient_or_sample: patient
+table_metadata:
+  form_name: Surgery and Interventional Radiology
+  cdm_source_table: epic_ddp_concat/surgery/table_timeline_surgery.tsv
+  table_description: Timeline of surgical procedures and interventional radiology
+  cbio_timeline_reason_for_missing_data: No IR or surgical procedures performed at
+    MSK
+  cbio_timeline_data_source: IDB. Darwin Radiology Reports for IR. Darwin patient
+    procedures for surgery.
+  cbio_data_source_link: https://github.mskcc.org/cdsi/msk-impact/blob/master/msk_solid_heme/data_timeline_surgery.txt
+  for_docs_site_timeline: true
+columns:
+  PATIENT_ID:
+    field_name: PATIENT_ID
+    field_label: PATIENT_ID
+    field_note: Medical Record Number
+    nlp_derived: false
+  START_DATE:
+    field_name: START_DATE
+    field_label: Date of Procedure
+    field_note: Date of surgery or IR
+    nlp_derived: false
+  STOP_DATE:
+    field_name: STOP_DATE
+    field_label: Stop Date
+    field_note: STOP_DATE description not available in codebook
+    nlp_derived: false
+  EVENT_TYPE:
+    field_name: EVENT_TYPE
+    field_label: Event Type
+    field_note: All SURGERY (cbioportal formatting)
+    nlp_derived: false
+  SUBTYPE:
+    field_name: SUBTYPE
+    field_label: Event Subtype
+    field_note: Either Surgery or IR
+    nlp_derived: false
+  PROCEDURE_DESCRIPTION:
+    field_name: PROCEDURE_DESCRIPTION
+    field_label: Procedure Description
+    field_note: Free-text description from ddp_surgery.tsv or ddp_ir.tsv
+    nlp_derived: false

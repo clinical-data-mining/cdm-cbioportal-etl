@@ -1,37 +1,42 @@
 import argparse
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 import pandas as pd
 
-from msk_cdm.minio import MinioAPI
-from msk_cdm.data_classes.epic_ddp_concat import CDMProcessingVariables as cdm_files
-from cdm_cbioportal_etl.utils import cbioportal_update_config
+from msk_cdm.databricks import DatabricksAPI
+from lib.utils import cbioportal_update_config
 from msk_cdm.data_processing import (
     mrn_zero_pad,
     convert_col_to_datetime
 )
-from cdm_cbioportal_etl.utils import get_anchor_dates
 
 
 COLS_OS = ['DMP_ID', 'OS_MONTHS', 'OS_STATUS']
 COL_P_ID = 'PATIENT_ID'
+TABLE_DEMO = 'cdsi_prod.cdm_impact_pipeline_prod.t01_epic_ddp_demographics'
+table_anchor_dates = 'cdsi_eng_phi.cdm_eng_cbioportal_etl.timeline_anchor_dates'
+COL_ANCHOR_DATE = 'DATE_TUMOR_SEQUENCING'
 
 def _load_data(
-    obj_minio,
-    fname_demo,
-    fname_minio_env
+    obj_db,
+    table_demo,
+    fname_databricks_env
 ):
-    # Demographics
-    print('Loading %s' % fname_demo)
-    obj = obj_minio.load_obj(path_object=fname_demo)
-    df_demo = pd.read_csv(obj, sep='\t', low_memory=False)
+    # Demographics from Databricks table
+    print('Loading demographics table: %s' % table_demo)
+    sql = f"SELECT * FROM {table_demo}"
+    df_demo = obj_db.query_from_sql(sql=sql)
     df_demo = df_demo.drop_duplicates()
 
-    # Pathology table for sequencing date
-    df_path_g = get_anchor_dates(fname_minio_env)
+    # Pathology table for sequencing date (using get_anchor_dates which queries Databricks)
+    sql_anchor_dates = f"SELECT * FROM {table_anchor_dates}"
+    df_path_g = obj_db.query_from_sql(sql=sql_anchor_dates)
     print(df_path_g.head())
 
     print('Data loaded')
-    
+
     return df_demo, df_path_g
 
 
@@ -44,8 +49,15 @@ def _clean_and_merge(
     df_demo = mrn_zero_pad(df=df_demo, col_mrn='MRN')
     col_os = ['MRN', 'PT_DEATH_DTE', 'PLA_LAST_CONTACT_DTE']
     df_demo_f = df_demo[col_os].copy()
-    df_demo_f = convert_col_to_datetime(df=df_demo_f, col='PT_DEATH_DTE')
-    df_demo_f = convert_col_to_datetime(df=df_demo_f, col='PLA_LAST_CONTACT_DTE')
+    # Parse dates with coercion to handle None/invalid strings gracefully
+    df_demo_f['PT_DEATH_DTE'] = pd.to_datetime(df_demo_f['PT_DEATH_DTE'], errors='coerce')
+    df_demo_f['PLA_LAST_CONTACT_DTE'] = pd.to_datetime(df_demo_f['PLA_LAST_CONTACT_DTE'], errors='coerce')
+
+    # Clean anchor dates
+    df_path_g = mrn_zero_pad(df=df_path_g, col_mrn='MRN')
+    df_path_g[COL_ANCHOR_DATE] = pd.to_datetime(
+        df_path_g[COL_ANCHOR_DATE], errors='coerce'
+    )
 
     df_os = df_path_g.merge(right=df_demo_f, how='left', on='MRN')
     
@@ -55,12 +67,12 @@ def _clean_and_merge(
 def _create_os_cols(df_os):
     # Create interval and event data
     df_os['OS_DATE'] = df_os['PT_DEATH_DTE'].fillna(df_os['PLA_LAST_CONTACT_DTE'])
-    df_os['OS_INT'] = (df_os['OS_DATE'] - df_os['DTE_TUMOR_SEQUENCING']).dt.days/30.417
+    df_os['OS_INT'] = (df_os['OS_DATE'] - df_os[COL_ANCHOR_DATE]).dt.days/30.417
     df_os['OS_MONTHS'] = df_os['OS_INT']
     df_os['OS_STATUS'] = df_os['PT_DEATH_DTE'].notnull().replace({True: '1:DECEASED', False:'0:LIVING'})
     OS_INT_ERROR = df_os['OS_INT'] > 150
-    OS_INT_ERROR2a = df_os['PLA_LAST_CONTACT_DTE'] < df_os['DTE_TUMOR_SEQUENCING']
-    OS_INT_ERROR2b = df_os['PT_DEATH_DTE'] < df_os['DTE_TUMOR_SEQUENCING']
+    OS_INT_ERROR2a = df_os['PLA_LAST_CONTACT_DTE'] < df_os[COL_ANCHOR_DATE]
+    OS_INT_ERROR2b = df_os['PT_DEATH_DTE'] < df_os[COL_ANCHOR_DATE]
     OS_INT_ERROR2 = OS_INT_ERROR2a | OS_INT_ERROR2b
     df_os.loc[OS_INT_ERROR2, 'OS_MONTHS'] = 0
     df_os['OS_MONTHS'] = df_os['OS_MONTHS'].astype(str)
@@ -71,36 +83,51 @@ def _create_os_cols(df_os):
 
 
 def _process_data(
-    fname_minio_env,
-    fname_save,
-    fname_demo
+    fname_databricks_env,
+    volume_path_save,
+    table_demo,
+    catalog=None,
+    schema=None,
+    table_name=None
 ):
-    # Create MinIO object
-    obj_minio = MinioAPI(fname_minio_env=fname_minio_env)
-    
+    # Create Databricks object
+    obj_db = DatabricksAPI(fname_databricks_env=fname_databricks_env)
+
     # Load data
     df_demo, df_path_g = _load_data(
-        obj_minio=obj_minio,
-        fname_demo=fname_demo,
-        fname_minio_env=fname_minio_env
+        obj_db=obj_db,
+        table_demo=table_demo,
+        fname_databricks_env=fname_databricks_env
     )
-    
+
     # Clean and merge data
     df_os = _clean_and_merge(
-        df_demo=df_demo, 
+        df_demo=df_demo,
         df_path_g=df_path_g
     )
-    
+
     # Add annotations for OS
     df_os_f = _create_os_cols(df_os=df_os)
 
     print('Shape of OS file: %s' % str(df_os_f.shape))
-    
-    # Save data
-    obj_minio.save_obj(
-        df=df_os_f, 
-        path_object=fname_save, 
-        sep='\t'
+
+    # Save data to Databricks volume
+    dict_database_table_info = None
+    if catalog and schema and table_name:
+        dict_database_table_info = {
+            'catalog': catalog,
+            'schema': schema,
+            'table': table_name,
+            'volume_path': volume_path_save,
+            'sep': '\t'
+        }
+
+    obj_db.write_db_obj(
+        df=df_os_f,
+        volume_path=volume_path_save,
+        sep='\t',
+        overwrite=True,
+        dict_database_table_info=dict_database_table_info
     )
 
     return df_os_f
@@ -115,25 +142,34 @@ def main():
         help="Yaml file containing run parameters and necessary file locations.",
     )
     parser.add_argument(
-        "--minio_env",
+        "--databricks_env",
         action="store",
-        dest="minio_env",
+        dest="databricks_env",
         required=True,
-        help="--location of Minio environment file",
+        help="--location of Databricks environment file",
     )
     args = parser.parse_args()
 
     obj_yaml = cbioportal_update_config(fname_yaml_config=args.config_yaml)
+    databricks_config = obj_yaml.config_dict.get('inputs_databricks', {})
+    catalog = databricks_config.get('catalog', 'cdsi_prod')
+    schema = databricks_config.get('schema', 'cdsi_data_deid')
+    volume = databricks_config.get('volume', 'cdsi_data_deid_volume')
+    volume_path_intermediate = databricks_config.get('volume_path_intermediate', 'cbioportal/intermediate_files/')
 
-    fname_save = cdm_files.fname_overall_survival
-    fname_demo = cdm_files.fname_demo
-    
+    # Construct paths
+    volume_path_save = f"/Volumes/{catalog}/{schema}/{volume}/{volume_path_intermediate}data_overall_survival.tsv"
+    table_name = "data_overall_survival"
+
     df_os_f = _process_data(
-        fname_minio_env=args.minio_env,
-        fname_save=fname_save,
-        fname_demo=fname_demo
+        fname_databricks_env=args.databricks_env,
+        volume_path_save=volume_path_save,
+        table_demo=TABLE_DEMO,
+        catalog=catalog,
+        schema=schema,
+        table_name=table_name
     )
-    
+
     print(df_os_f.sample())
     print('Missing data:')
     print(df_os_f.isnull().sum())

@@ -46,8 +46,6 @@ package-lock.json
 *.log
 
 # Data files (common patterns)
-*.tsv
-*.csv
 *.xlsx
 *.xls
 data_clinical_*.txt

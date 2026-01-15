@@ -2,72 +2,85 @@
 cbioportal_timeline_batch_deidentify.py
 
 Batch wrapper script to execute timeline deidentification for all timeline files.
-This script loops through all timeline configurations and calls the deidentification
-process for each one.
+Reads timeline configurations from YAML files in config/timelines/ directory.
 """
 import os
 import sys
 import argparse
 import subprocess
 from pathlib import Path
+import yaml
 
 
-# Hardcoded timeline configurations
-# Format: (task_id, databricks_table, output_filename, columns, merge_level)
-TIMELINE_CONFIGS = [
-    ("treatment", "cdsi_prod.cdm_idbw_impact_pipeline_prod.table_timeline_medications", "data_timeline_treatment",
-     "PATIENT_ID,START_DATE,STOP_DATE,EVENT_TYPE,TREATMENT_TYPE,AGENT,SUBTYPE,RX_INVESTIGATIVE", None),
-    ("surgery", "cdsi_prod.cdm_idbw_impact_pipeline_prod.table_timeline_surgery", "data_timeline_surgery",
-     "PATIENT_ID,START_DATE,STOP_DATE,EVENT_TYPE,SUBTYPE,PROCEDURE_DESCRIPTION", None),
-    ("radiation", "cdsi_prod.cdm_idbw_impact_pipeline_prod.table_timeline_radiation", "data_timeline_radiation",
-     "PATIENT_ID,START_DATE,STOP_DATE,EVENT_TYPE,SUBTYPE,PLAN,DELIVERED_DOSE,PLANNED_FRACTIONS,REFERENCE_POINT", None),
-    ("specimen", "cdsi_prod.cdm_idbw_impact_pipeline_prod.table_timeline_sequencing", "data_timeline_specimen",
-     "PATIENT_ID,START_DATE,STOP_DATE,EVENT_TYPE,SUBTYPE,SAMPLE_ID", "sample"),
-    ("specimen_surgery", "cdsi_prod.cdm_idbw_impact_pipeline_prod.table_timeline_specimen_surgery", "data_timeline_specimen_surgery",
-     "PATIENT_ID,START_DATE,STOP_DATE,EVENT_TYPE,SUBTYPE,SAMPLE_ID", "sample"),
-    ("diagnosis", "cdsi_prod.cdm_idbw_impact_pipeline_prod.table_dx_timeline_primary", "data_timeline_diagnosis",
-     "PATIENT_ID,START_DATE,STOP_DATE,EVENT_TYPE,SUBTYPE,SOURCE,DX_DESCRIPTION,AJCC,CLINICAL_GROUP,PATH_GROUP,SUMMARY,STAGE_CDM_DERIVED,STAGE_CDM_DERIVED_GRANULAR", None),
-    ("follow_up", "cdsi_prod.cdm_idbw_impact_pipeline_prod.table_timeline_follow_up", "data_timeline_follow_up",
-     "PATIENT_ID,START_DATE,STOP_DATE,EVENT_TYPE,SUBTYPE,SOURCE", None),
-    ("progression", "cdsi_eng_phi.cdm_eng_rad_progression.table_timeline_radiology_cancer_progression_predictions", "data_timeline_progression",
-     "PATIENT_ID,START_DATE,STOP_DATE,EVENT_TYPE,SUBTYPE,SOURCE,SOURCE_SPECIFIC,RADIOLOGY_PROCEDURE_NAME,PROGRESSION,PROGRESSION_PROBABILITY,STYLE_COLOR", None),
-    ("cancer_presence", "cdsi_eng_phi.cdm_eng_rad_cancer_presence.table_timeline_cancer_presence", "data_timeline_cancer_presence",
-     "PATIENT_ID,START_DATE,STOP_DATE,EVENT_TYPE,SUBTYPE,SOURCE,CANCER_PRESENT", None),
-    ("tumor_sites", "cdsi_eng_phi.cdm_eng_rad_tumor_sites.table_timeline_radiology_tumor_sites_predictions", "data_timeline_tumor_sites",
-     "PATIENT_ID,START_DATE,STOP_DATE,EVENT_TYPE,SUBTYPE,SOURCE,SOURCE_SPECIFIC,TUMOR_SITE,RADIOLOGY_PROCEDURE_NAME,STYLE_COLOR", None),
-    ("cea_labs", "cdsi_prod.cdm_impact_pipeline_prod.t34_epic_ddp_cea_labs", "data_timeline_cea_labs",
-     "PATIENT_ID,START_DATE,STOP_DATE,EVENT_TYPE,SUBTYPE,SOURCE,TEST,LR_ABNORMALITY_CD,LR_TEST_UP_LIMIT,LR_TEST_LOW_LIMIT,LR_UNIT_MEASURE,RESULT,LR_ABNORMALITY_CD_TEXT", None),
-    ("ca_125_labs", "cdsi_prod.cdm_impact_pipeline_prod.t35_epic_ddp_ca_125_labs", "data_timeline_ca_125_labs",
-     "PATIENT_ID,START_DATE,STOP_DATE,EVENT_TYPE,SUBTYPE,SOURCE,TEST,LR_ABNORMALITY_CD,LR_TEST_UP_LIMIT,LR_TEST_LOW_LIMIT,LR_UNIT_MEASURE,RESULT,LR_ABNORMALITY_CD_TEXT", None),
-    ("ca_15_3_labs", "cdsi_prod.cdm_impact_pipeline_prod.t36_epic_ddp_ca_15_3_labs", "data_timeline_ca_15-3_labs",
-     "PATIENT_ID,START_DATE,STOP_DATE,EVENT_TYPE,SUBTYPE,SOURCE,TEST,LR_ABNORMALITY_CD,LR_TEST_UP_LIMIT,LR_TEST_LOW_LIMIT,LR_UNIT_MEASURE,RESULT,LR_ABNORMALITY_CD_TEXT", None),
-    ("ca_19_9_labs", "cdsi_prod.cdm_impact_pipeline_prod.t37_epic_ddp_ca_19_9_labs", "data_timeline_ca_19-9_labs",
-     "PATIENT_ID,START_DATE,STOP_DATE,EVENT_TYPE,SUBTYPE,SOURCE,TEST,LR_ABNORMALITY_CD,LR_TEST_UP_LIMIT,LR_TEST_LOW_LIMIT,LR_UNIT_MEASURE,RESULT,LR_ABNORMALITY_CD_TEXT", None),
-    ("psa_labs", "cdsi_prod.cdm_impact_pipeline_prod.t38_epic_ddp_psa_labs", "data_timeline_psa_labs",
-     "PATIENT_ID,START_DATE,STOP_DATE,EVENT_TYPE,SUBTYPE,SOURCE,TEST,LR_ABNORMALITY_CD,LR_TEST_UP_LIMIT,LR_TEST_LOW_LIMIT,LR_UNIT_MEASURE,RESULT,LR_ABNORMALITY_CD_TEXT", None),
-    ("tsh_labs", "cdsi_prod.cdm_impact_pipeline_prod.t39_epic_ddp_tsh_labs", "data_timeline_tsh_labs",
-     "PATIENT_ID,START_DATE,STOP_DATE,EVENT_TYPE,SUBTYPE,SOURCE,TEST,LR_ABNORMALITY_CD,LR_TEST_UP_LIMIT,LR_TEST_LOW_LIMIT,LR_UNIT_MEASURE,RESULT,LR_ABNORMALITY_CD_TEXT", None),
-    ("bmi", "cdsi_prod.cdm_impact_pipeline_prod.t33_epic_ddp_bmi", "data_timeline_bmi",
-     "PATIENT_ID,START_DATE,STOP_DATE,EVENT_TYPE,SUBTYPE,SOURCE,TEST,RESULT", None),
-    ("ecog_kps", "cdsi_prod.cdm_impact_pipeline_prod.t31_epic_ddp_ecog_kps", "data_timeline_ecog_kps",
-     "PATIENT_ID,START_DATE,STOP_DATE,EVENT_TYPE,SUBTYPE,SOURCE,ECOG_KPS", None),
-    ("mmr", "cdsi_prod.cdm_idbw_impact_pipeline_prod.table_timeline_mmr_calls", "data_timeline_mmr",
-     "PATIENT_ID,START_DATE,STOP_DATE,EVENT_TYPE,SUBTYPE,SOURCE,MMR", None),
-    ("pdl1", "cdsi_prod.cdm_idbw_impact_pipeline_prod.table_timeline_pdl1_calls", "data_timeline_pdl1",
-     "PATIENT_ID,START_DATE,STOP_DATE,EVENT_TYPE,SUBTYPE,SOURCE,PDL1_POSITIVE", None),
-    ("gleason", "cdsi_prod.cdm_idbw_impact_pipeline_prod.table_timeline_gleason_scores", "data_timeline_gleason",
-     "PATIENT_ID,START_DATE,STOP_DATE,EVENT_TYPE,SUBTYPE,SOURCE,GLEASON_SCORE", None),
-]
+def load_timeline_configs(config_dir, production_or_test):
+    """
+    Load all timeline YAML configurations from directory.
+
+    Parameters
+    ----------
+    config_dir : str
+        Directory containing timeline YAML config files
+    production_or_test : str
+        'production' or 'test' - determines which source_table to use
+
+    Returns
+    -------
+    list of dict
+        List of timeline configurations with keys:
+        - timeline_id
+        - source_table
+        - output_filename
+        - columns (list)
+        - patient_or_sample
+    """
+    config_path = Path(config_dir)
+    if not config_path.exists():
+        raise FileNotFoundError(f"Config directory not found: {config_dir}")
+
+    yaml_files = sorted(config_path.glob("*.yaml"))
+
+    if not yaml_files:
+        raise ValueError(f"No YAML files found in {config_dir}")
+
+    configs = []
+    for yaml_file in yaml_files:
+        with open(yaml_file, 'r') as f:
+            config = yaml.safe_load(f)
+
+            # Choose source table based on production_or_test
+            if production_or_test == 'production':
+                source_table = config['source_table_prod']
+            else:
+                source_table = config['source_table_dev']
+
+            # Extract ETL-relevant fields
+            etl_config = {
+                'timeline_id': config['timeline_id'],
+                'source_table': source_table,
+                'output_filename': config['output_filename'],
+                'columns': list(config['columns'].keys()),  # Extract column names
+                'patient_or_sample': config['patient_or_sample']
+            }
+            configs.append(etl_config)
+
+    print(f"Loaded {len(configs)} timeline configurations from {config_dir}")
+    return configs
 
 
-def run_timeline_deidentification(fname_dbx, fname_sample, volume_base_path, gpfs_output_path, cohort_name):
+def run_timeline_deidentification(config_dir, production_or_test, fname_dbx, anchor_dates, fname_sample, volume_base_path, gpfs_output_path, cohort_name):
     """
     Run timeline deidentification for all configured timeline files.
 
     Parameters
     ----------
+    config_dir : str
+        Directory containing timeline YAML config files
+    production_or_test : str
+        'production' or 'test' - determines which source_table to use
     fname_dbx : str
         Path to Databricks environment file
+    anchor_dates : str
+        Databricks table name for anchor dates (e.g., catalog.schema.table)
     fname_sample : str
         Path to sample list file
     volume_base_path : str
@@ -77,6 +90,9 @@ def run_timeline_deidentification(fname_dbx, fname_sample, volume_base_path, gpf
     cohort_name : str
         Name of the cohort (e.g., 'mskimpact', 'mskimpact_heme')
     """
+
+    # Load timeline configurations from YAML files
+    timeline_configs = load_timeline_configs(config_dir, production_or_test)
 
     # Get the directory where this script is located
     script_dir = Path(__file__).parent
@@ -91,8 +107,11 @@ def run_timeline_deidentification(fname_dbx, fname_sample, volume_base_path, gpf
     print("=" * 80)
     print("TIMELINE BATCH DEIDENTIFICATION")
     print("=" * 80)
-    print(f"Total timeline files to process: {len(TIMELINE_CONFIGS)}")
+    print(f"Config directory: {config_dir}")
+    print(f"Production/Test: {production_or_test}")
+    print(f"Total timeline files to process: {len(timeline_configs)}")
     print(f"Databricks env: {fname_dbx}")
+    print(f"Anchor dates: {anchor_dates}")
     print(f"Sample list: {fname_sample}")
     print(f"Volume base path: {volume_path_full}")
     print(f"GPFS output path: {gpfs_output_path}")
@@ -103,35 +122,41 @@ def run_timeline_deidentification(fname_dbx, fname_sample, volume_base_path, gpf
     successful = []
     failed = []
 
-    for idx, (task_id, dbx_table, output_name, columns, merge_level) in enumerate(TIMELINE_CONFIGS, 1):
-        print(f"\n[{idx}/{len(TIMELINE_CONFIGS)}] Processing: {task_id}")
+    for idx, config in enumerate(timeline_configs, 1):
+        timeline_id = config['timeline_id']
+        source_table = config['source_table']
+        output_filename = config['output_filename']
+        columns = config['columns']  # This is a list
+        patient_or_sample = config['patient_or_sample']
+
+        print(f"\n[{idx}/{len(timeline_configs)}] Processing: {timeline_id}")
         print("-" * 80)
 
         # Build paths
-        fname_output_volume = f"{volume_path_full}/{output_name}_phi.tsv"
-        fname_output_gpfs = f"{gpfs_output_path}/{output_name}.txt"
+        fname_output_volume = f"{volume_path_full}/{output_filename}_phi.tsv"
+        fname_output_gpfs = f"{gpfs_output_path}/{output_filename}.txt"
+
+        # Convert columns list to comma-separated string
+        columns_str = ",".join(columns)
 
         # Build command arguments
         cmd = [
             "python",
             str(deidentify_script),
             f"--fname_dbx={fname_dbx}",
-            f"--fname_timeline={dbx_table}",
+            f"--fname_deid={anchor_dates}",
+            f"--fname_timeline={source_table}",
             f"--fname_sample={fname_sample}",
             f"--fname_output_volume={fname_output_volume}",
             f"--fname_output_gpfs={fname_output_gpfs}",
-            f"--columns_cbio={columns}"
+            f"--columns_cbio={columns_str}",
+            f"--merge_level={patient_or_sample}"  # Always pass merge_level
         ]
 
-        # Add merge_level if specified
-        if merge_level:
-            cmd.append(f"--merge_level={merge_level}")
-
-        print(f"Table: {dbx_table}")
+        print(f"Table: {source_table}")
         print(f"Output (PHI): {fname_output_volume}")
         print(f"Output (DEID): {fname_output_gpfs}")
-        if merge_level:
-            print(f"Merge level: {merge_level}")
+        print(f"Merge level: {patient_or_sample}")
         print()
 
         try:
@@ -140,18 +165,18 @@ def run_timeline_deidentification(fname_dbx, fname_sample, volume_base_path, gpf
             print(result.stdout)
             if result.stderr:
                 print("STDERR:", result.stderr)
-            successful.append(task_id)
-            print(f"✓ Successfully processed: {task_id}")
+            successful.append(timeline_id)
+            print(f"✓ Successfully processed: {timeline_id}")
         except subprocess.CalledProcessError as e:
-            print(f"✗ FAILED to process: {task_id}")
+            print(f"✗ FAILED to process: {timeline_id}")
             print(f"Error code: {e.returncode}")
             print(f"STDOUT: {e.stdout}")
             print(f"STDERR: {e.stderr}")
-            failed.append(task_id)
+            failed.append(timeline_id)
         except Exception as e:
-            print(f"✗ FAILED to process: {task_id}")
+            print(f"✗ FAILED to process: {timeline_id}")
             print(f"Error: {str(e)}")
-            failed.append(task_id)
+            failed.append(timeline_id)
 
         print("-" * 80)
 
@@ -159,19 +184,19 @@ def run_timeline_deidentification(fname_dbx, fname_sample, volume_base_path, gpf
     print("\n" + "=" * 80)
     print("BATCH PROCESSING SUMMARY")
     print("=" * 80)
-    print(f"Total processed: {len(TIMELINE_CONFIGS)}")
+    print(f"Total processed: {len(timeline_configs)}")
     print(f"Successful: {len(successful)}")
     print(f"Failed: {len(failed)}")
 
     if successful:
         print(f"\nSuccessful files ({len(successful)}):")
-        for task_id in successful:
-            print(f"  ✓ {task_id}")
+        for timeline_id in successful:
+            print(f"  ✓ {timeline_id}")
 
     if failed:
         print(f"\nFailed files ({len(failed)}):")
-        for task_id in failed:
-            print(f"  ✗ {task_id}")
+        for timeline_id in failed:
+            print(f"  ✗ {timeline_id}")
         print("\n⚠ WARNING: Some timeline files failed to process")
         sys.exit(1)
     else:
@@ -185,11 +210,33 @@ if __name__ == "__main__":
         description="Batch deidentification of all cBioPortal timeline files"
     )
     parser.add_argument(
+        "--config_dir",
+        action="store",
+        dest="config_dir",
+        required=True,
+        help="Directory containing timeline YAML config files (e.g., config/timelines)"
+    )
+    parser.add_argument(
+        "--production_or_test",
+        action="store",
+        dest="production_or_test",
+        required=True,
+        choices=["production", "test"],
+        help="Use production or test source tables"
+    )
+    parser.add_argument(
         "--fname_dbx",
         action="store",
         dest="fname_dbx",
         required=True,
         help="Path to Databricks environment file"
+    )
+    parser.add_argument(
+        "--anchor_dates",
+        action="store",
+        dest="anchor_dates",
+        required=True,
+        help="Databricks table name for anchor dates (e.g., catalog.schema.table)"
     )
     parser.add_argument(
         "--fname_sample",
@@ -223,7 +270,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     run_timeline_deidentification(
+        config_dir=args.config_dir,
+        production_or_test=args.production_or_test,
         fname_dbx=args.fname_dbx,
+        anchor_dates=args.anchor_dates,
         fname_sample=args.fname_sample,
         volume_base_path=args.volume_base_path,
         gpfs_output_path=args.gpfs_output_path,

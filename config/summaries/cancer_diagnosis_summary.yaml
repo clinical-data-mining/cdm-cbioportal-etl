@@ -1,0 +1,37 @@
+summary_id: cancer_diagnosis_summary
+patient_or_sample: patient
+source_table_prod: cdsi_prod.cdm_impact_pipeline_prod.table_dx_impact_summary
+source_table_dev: cdsi_eng_phi.cdm_eng_diagnosis.table_dx_impact_summary
+key_column: MRN
+columns:
+- MRN
+- STAGE_HIGHEST_RECORDED
+- NUM_ICDO_DX
+date_columns: []
+dest_prod:
+  catalog: cdsi_eng_phi
+  schema: cdm_eng_cbioportal_etl
+  volume_name: cdm_eng_cbioportal_etl_volume
+  filename: cancer_diagnosis_summary_summary.tsv
+dest_dev:
+  catalog: cdsi_eng_phi
+  schema: cdm_eng_cbioportal_etl
+  volume_name: cdm_eng_cbioportal_etl_volume_dev
+  filename: cancer_diagnosis_summary_summary.tsv
+column_metadata:
+  STAGE_HIGHEST_RECORDED:
+    label: "Stage (Highest Recorded)"
+    datatype: STRING
+    comment: 'Stage (Highest Recorded) ---DESCRIPTION: Highest recorded stage in tumor
+      registry (ICD-O). Data has been aggregated from the CDM derived stage information,
+      which bins stage in "stage 1-3" and "stage 4". ---MISSING DATA: Stage data not
+      entered by admins in tumor registry ---SOURCE: Derived from IDB/Revenue Management
+      System (RMS) dates'
+    fill_value: 'Unknown'
+  NUM_ICDO_DX:
+    label: "Number of Tumor Registry Entries"
+    datatype: NUMBER
+    comment: 'Number of Tumor Registry Entries ---DESCRIPTION: Number of Tumor Registry
+      Entries for patient ---MISSING DATA: No tumor registry data entered for patient
+      ---SOURCE: NLP generated (Via IDB/Revenue Management System (RMS) dates)'
+    fill_value: '0'

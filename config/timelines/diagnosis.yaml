@@ -1,0 +1,84 @@
+timeline_id: diagnosis
+source_table_prod: cdsi_prod.cdm_idbw_impact_pipeline_prod.table_dx_timeline_primary
+source_table_dev: cdsi_eng_phi.cdm_eng_diagnosis.table_dx_timeline_primary
+output_filename: data_timeline_diagnosis
+patient_or_sample: patient
+table_metadata:
+  form_name: Primary Diagnoses from Tumor Registry
+  cdm_source_table: diagnosis/table_dx_timeline_primary.tsv
+  table_description: Primary diagnosis data from the tumor registry (ICD-O) in a cbioportal
+    timeline format
+  cbio_timeline_reason_for_missing_data: No tumor registry data entered for patient
+  cbio_timeline_data_source: IDB Cancer Database
+  cbio_data_source_link: https://github.mskcc.org/cdsi/msk-impact/blob/master/msk_solid_heme/data_timeline_diagnosis.txt
+  for_docs_site_timeline: true
+columns:
+  PATIENT_ID:
+    field_name: PATIENT_ID
+    field_label: PATIENT_ID
+    field_note: Medical Record Number
+    nlp_derived: false
+  START_DATE:
+    field_name: START_DATE
+    field_label: Date of Diagnosis
+    field_note: Date of diagnosis via ICD-O tumor registry data
+    nlp_derived: false
+  STOP_DATE:
+    field_name: STOP_DATE
+    field_label: Date of Diagnosis (Stop Date)
+    field_note: All should be blank (Used for cbioportal etl purposes)
+    nlp_derived: false
+  EVENT_TYPE:
+    field_name: EVENT_TYPE
+    field_label: Event Type (Diagnosis)
+    field_note: All should be under Diagnosis (portal track)
+    nlp_derived: false
+  SUBTYPE:
+    field_name: SUBTYPE
+    field_label: Subtype (Primary)
+    field_note: All should be Primary (portal sub track)
+    nlp_derived: false
+  SOURCE:
+    field_name: SOURCE
+    field_label: Source (Primary)
+    field_note: All should be Tumor Registry (portal sub track)
+    nlp_derived: false
+  DX_DESCRIPTION:
+    field_name: DX_DESCRIPTION
+    field_label: Diagnosis Description (Primary)
+    field_note: Standardized ICD-O data entry info including histology, site, codes,
+      and stage
+    nlp_derived: false
+  AJCC:
+    field_name: AJCC
+    field_label: Cancer Stage - AJCC
+    field_note: AJCC staging via tumor registry. All AJCC versions are used and grouped
+      together.
+    nlp_derived: false
+  CLINICAL_GROUP:
+    field_name: CLINICAL_GROUP
+    field_label: 'Cancer Stage - Clinical '
+    field_note: Clinical staging via tumor registry
+    nlp_derived: false
+  PATH_GROUP:
+    field_name: PATH_GROUP
+    field_label: Path Group
+    field_note: PATH_GROUP description not available in codebook
+    nlp_derived: false
+  SUMMARY:
+    field_name: SUMMARY
+    field_label: Cancer Stage - MSK Summary
+    field_note: Summary of staging provided by MSK
+    nlp_derived: false
+  STAGE_CDM_DERIVED:
+    field_name: STAGE_CDM_DERIVED
+    field_label: Cancer Stage - Aggregated
+    field_note: Cancer stage binned into stage 1-3 and stage 4 based on Cancer Stage
+      AJCC/Clinical/Pathologic. Cases that are labeled 88 or 99 are converted to stage
+      1-3.
+    nlp_derived: false
+  STAGE_CDM_DERIVED_GRANULAR:
+    field_name: STAGE_CDM_DERIVED_GRANULAR
+    field_label: Cancer Stage - Aggregated (Granular)
+    field_note: Cancer stage based on Cancer Stage AJCC/Clinical/Pathologic/Summary.
+    nlp_derived: false

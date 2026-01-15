@@ -1,0 +1,39 @@
+summary_id: pathology_gleason_scores_for_cbioportal_patient_summary
+patient_or_sample: patient
+source_table_prod: cdsi_prod.cdm_idbw_impact_pipeline_prod.table_summary_gleason_patient
+source_table_dev: cdsi_eng_phi.cdm_eng_pathology_report_segmentation.table_summary_gleason_patient
+key_column: MRN
+columns:
+- MRN
+- GLEASON_FIRST_REPORTED
+- GLEASON_HIGHEST_REPORTED
+date_columns: []
+dest_prod:
+  catalog: cdsi_eng_phi
+  schema: cdm_eng_cbioportal_etl
+  volume_name: cdm_eng_cbioportal_etl_volume
+  filename: pathology_gleason_scores_for_cbioportal_patient_summary_summary.tsv
+dest_dev:
+  catalog: cdsi_eng_phi
+  schema: cdm_eng_cbioportal_etl
+  volume_name: cdm_eng_cbioportal_etl_volume_dev
+  filename: pathology_gleason_scores_for_cbioportal_patient_summary_summary.tsv
+column_metadata:
+  GLEASON_FIRST_REPORTED:
+    label: Gleason Score, 1st Reported (NLP)
+    datatype: STRING
+    comment: 'Gleason Score, 1st Reported (NLP) ---DESCRIPTION: Patient level summary
+      of the 1st reported Gleason score from pathology reports. Within pathology reports,
+      the highest Gleason Score is used. NLP used to derive values. ---MISSING DATA:
+      No reported Gleason Score for patient. Rule-based NLP did not sense the word
+      "gleason" any pathology reports. ---SOURCE: NLP generated from pathology reports'
+    fill_value: NA
+  GLEASON_HIGHEST_REPORTED:
+    label: Gleason Score, Highest Reported (NLP)
+    datatype: STRING
+    comment: 'Gleason Score, Highest Reported (NLP) ---DESCRIPTION: Patient level
+      summary of the highest reported Gleason score from pathology reports. NLP used
+      to derive ---MISSING DATA: No reported Gleason Score for patient. Rule-based
+      NLP did not sense the word "gleason" any pathology reports. ---SOURCE: NLP generated
+      from pathology reports'
+    fill_value: NA
