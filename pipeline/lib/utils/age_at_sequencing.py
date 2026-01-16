@@ -69,7 +69,7 @@ def compute_age_at_sequencing(
     df_demo['OS_DTE'] = df_demo['PT_DEATH_DTE'].fillna(df_demo['PLA_LAST_CONTACT_DTE'])
 
     ## Load pathology report table
-    col_keep_samples = ['MRN', 'DTE_TUMOR_SEQUENCING', 'DMP_ID', 'SAMPLE_ID']
+    col_keep_samples = ['MRN', 'DATE_TUMOR_SEQUENCING', 'DMP_ID', 'SAMPLE_ID']
     cols_str_samples = ', '.join(col_keep_samples)
     sql_samples = f"SELECT {cols_str_samples} FROM {table_samples}"
     df_path1 = obj_db.query_from_sql(sql=sql_samples)
@@ -85,18 +85,18 @@ def compute_age_at_sequencing(
     df_path_clean = df_path_clean[df_path_clean['SAMPLE_ID'].str.contains('-T')].copy()
     df_path_clean['DMP_ID_DERIVED'] = df_path_clean['SAMPLE_ID'].apply(lambda x: x[:9])
     df_path_clean = df_path_clean[df_path_clean['DMP_ID_DERIVED'] == df_path_clean['DMP_ID']].copy()
-    df_path_clean['DTE_TUMOR_SEQUENCING'] = pd.to_datetime(df_path_clean['DTE_TUMOR_SEQUENCING'], errors='coerce')
-    if isinstance(df_path_clean['DTE_TUMOR_SEQUENCING'].dtype, pd.DatetimeTZDtype):
-        df_path_clean['DTE_TUMOR_SEQUENCING'] = df_path_clean['DTE_TUMOR_SEQUENCING'].dt.tz_localize(None)
+    df_path_clean['DATE_TUMOR_SEQUENCING'] = pd.to_datetime(df_path_clean['DATE_TUMOR_SEQUENCING'], errors='coerce')
+    if isinstance(df_path_clean['DATE_TUMOR_SEQUENCING'].dtype, pd.DatetimeTZDtype):
+        df_path_clean['DATE_TUMOR_SEQUENCING'] = df_path_clean['DATE_TUMOR_SEQUENCING'].dt.tz_localize(None)
 
     ## Merge dataframes
     df_f = df_path_clean.merge(right=df_demo, how='left', on=['MRN'])
 
     ## Compute age at sequencing
-    df_f['AGE_AT_SEQUENCING_DAYS_PHI'] = (df_f['DTE_TUMOR_SEQUENCING'] - df_f['PT_BIRTH_DTE']).dt.days
+    df_f['AGE_AT_SEQUENCING_DAYS_PHI'] = (df_f['DATE_TUMOR_SEQUENCING'] - df_f['PT_BIRTH_DTE']).dt.days
 
     ## Compute OS interval
-    df_f['OS_INT'] = (df_f['OS_DTE'] - df_f['DTE_TUMOR_SEQUENCING']).dt.days
+    df_f['OS_INT'] = (df_f['OS_DTE'] - df_f['DATE_TUMOR_SEQUENCING']).dt.days
 
     df_f['AGE_AT_SEQUENCING_YEARS_PHI'] = (df_f['AGE_AT_SEQUENCING_DAYS_PHI']/AGE_CONVERSION_FACTOR)
     df_f['AGE_AT_SEQUENCING_YEARS_WITH_OS_INT_PHI'] = ((df_f['AGE_AT_SEQUENCING_DAYS_PHI'] + df_f['OS_INT'])/AGE_CONVERSION_FACTOR)

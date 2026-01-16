@@ -33,7 +33,7 @@ def date_of_sequencing(
     obj_db = DatabricksAPI(fname_databricks_env=databricks_env)
 
     ## Load pathology report table
-    col_keep = ['DMP_ID', 'SAMPLE_ID', 'DTE_TUMOR_SEQUENCING']
+    col_keep = ['DMP_ID', 'SAMPLE_ID', 'DATE_TUMOR_SEQUENCING']
     cols_str = ', '.join(col_keep)
     sql = f"SELECT {cols_str} FROM {table_samples}"
     df_path1 = obj_db.query_from_sql(sql=sql)
@@ -41,7 +41,7 @@ def date_of_sequencing(
     df_path = df_path.rename(
         columns={
             'DMP_ID': 'PATIENT_ID',
-            'DTE_TUMOR_SEQUENCING': 'SEQ_DATE'
+            'DATE_TUMOR_SEQUENCING': 'SEQ_DATE'
         }
     )
 
