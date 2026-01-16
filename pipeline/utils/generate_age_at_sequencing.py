@@ -3,13 +3,16 @@ import sys
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from msk_cdm.data_classes.epic_ddp_concat import CDMProcessingVariables as config_cdm
-from lib.utils import cbioportal_update_config, compute_age_at_sequencing
+from lib.utils import compute_age_at_sequencing
 
-fname_save_age_at_seq = 'cbioportal/age_at_sequencing.tsv'
-fname_demo = config_cdm.fname_demo
-fname_samples = config_cdm.fname_id_map
+# Table names
+TABLE_DEMO = 'cdsi_prod.cdm_impact_pipeline_prod.t01_epic_ddp_demographics'
+TABLE_SAMPLES = 'cdsi_prod.cdm_impact_pipeline_prod.t03_id_mapping_pathology_sample_xml_parsed'
 
+# Databricks volume configuration
+CATALOG = 'cdsi_eng_phi'
+SCHEMA = 'cdm_eng_cbioportal_etl'
+VOLUME = 'cdm_eng_cbioportal_etl_volume'
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Script for creating age at sequencing data")
@@ -22,11 +25,18 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
+    # Construct volume path
+    table_name = 'age_at_sequencing'
+    volume_path_save = f'/Volumes/{CATALOG}/{SCHEMA}/{VOLUME}/cbioportal/{table_name}.tsv'
+
     print('Generating age at sequencing data')
     compute_age_at_sequencing(
         databricks_env=args.databricks_env,
-        fname_demo=fname_demo,
-        fname_samples=fname_samples,
-        fname_save_age_at_seq=fname_save_age_at_seq
+        table_demo=TABLE_DEMO,
+        table_samples=TABLE_SAMPLES,
+        volume_path_save_age_at_seq=volume_path_save,
+        table_save_age_at_seq=table_name,
+        catalog=CATALOG,
+        schema=SCHEMA
     )
     print('Complete')
