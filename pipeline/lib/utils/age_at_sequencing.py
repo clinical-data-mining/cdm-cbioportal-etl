@@ -51,10 +51,21 @@ def compute_age_at_sequencing(
     sql_demo = f"SELECT {cols_str_demo} FROM {table_demo}"
     df_demo = obj_db.query_from_sql(sql=sql_demo)
     df_demo = mrn_zero_pad(df=df_demo, col_mrn='MRN')
-    df_demo['PT_BIRTH_DTE'] = pd.to_datetime(df_demo['PT_BIRTH_DTE'])
-    df_demo['PT_DEATH_DTE'] = pd.to_datetime(df_demo['PT_DEATH_DTE'])
+
+    # Convert date columns to datetime with timezone handling
+    df_demo['PT_BIRTH_DTE'] = pd.to_datetime(df_demo['PT_BIRTH_DTE'], errors='coerce')
+    if isinstance(df_demo['PT_BIRTH_DTE'].dtype, pd.DatetimeTZDtype):
+        df_demo['PT_BIRTH_DTE'] = df_demo['PT_BIRTH_DTE'].dt.tz_localize(None)
+
+    df_demo['PT_DEATH_DTE'] = pd.to_datetime(df_demo['PT_DEATH_DTE'], errors='coerce')
+    if isinstance(df_demo['PT_DEATH_DTE'].dtype, pd.DatetimeTZDtype):
+        df_demo['PT_DEATH_DTE'] = df_demo['PT_DEATH_DTE'].dt.tz_localize(None)
+
     df_demo['PLA_LAST_CONTACT_DTE'] = df_demo['PLA_LAST_CONTACT_DTE'].fillna(today)
-    df_demo['PLA_LAST_CONTACT_DTE'] = pd.to_datetime(df_demo['PLA_LAST_CONTACT_DTE'])
+    df_demo['PLA_LAST_CONTACT_DTE'] = pd.to_datetime(df_demo['PLA_LAST_CONTACT_DTE'], errors='coerce')
+    if isinstance(df_demo['PLA_LAST_CONTACT_DTE'].dtype, pd.DatetimeTZDtype):
+        df_demo['PLA_LAST_CONTACT_DTE'] = df_demo['PLA_LAST_CONTACT_DTE'].dt.tz_localize(None)
+
     df_demo['OS_DTE'] = df_demo['PT_DEATH_DTE'].fillna(df_demo['PLA_LAST_CONTACT_DTE'])
 
     ## Load pathology report table
@@ -74,7 +85,9 @@ def compute_age_at_sequencing(
     df_path_clean = df_path_clean[df_path_clean['SAMPLE_ID'].str.contains('-T')].copy()
     df_path_clean['DMP_ID_DERIVED'] = df_path_clean['SAMPLE_ID'].apply(lambda x: x[:9])
     df_path_clean = df_path_clean[df_path_clean['DMP_ID_DERIVED'] == df_path_clean['DMP_ID']].copy()
-    df_path_clean['DTE_TUMOR_SEQUENCING'] = pd.to_datetime(df_path_clean['DTE_TUMOR_SEQUENCING'])
+    df_path_clean['DTE_TUMOR_SEQUENCING'] = pd.to_datetime(df_path_clean['DTE_TUMOR_SEQUENCING'], errors='coerce')
+    if isinstance(df_path_clean['DTE_TUMOR_SEQUENCING'].dtype, pd.DatetimeTZDtype):
+        df_path_clean['DTE_TUMOR_SEQUENCING'] = df_path_clean['DTE_TUMOR_SEQUENCING'].dt.tz_localize(None)
 
     ## Merge dataframes
     df_f = df_path_clean.merge(right=df_demo, how='left', on=['MRN'])
