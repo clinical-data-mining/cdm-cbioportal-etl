@@ -1,7 +1,7 @@
 summary_id: smoking_history
 patient_or_sample: patient
 source_table_prod: cdsi_prod.cdm_impact_pipeline_prod.t13_epic_ddp_smoking
-source_table_dev: cdsi_prod.cdm_idbw_impact_pipeline_prod.smoking_status_predictions
+source_table_dev: cdsi_prod.cdm_impact_pipeline_prod.t13_epic_ddp_smoking
 key_column: MRN
 columns:
 - MRN

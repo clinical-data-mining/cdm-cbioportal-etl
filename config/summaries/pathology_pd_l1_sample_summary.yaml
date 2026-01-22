@@ -1,6 +1,6 @@
 summary_id: pathology_pd_l1_sample_summary
 patient_or_sample: sample
-source_table_prod: cdsi_prod.cdm_idbw_impact_pipeline_prod.table_summary_pdl1_sample
+source_table_prod: cdsi_eng_phi.cdm_eng_pathology_report_segmentation.table_summary_pdl1_sample
 source_table_dev: cdsi_eng_phi.cdm_eng_pathology_report_segmentation.table_summary_pdl1_sample
 key_column: SAMPLE_ID
 columns:
