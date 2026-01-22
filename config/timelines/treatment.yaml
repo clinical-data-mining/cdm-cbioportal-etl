@@ -1,5 +1,5 @@
 timeline_id: treatment
-source_table_prod: cdsi_prod.cdm_idbw_impact_pipeline_prod.table_timeline_medications
+source_table_prod: cdsi_eng_phi.cdm_eng_treatments.table_timeline_medications
 source_table_dev: cdsi_eng_phi.cdm_eng_treatments.table_timeline_medications
 output_filename: data_timeline_treatment
 patient_or_sample: patient

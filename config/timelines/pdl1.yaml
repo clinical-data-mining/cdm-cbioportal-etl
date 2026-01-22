@@ -1,5 +1,5 @@
 timeline_id: pdl1
-source_table_prod: cdsi_prod.cdm_idbw_impact_pipeline_prod.table_timeline_pdl1_calls
+source_table_prod: cdsi_eng_phi.cdm_eng_pathology_report_segmentation.table_timeline_pdl1_calls
 source_table_dev: cdsi_eng_phi.cdm_eng_pathology_report_segmentation.table_timeline_pdl1_calls
 output_filename: data_timeline_pdl1
 patient_or_sample: patient

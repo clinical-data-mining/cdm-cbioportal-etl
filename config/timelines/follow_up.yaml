@@ -1,5 +1,5 @@
 timeline_id: follow_up
-source_table_prod: cdsi_prod.cdm_idbw_impact_pipeline_prod.table_timeline_follow_up
+source_table_prod: cdsi_eng_phi.cdm_eng_cbioportal_etl.data_timeline_follow_up
 source_table_dev: cdsi_eng_phi.cdm_eng_cbioportal_etl.data_timeline_follow_up
 output_filename: data_timeline_follow_up
 patient_or_sample: patient

@@ -1,5 +1,5 @@
 timeline_id: surgery
-source_table_prod: cdsi_prod.cdm_idbw_impact_pipeline_prod.table_timeline_surgery
+source_table_prod: cdsi_eng_phi.cdm_eng_treatments.table_timeline_surgery
 source_table_dev: cdsi_eng_phi.cdm_eng_treatments.table_timeline_surgery
 output_filename: data_timeline_surgery
 patient_or_sample: patient
