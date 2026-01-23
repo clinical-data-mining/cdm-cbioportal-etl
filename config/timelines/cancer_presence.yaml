@@ -3,6 +3,9 @@ source_table_prod: cdsi_eng_phi.cdm_eng_rad_cancer_presence.table_timeline_cance
 source_table_dev: cdsi_eng_phi.cdm_eng_rad_cancer_presence.table_timeline_cancer_presence
 output_filename: data_timeline_cancer_presence
 patient_or_sample: patient
+output_table:
+  catalog: cdsi_eng_phi
+  schema: cdm_eng_cbioportal_etl
 table_metadata:
   form_name: Disease-Free Status
   cdm_source_table: radiology/cancer_presence/impact/table_timeline_cancer_presence.tsv

@@ -3,6 +3,9 @@ source_table_prod: cdsi_prod.cdm_impact_pipeline_prod.t33_epic_ddp_bmi
 source_table_dev: cdsi_prod.cdm_impact_pipeline_prod.t33_epic_ddp_bmi
 output_filename: data_timeline_bmi
 patient_or_sample: patient
+output_table:
+  catalog: cdsi_eng_phi
+  schema: cdm_eng_cbioportal_etl
 table_metadata:
   form_name: Body Mass Index (BMI)
   cdm_source_table: epic_ddp_concat/measurements/impact/t33_epic_ddp_bmi.tsv

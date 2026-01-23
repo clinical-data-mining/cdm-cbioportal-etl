@@ -3,6 +3,9 @@ source_table_prod: cdsi_eng_phi.cdm_eng_rad_tumor_sites.table_timeline_radiology
 source_table_dev: cdsi_eng_phi.cdm_eng_rad_tumor_sites.table_timeline_radiology_tumor_sites_predictions
 output_filename: data_timeline_tumor_sites
 patient_or_sample: patient
+output_table:
+  catalog: cdsi_eng_phi
+  schema: cdm_eng_cbioportal_etl
 table_metadata:
   form_name: Tumor Sites from Radiology Reports
   cdm_source_table: radiology/tumor_sites/impact/table_timeline_tumor_sites.tsv
