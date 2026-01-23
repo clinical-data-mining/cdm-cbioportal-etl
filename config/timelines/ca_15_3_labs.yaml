@@ -1,7 +1,7 @@
 timeline_id: ca_15_3_labs
 source_table_prod: cdsi_prod.cdm_impact_pipeline_prod.t36_epic_ddp_ca_15_3_labs
 source_table_dev: cdsi_prod.cdm_impact_pipeline_prod.t36_epic_ddp_ca_15_3_labs
-output_filename: data_timeline_ca_15-3_labs
+output_filename: data_timeline_ca_15_3_labs
 patient_or_sample: patient
 output_table:
   catalog: cdsi_eng_phi
