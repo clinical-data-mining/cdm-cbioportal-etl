@@ -10,7 +10,6 @@ Usage:
     python cbioportal_formatting_radrpt_tumor_sites_summary.py \
         --table_path "catalog.schema.tumor_sites_timeline_table" \
         --databricks_env "/path/to/databricks_env" \
-        --output_table "catalog.schema.tumor_sites_summary_table" \
         --volume_path "/Volumes/catalog/schema/volume_name/output_file.tsv"
 """
 import argparse
@@ -54,14 +53,12 @@ class TumorSitesSummaryProcessor(object):
             self,
             table_path,
             fname_databricks_config,
-            output_table,
             volume_path,
             catalog,
             schema,
             table_name
     ):
         self._table_path = table_path
-        self._output_table = output_table
         self._volume_path = volume_path
         self._catalog = catalog
         self._schema = schema
@@ -92,8 +89,7 @@ class TumorSitesSummaryProcessor(object):
         df_summary = self._create_summary()
         self._df_summary = df_summary
 
-        if self._output_table is not None:
-            print('Saving to Databricks table: %s' % self._output_table)
+        if self._volume_path is not None:
             print('Using volume path: %s' % self._volume_path)
 
             # Save data to Databricks volume
@@ -108,6 +104,7 @@ class TumorSitesSummaryProcessor(object):
                 }
 
             # Write DataFrame to Databricks volume
+            print('Saving to Databricks table')
             self._obj_databricks.write_db_obj(
                 df=self._df_summary,
                 volume_path=self._volume_path,
@@ -218,9 +215,9 @@ def main():
     volume_path_save = f"/Volumes/{catalog}/{schema}/{volume}/{volume_path_intermediate}{VOLUME_FNAME}"
 
     obj_processor = TumorSitesSummaryProcessor(
+        table_path=TABLE_PATH,
         fname_databricks_config=args.databricks_env,
         volume_path=volume_path_save,
-        table_path=TABLE_PATH,
         catalog=catalog,
         schema=schema,
         table_name=OUTPUT_TABLE
