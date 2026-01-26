@@ -1,8 +1,11 @@
 timeline_id: ca_19_9_labs
 source_table_prod: cdsi_prod.cdm_impact_pipeline_prod.t37_epic_ddp_ca_19_9_labs
 source_table_dev: cdsi_prod.cdm_impact_pipeline_prod.t37_epic_ddp_ca_19_9_labs
-output_filename: data_timeline_ca_19-9_labs
+output_filename: data_timeline_ca_19_9_labs
 patient_or_sample: patient
+output_table:
+  catalog: cdsi_eng_phi
+  schema: cdm_eng_cbioportal_etl
 table_metadata:
   form_name: Cancer Antigen Labs (CA_19-9)
   cdm_source_table: epic_ddp_concat/labs/impact/t37_epic_ddp_ca_19_9_labs.tsv

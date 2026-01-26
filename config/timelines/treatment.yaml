@@ -3,6 +3,9 @@ source_table_prod: cdsi_eng_phi.cdm_eng_treatments.table_timeline_medications
 source_table_dev: cdsi_eng_phi.cdm_eng_treatments.table_timeline_medications
 output_filename: data_timeline_treatment
 patient_or_sample: patient
+output_table:
+  catalog: cdsi_eng_phi
+  schema: cdm_eng_cbioportal_etl
 table_metadata:
   form_name: Anti-Cancer Medications
   cdm_source_table: medications/table_timeline_medications.tsv

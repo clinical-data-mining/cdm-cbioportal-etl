@@ -3,6 +3,9 @@ source_table_prod: cdsi_eng_phi.cdm_eng_diagnosis.table_dx_timeline_primary
 source_table_dev: cdsi_eng_phi.cdm_eng_diagnosis.table_dx_timeline_primary
 output_filename: data_timeline_diagnosis
 patient_or_sample: patient
+output_table:
+  catalog: cdsi_eng_phi
+  schema: cdm_eng_cbioportal_etl
 table_metadata:
   form_name: Primary Diagnoses from Tumor Registry
   cdm_source_table: diagnosis/table_dx_timeline_primary.tsv

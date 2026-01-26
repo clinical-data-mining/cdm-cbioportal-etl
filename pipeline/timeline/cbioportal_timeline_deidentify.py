@@ -317,6 +317,27 @@ def main():
         choices=["patient", "sample"],
         help="Level at which to merge timeline data: 'patient' (default) or 'sample'"
     )
+    parser.add_argument(
+        "--catalog",
+        action="store",
+        dest="catalog",
+        default=None,
+        help="Databricks catalog for output table (optional)"
+    )
+    parser.add_argument(
+        "--schema",
+        action="store",
+        dest="schema",
+        default=None,
+        help="Databricks schema for output table (optional)"
+    )
+    parser.add_argument(
+        "--table_name",
+        action="store",
+        dest="table_name",
+        default=None,
+        help="Databricks table name for output table (optional)"
+    )
 
     args = parser.parse_args()
 
@@ -484,7 +505,26 @@ def main():
     # =========================================================================
     print(f'\nSaving PHI version to: {args.fname_output_volume}')
     obj_dbx = DatabricksAPI(fname_databricks_env=args.fname_dbx)
-    obj_dbx.write_db_obj(df=df_f, volume_path=args.fname_output_volume, sep='\t', overwrite=True)
+
+    # Build dict_database_table_info if catalog, schema, and table_name are provided
+    dict_database_table_info = None
+    if args.catalog and args.schema and args.table_name:
+        dict_database_table_info = {
+            'catalog': args.catalog,
+            'schema': args.schema,
+            'table': args.table_name,
+            'volume_path': args.fname_output_volume,
+            'sep': '\t'
+        }
+        print(f'Creating Databricks table: {args.catalog}.{args.schema}.{args.table_name}')
+
+    obj_dbx.write_db_obj(
+        df=df_f,
+        volume_path=args.fname_output_volume,
+        sep='\t',
+        overwrite=True,
+        dict_database_table_info=dict_database_table_info
+    )
 
     # =========================================================================
     # 10. Create deidentified version and save to GPFS

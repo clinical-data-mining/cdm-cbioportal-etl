@@ -3,6 +3,9 @@ source_table_prod: cdsi_eng_phi.cdm_eng_pathology_report_segmentation.table_time
 source_table_dev: cdsi_eng_phi.cdm_eng_pathology_report_segmentation.table_timeline_specimen_surgery
 output_filename: data_timeline_specimen_surgery
 patient_or_sample: sample
+output_table:
+  catalog: cdsi_eng_phi
+  schema: cdm_eng_cbioportal_etl
 table_metadata:
   form_name: Sample Acquisition
   cdm_source_table: epic_ddp_concat/pathology/table_timeline_specimen_surgery.tsv

@@ -178,7 +178,7 @@ def main():
     catalog = databricks_config.get('catalog', 'cdsi_prod')
     schema = databricks_config.get('schema', 'cdsi_data_deid')
     volume = databricks_config.get('volume', 'cdsi_data_deid_volume')
-    volume_path_intermediate = databricks_config.get('volume_path_intermediate', 'cbioportal/intermediate_files/')
+    volume_path_intermediate = 'cbioportal/intermediate_files/'
 
     # Construct paths
     volume_path_save = f"/Volumes/{catalog}/{schema}/{volume}/{volume_path_intermediate}patient_age_summary_cbioportal.tsv"

@@ -53,13 +53,20 @@ def load_timeline_configs(config_dir, production_or_test):
             else:
                 source_table = config['source_table_dev']
 
+            # Extract output_table config (optional, with defaults)
+            output_table_config = config.get('output_table', {})
+            catalog = output_table_config.get('catalog', 'cdsi_eng_phi')
+            schema = output_table_config.get('schema', 'cdm_eng_cbioportal_etl')
+
             # Extract ETL-relevant fields
             etl_config = {
                 'timeline_id': config['timeline_id'],
                 'source_table': source_table,
                 'output_filename': config['output_filename'],
                 'columns': list(config['columns'].keys()),  # Extract column names
-                'patient_or_sample': config['patient_or_sample']
+                'patient_or_sample': config['patient_or_sample'],
+                'catalog': catalog,
+                'schema': schema
             }
             configs.append(etl_config)
 
@@ -128,6 +135,8 @@ def run_timeline_deidentification(config_dir, production_or_test, fname_dbx, anc
         output_filename = config['output_filename']
         columns = config['columns']  # This is a list
         patient_or_sample = config['patient_or_sample']
+        catalog = config['catalog']
+        schema = config['schema']
 
         print(f"\n[{idx}/{len(timeline_configs)}] Processing: {timeline_id}")
         print("-" * 80)
@@ -135,6 +144,9 @@ def run_timeline_deidentification(config_dir, production_or_test, fname_dbx, anc
         # Build paths
         fname_output_volume = f"{volume_path_full}/{output_filename}_phi.tsv"
         fname_output_gpfs = f"{gpfs_output_path}/{output_filename}.txt"
+
+        # Build table name: {output_filename}_{cohort_name}_phi
+        table_name = f"{output_filename}_{cohort_name}_phi"
 
         # Convert columns list to comma-separated string
         columns_str = ",".join(columns)
@@ -150,12 +162,16 @@ def run_timeline_deidentification(config_dir, production_or_test, fname_dbx, anc
             f"--fname_output_volume={fname_output_volume}",
             f"--fname_output_gpfs={fname_output_gpfs}",
             f"--columns_cbio={columns_str}",
-            f"--merge_level={patient_or_sample}"  # Always pass merge_level
+            f"--merge_level={patient_or_sample}",  # Always pass merge_level
+            f"--catalog={catalog}",
+            f"--schema={schema}",
+            f"--table_name={table_name}"
         ]
 
-        print(f"Table: {source_table}")
-        print(f"Output (PHI): {fname_output_volume}")
-        print(f"Output (DEID): {fname_output_gpfs}")
+        print(f"Source table: {source_table}")
+        print(f"Output volume (PHI): {fname_output_volume}")
+        print(f"Output table (PHI): {catalog}.{schema}.{table_name}")
+        print(f"Output GPFS (DEID): {fname_output_gpfs}")
         print(f"Merge level: {patient_or_sample}")
         print()
 
