@@ -14,6 +14,10 @@ Usage:
         --volume_path "/Volumes/catalog/schema/volume_name/output_file.tsv"
 """
 import argparse
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+
 import pandas as pd
 
 from msk_cdm.data_processing import mrn_zero_pad
