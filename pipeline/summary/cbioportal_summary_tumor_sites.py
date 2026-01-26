@@ -99,17 +99,9 @@ class TumorSitesSummaryProcessor(object):
                     'catalog': self._catalog,
                     'schema': self._schema,
                     'table': self._table_name,
-                    'volume_path': volume_path_save,
+                    'volume_path': self._volume_path,
                     'sep': '\t'
                 }
-
-            obj_db.write_db_obj(
-                df=df_os_f,
-                volume_path=volume_path_save,
-                sep='\t',
-                overwrite=True,
-                dict_database_table_info=dict_database_table_info
-            )
 
             # Write DataFrame to Databricks volume
             self._obj_databricks.write_db_obj(
@@ -119,21 +111,6 @@ class TumorSitesSummaryProcessor(object):
                 overwrite=True
             )
             print('Successfully wrote to volume')
-
-            # Parse output table into catalog, schema, table components
-            parts = self._output_table.split('.')
-            if len(parts) != 3:
-                raise ValueError(f"Output table must be in format catalog.schema.table, got: {self._output_table}")
-            catalog, schema, table = parts
-
-            # Create table from volume
-            dict_database_table_info = {
-                'catalog': catalog,
-                'schema': schema,
-                'table': table,
-                'volume_path': self._volume_path,
-                'sep': '\t'
-            }
 
             self._obj_databricks.create_table_from_volume(
                 dict_database_table_info=dict_database_table_info
@@ -239,7 +216,7 @@ def main():
     obj_processor = TumorSitesSummaryProcessor(
         fname_databricks_config=args.databricks_env,
         volume_path=volume_path_save,
-        table_path=args.table_path,
+        table_path=TABLE_PATH,
         catalog=catalog,
         schema=schema,
         table_name=OUTPUT_TABLE
