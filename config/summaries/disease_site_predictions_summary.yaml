@@ -1,7 +1,7 @@
 summary_id: disease_site_predictions_summary
 patient_or_sample: patient
 source_table_prod: cdsi_eng_phi.cdm_eng_rad_tumor_sites.table_summary_radiology_tumor_sites_predictions
-source_table_dev: cdsi_eng_phi.cdm_eng_rad_tumor_sites.table_summary_radiology_tumor_sites_predictions
+source_table_dev: cdsi_eng_phi.cdm_eng_cbioportal_etl.table_summary_radiology_tumor_sites_predictions
 key_column: MRN
 columns:
 - MRN
