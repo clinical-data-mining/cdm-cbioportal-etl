@@ -43,6 +43,12 @@ def cbioportal_timeline_follow_up(
     df_demo = obj_db.query_from_sql(sql=sql)
 
     df_demo_f = df_demo.copy()
+    df_demo_f['PT_DEATH_DTE'] = pd.to_datetime(df_demo_f['PT_DEATH_DTE'], errors='coerce', format='mixed')
+    if isinstance(df_demo_f['PT_DEATH_DTE'].dtype, pd.DatetimeTZDtype):
+        df_demo_f['PT_DEATH_DTE'] = df_demo_f['PT_DEATH_DTE'].dt.tz_localize(None)
+    df_demo_f['PLA_LAST_CONTACT_DTE'] = pd.to_datetime(df_demo_f['PLA_LAST_CONTACT_DTE'], errors='coerce', format='mixed')
+    if isinstance(df_demo_f['PLA_LAST_CONTACT_DTE'].dtype, pd.DatetimeTZDtype):
+        df_demo_f['PLA_LAST_CONTACT_DTE'] = df_demo_f['PLA_LAST_CONTACT_DTE'].dt.tz_localize(None)
     # Remove last contact date if patient is deceased
     logic_deceased = df_demo_f['PT_DEATH_DTE'].notnull()
     df_demo_f.loc[logic_deceased, 'PLA_LAST_CONTACT_DTE'] = pd.NA
@@ -65,6 +71,7 @@ def cbioportal_timeline_follow_up(
     df_os_ = df_os_.assign(SUBTYPE='Follow-Up')
 
     df_os_ = df_os_[df_os_['START_DATE'].notnull()].copy()
+    df_os_['START_DATE'] = pd.to_datetime(df_os_['START_DATE'], errors='coerce', format='mixed').dt.strftime('%Y-%m-%d')
     df_os_ = df_os_[col_order]
     df_os_ = df_os_.replace(rep_dict)
 
