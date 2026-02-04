@@ -43,6 +43,8 @@ def cbioportal_timeline_follow_up(
     df_demo = obj_db.query_from_sql(sql=sql)
 
     df_demo_f = df_demo.copy()
+    df_demo_f['PT_DEATH_DTE'] = pd.to_datetime(df_demo_f['PT_DEATH_DTE'], errors='coerce')
+    df_demo_f['PLA_LAST_CONTACT_DTE'] = pd.to_datetime(df_demo_f['PLA_LAST_CONTACT_DTE'], errors='coerce')
     # Remove last contact date if patient is deceased
     logic_deceased = df_demo_f['PT_DEATH_DTE'].notnull()
     df_demo_f.loc[logic_deceased, 'PLA_LAST_CONTACT_DTE'] = pd.NA
