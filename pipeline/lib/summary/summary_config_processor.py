@@ -194,19 +194,12 @@ class SummaryConfigProcessor:
             df_anchor = mrn_zero_pad(df=df_anchor, col_mrn='MRN')
             df_merged = df_anchor.merge(right=df_data, how='inner', on='MRN')
             df_merged = df_merged.drop(columns=['MRN'])
+        elif key_column == 'SAMPLE_ID':
+            # For SAMPLE_ID
+            print("key_column = SAMPLE_ID. No need to merge with anchor dates")
+            df_merged = df_data.copy()
         else:
-            # For other keys (like SAMPLE_ID), merge on DMP_ID
-            df_anchor_subset = df_anchor[['DMP_ID', 'DATE_TUMOR_SEQUENCING']].drop_duplicates()
-            df_merged = df_anchor_subset.merge(
-                right=df_data,
-                how='inner',
-                left_on='DMP_ID',
-                right_on=key_column
-            )
-
-            # Drop the key column if it's not DMP_ID (to avoid duplicate columns)
-            if key_column != 'DMP_ID' and key_column in df_merged.columns:
-                df_merged = df_merged.drop(columns=[key_column])
+            raise ValueError(f"Invalid key column: {key_column}")
 
         print(f"  After merge: {df_merged.shape[0]} rows")
         return df_merged
