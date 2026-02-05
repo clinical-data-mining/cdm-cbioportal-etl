@@ -113,7 +113,7 @@ def run_patient_pipeline(args):
         "--output_volume_path", data_path,
         "--output_catalog", args.catalog,
         "--output_schema", args.schema,
-        "--output_table", "data_clinical_patient"
+        "--output_table", f"data_clinical_patient_{args.cohort}_phi"
     ]
     run_command(cmd_step2, "Step 2: Merge patient intermediates")
 
@@ -127,7 +127,7 @@ def run_patient_pipeline(args):
         "--output_volume_path", header_path,
         "--output_catalog", args.catalog,
         "--output_schema", args.schema,
-        "--output_table", "data_clinical_patient_header"
+        "--output_table", f"data_clinical_patient_header_{args.cohort}_phi"
     ]
     run_command(cmd_step3, "Step 3: Create patient header")
 
@@ -189,7 +189,7 @@ def run_sample_pipeline(args):
         "--output_volume_path", data_path,
         "--output_catalog", args.catalog,
         "--output_schema", args.schema,
-        "--output_table", "data_clinical_sample"
+        "--output_table", f"data_clinical_sample_{args.cohort}_phi"
     ]
     run_command(cmd_step2, "Step 2: Merge sample intermediates")
 
@@ -203,7 +203,7 @@ def run_sample_pipeline(args):
         "--output_volume_path", header_path,
         "--output_catalog", args.catalog,
         "--output_schema", args.schema,
-        "--output_table", "data_clinical_sample_header"
+        "--output_table", f"data_clinical_sample_header_{args.cohort}_phi"
     ]
     run_command(cmd_step3, "Step 3: Create sample header")
 
