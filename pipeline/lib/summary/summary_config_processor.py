@@ -196,7 +196,9 @@ class SummaryConfigProcessor:
             df_merged = df_merged.drop(columns=['MRN'])
         elif (key_column == 'SAMPLE_ID') or (key_column == 'DMP_ID') or (key_column == 'PATIENT_ID'):
             # For SAMPLE_ID
-            print("key_column = SAMPLE_ID. No need to merge with anchor dates")
+            print("key_column = SAMPLE_ID or DMP_ID. No need to merge with anchor dates")
+            if 'MRN' in df_data.columns:
+                df_data = df_data.drop(columns=['MRN'])
             df_merged = df_data.copy()
         else:
             raise ValueError(f"Invalid key column: {key_column}")
