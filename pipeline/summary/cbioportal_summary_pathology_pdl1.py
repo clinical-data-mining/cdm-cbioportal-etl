@@ -55,6 +55,13 @@ def _clean_data_sample(df_pdl1, df_map):
         right_on='SOURCE_ACCESSION_NUMBER_0'
     )
 
+    print(df_pdl1.head())
+    print('-' * 20)
+    print(df_map.head())
+    print('-' * 20)
+    print(df_pdl1_s1.head())
+    print('-' * 20)
+
     df_pdl1_s = df_pdl1_s1[['SAMPLE_ID', 'PDL1_POSITIVE']].copy()
     df_pdl1_s['DMP_ID'] = df_pdl1_s['SAMPLE_ID'].apply(lambda x: x[:9])
 
