@@ -29,7 +29,7 @@ def _load_data(obj_db, table_gleason, table_map):
     print(f'Loading {table_gleason}')
     sql_gleason = f"SELECT * FROM {table_gleason}"
     df_gleason = obj_db.query_from_sql(sql=sql_gleason)
-    df_gleason['DTE_PATH_PROCEDURE'] = pd.to_datetime(df_gleason['DTE_PATH_PROCEDURE'], errors='coerce')
+    df_gleason['START_DATE'] = pd.to_datetime(df_gleason['START_DATE'], errors='coerce')
 
     print(f'Loading {table_map}')
     sql_map = f"SELECT MRN, SAMPLE_ID, SOURCE_ACCESSION_NUMBER_0 FROM {table_map}"
@@ -39,7 +39,7 @@ def _load_data(obj_db, table_gleason, table_map):
 
 
 def _clean_data_patient(df_gleason, df_map):
-    df_gleason = df_gleason.sort_values(by=['MRN', 'DTE_PATH_PROCEDURE'])
+    df_gleason = df_gleason.sort_values(by=['MRN', 'START_DATE'])
     gleason_highest = df_gleason.groupby(['MRN'])[COL_GLEASON].max().rename('GLEASON_HIGHEST_REPORTED').reset_index()
     gleason_first = df_gleason.groupby(['MRN']).first().reset_index()
     gleason_first = gleason_first.rename(columns={COL_GLEASON: 'GLEASON_FIRST_REPORTED'})

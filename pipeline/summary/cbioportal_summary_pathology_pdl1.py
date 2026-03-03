@@ -26,7 +26,7 @@ def _load_data(obj_db, table_pdl1, table_map):
     print(f'Loading {table_pdl1}')
     sql_pdl1 = f"SELECT * FROM {table_pdl1}"
     df_pdl1 = obj_db.query_from_sql(sql=sql_pdl1)
-    df_pdl1['DTE_PATH_PROCEDURE'] = pd.to_datetime(df_pdl1['DTE_PATH_PROCEDURE'], errors='coerce')
+    df_pdl1['START_DATE'] = pd.to_datetime(df_pdl1['START_DATE'], errors='coerce')
 
     print(f'Loading {table_map}')
     sql_map = f"SELECT SAMPLE_ID, SOURCE_ACCESSION_NUMBER_0 FROM {table_map}"
@@ -37,7 +37,7 @@ def _load_data(obj_db, table_pdl1, table_map):
 
 def _clean_data_patient(df_pdl1):
     """Create patient-level summary."""
-    df_pdl1 = df_pdl1.sort_values(by=['MRN', 'DTE_PATH_PROCEDURE'])
+    df_pdl1 = df_pdl1.sort_values(by=['MRN', 'START_DATE'])
     reps = {True: 'Yes', False: 'No'}
     list_mrns_pdl1 = df_pdl1.loc[df_pdl1['PDL1_POSITIVE'] == 'Yes', 'MRN']
     df_pdl1_summary = df_pdl1[['MRN']].drop_duplicates()
