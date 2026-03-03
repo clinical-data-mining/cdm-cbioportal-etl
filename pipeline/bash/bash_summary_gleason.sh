@@ -20,7 +20,7 @@ MY_PATH="$(dirname -- "${BASH_SOURCE[0]}")"
 cd $MY_PATH
 cd ../summary
 
-SCRIPT="cbio_gleason_summary.py"
+SCRIPT="cbioportal_summary_pathology_gleason.py"
 
 # Run script
 python $SCRIPT --databricks_env=$DATABRICKS_ENV
