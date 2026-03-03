@@ -43,15 +43,42 @@ def cbioportal_timeline_follow_up(
     df_demo = obj_db.query_from_sql(sql=sql)
 
     df_demo_f = df_demo.copy()
-    df_demo_f['PT_DEATH_DTE'] = pd.to_datetime(df_demo_f['PT_DEATH_DTE'], errors='coerce', format='mixed')
-    if isinstance(df_demo_f['PT_DEATH_DTE'].dtype, pd.DatetimeTZDtype):
-        df_demo_f['PT_DEATH_DTE'] = df_demo_f['PT_DEATH_DTE'].dt.tz_localize(None)
-    df_demo_f['PLA_LAST_CONTACT_DTE'] = pd.to_datetime(df_demo_f['PLA_LAST_CONTACT_DTE'], errors='coerce', format='mixed')
-    if isinstance(df_demo_f['PLA_LAST_CONTACT_DTE'].dtype, pd.DatetimeTZDtype):
-        df_demo_f['PLA_LAST_CONTACT_DTE'] = df_demo_f['PLA_LAST_CONTACT_DTE'].dt.tz_localize(None)
+
+    def convert_datetime(df, col_name, format='mixed'):
+        df[col_name] = pd.to_datetime(df[col_name], errors='coerce', format=format)
+        if isinstance(df[col_name].dtype, pd.DatetimeTZDtype):
+            df[col_name] = df[col_name].dt.tz_localize(None)
+        return df
+
+    df_demo_f = convert_datetime(
+        df=df_demo_f,
+        col_name='MRN_CREATE_DTE',
+        format='mixed'
+    )
+
+    df_demo_f = convert_datetime(
+        df=df_demo_f,
+        col_name='PT_DEATH_DTE',
+        format='mixed'
+    )
+
+    df_demo_f = convert_datetime(
+        df=df_demo_f,
+        col_name='PLA_LAST_CONTACT_DTE',
+        format='mixed'
+    )
+
     # Remove last contact date if patient is deceased
     logic_deceased = df_demo_f['PT_DEATH_DTE'].notnull()
     df_demo_f.loc[logic_deceased, 'PLA_LAST_CONTACT_DTE'] = pd.NA
+
+    # Remove rows where MRN create date is greater than last contact date
+    logic_mrn_create_after_follow_up = df_demo_f['PLA_LAST_CONTACT_DTE'] < df_demo_f['MRN_CREATE_DTE']
+    df_demo_f.loc[logic_mrn_create_after_follow_up, 'MRN_CREATE_DTE'] = pd.NA
+    df_demo_f.loc[logic_mrn_create_after_follow_up, 'PLA_LAST_CONTACT_DTE'] = pd.NA
+
+    logic_mrn_create_after_death = df_demo_f['PT_DEATH_DTE'] < df_demo_f['MRN_CREATE_DTE']
+    df_demo_f.loc[logic_mrn_create_after_death, 'MRN_CREATE_DTE'] = pd.NA
 
     print('Creating timeline')
     df_os_ = pd.melt(
