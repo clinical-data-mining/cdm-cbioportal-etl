@@ -34,16 +34,16 @@ def _load_data(obj_db, table_pdl1):
 
 def _clean_data_patient(df_pdl1):
     """Create patient-level summary showing if patient ever had PDL1 positive result."""
-      # Get all unique MRNs that have at least one PDL1 positive result
-      mrns_with_pdl1_positive = df_pdl1.loc[df_pdl1['PDL1_POSITIVE'] == 'Yes', 'MRN'].unique()
+    # Get all unique MRNs that have at least one PDL1 positive result
+    mrns_with_pdl1_positive = df_pdl1.loc[df_pdl1['PDL1_POSITIVE'] == 'Yes', 'MRN'].unique()
 
-      # Create summary with all unique MRNs
-      df_pdl1_summary = df_pdl1[['MRN']].drop_duplicates().copy()
+    # Create summary with all unique MRNs
+    df_pdl1_summary = df_pdl1[['MRN']].drop_duplicates().copy()
 
-      # Mark HISTORY_OF_PDL1 as 'Yes' if MRN ever had a positive result
-      df_pdl1_summary['HISTORY_OF_PDL1'] = df_pdl1_summary['MRN'].isin(mrns_with_pdl1_positive).map({True: 'Yes', False: 'No'})
+    # Mark HISTORY_OF_PDL1 as 'Yes' if MRN ever had a positive result
+    df_pdl1_summary['HISTORY_OF_PDL1'] = df_pdl1_summary['MRN'].isin(mrns_with_pdl1_positive).map({True: 'Yes', False: 'No'})
 
-      return df_pdl1_summary
+    return df_pdl1_summary
 
 
 def _clean_data_sample(df_pdl1):
