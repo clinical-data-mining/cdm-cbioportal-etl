@@ -12,73 +12,72 @@ from msk_cdm.databricks import DatabricksAPI
 
 # Hardcoded table paths from databricks_config_pathology.yaml
 TABLE_PDL1 = 'cdsi_eng_phi.cdm_eng_pathology_report_segmentation.table_timeline_pdl1_calls'
-TABLE_MAP = 'cdsi_eng_phi.cdm_eng_pathology_report_segmentation.table_pathology_impact_sample_summary_dop_anno_epic_idb_combined'
 
 # Output paths
 CATALOG = 'cdsi_eng_phi'
 SCHEMA = 'cdm_eng_pathology_report_segmentation'
 VOLUME = 'cdm_eng_pathology_report_segmentation_volume'
 SUBDIRECTORY = 'cbioportal'
+table_name_patient = "table_summary_pdl1_patient"
+table_name_sample = "table_summary_pdl1_sample"
 
 
-def _load_data(obj_db, table_pdl1, table_map):
+def _load_data(obj_db, table_pdl1):
     """Load PD-L1 and mapping data."""
     print(f'Loading {table_pdl1}')
     sql_pdl1 = f"SELECT * FROM {table_pdl1}"
     df_pdl1 = obj_db.query_from_sql(sql=sql_pdl1)
     df_pdl1['START_DATE'] = pd.to_datetime(df_pdl1['START_DATE'], errors='coerce')
 
-    print(f'Loading {table_map}')
-    sql_map = f"SELECT SAMPLE_ID, SOURCE_ACCESSION_NUMBER_0 FROM {table_map}"
-    df_map = obj_db.query_from_sql(sql=sql_map)
-
-    return df_pdl1, df_map
+    return df_pdl1
 
 
 def _clean_data_patient(df_pdl1):
-    """Create patient-level summary."""
-    df_pdl1 = df_pdl1.sort_values(by=['MRN', 'START_DATE'])
-    reps = {True: 'Yes', False: 'No'}
-    list_mrns_pdl1 = df_pdl1.loc[df_pdl1['PDL1_POSITIVE'] == 'Yes', 'MRN']
-    df_pdl1_summary = df_pdl1[['MRN']].drop_duplicates()
-    df_pdl1_summary['HISTORY_OF_PDL1'] = df_pdl1_summary['MRN'].isin(list_mrns_pdl1).replace(reps)
+    """Create patient-level summary showing if patient ever had PDL1 positive result."""
+      # Get all unique MRNs that have at least one PDL1 positive result
+      mrns_with_pdl1_positive = df_pdl1.loc[df_pdl1['PDL1_POSITIVE'] == 'Yes', 'MRN'].unique()
 
-    return df_pdl1_summary
+      # Create summary with all unique MRNs
+      df_pdl1_summary = df_pdl1[['MRN']].drop_duplicates().copy()
+
+      # Mark HISTORY_OF_PDL1 as 'Yes' if MRN ever had a positive result
+      df_pdl1_summary['HISTORY_OF_PDL1'] = df_pdl1_summary['MRN'].isin(mrns_with_pdl1_positive).map({True: 'Yes', False: 'No'})
+
+      return df_pdl1_summary
 
 
-def _clean_data_sample(df_pdl1, df_map):
-    """Create sample-level summary."""
-    df_pdl1_s1 = df_pdl1.merge(
-        right=df_map[['SAMPLE_ID', 'SOURCE_ACCESSION_NUMBER_0']],
-        how='inner',
-        left_on='ACCESSION_NUMBER',
-        right_on='SOURCE_ACCESSION_NUMBER_0'
-    )
+def _clean_data_sample(df_pdl1):
+    """Create sample-level summary showing PDL1 status for each sample."""
+    # Filter to records with valid SAMPLE_ID and remove duplicates
+    df_pdl1_samples = df_pdl1[df_pdl1['SAMPLE_ID'].notnull()].copy()
+    df_pdl1_samples = df_pdl1_samples.drop_duplicates(subset=['SAMPLE_ID', 'PDL1_POSITIVE'])
 
-    print(df_pdl1.head())
-    print('-' * 20)
-    print(df_map.head())
-    print('-' * 20)
-    print(df_pdl1_s1.head())
-    print('-' * 20)
+    # Select relevant columns
+    df_pdl1_s = df_pdl1_samples[['SAMPLE_ID', 'PDL1_POSITIVE']].copy()
 
-    df_pdl1_s = df_pdl1_s1[['SAMPLE_ID', 'PDL1_POSITIVE']].copy()
-    df_pdl1_s['DMP_ID'] = df_pdl1_s['SAMPLE_ID'].apply(lambda x: x[:9])
+    # Extract DMP_ID (first 9 characters of SAMPLE_ID)
+    df_pdl1_s['DMP_ID'] = df_pdl1_s['SAMPLE_ID'].str[:9]
 
     return df_pdl1_s
 
 
-def create_pdl1_summaries(obj_db, table_pdl1, table_map,
-                         volume_path_patient, volume_path_sample,
-                         catalog, schema,
-                         table_name_patient, table_name_sample):
+def create_pdl1_summaries(
+        obj_db,
+        table_pdl1,
+        volume_path_patient,
+        volume_path_sample,
+        catalog,
+        schema,
+        table_name_patient,
+        table_name_sample
+):
     """Create and save PD-L1 patient and sample summaries."""
     # Load data
-    df_pdl1, df_map = _load_data(obj_db, table_pdl1, table_map)
+    df_pdl1 = _load_data(obj_db, table_pdl1)
 
     # Create summaries
     df_pdl1_p = _clean_data_patient(df_pdl1=df_pdl1)
-    df_pdl1_s = _clean_data_sample(df_pdl1=df_pdl1, df_map=df_map)
+    df_pdl1_s = _clean_data_sample(df_pdl1=df_pdl1)
 
     # Save patient data
     print(f"Saving {len(df_pdl1_p):,} patient records to {volume_path_patient}")
@@ -134,17 +133,13 @@ def main():
     obj_db = DatabricksAPI(fname_databricks_env=args.databricks_env)
 
     # Construct output paths
-    volume_path_patient = f"/Volumes/{CATALOG}/{SCHEMA}/{VOLUME}/{SUBDIRECTORY}/table_summary_pdl1_patient.tsv"
-    volume_path_sample = f"/Volumes/{CATALOG}/{SCHEMA}/{VOLUME}/{SUBDIRECTORY}/table_summary_pdl1_sample.tsv"
-
-    table_name_patient = "table_summary_pdl1_patient"
-    table_name_sample = "table_summary_pdl1_sample"
+    volume_path_patient = f"/Volumes/{CATALOG}/{SCHEMA}/{VOLUME}/{SUBDIRECTORY}/{table_name_patient}.tsv"
+    volume_path_sample = f"/Volumes/{CATALOG}/{SCHEMA}/{VOLUME}/{SUBDIRECTORY}/{table_name_sample}.tsv"
 
     print('Creating PD-L1 Summaries')
     create_pdl1_summaries(
         obj_db=obj_db,
         table_pdl1=TABLE_PDL1,
-        table_map=TABLE_MAP,
         volume_path_patient=volume_path_patient,
         volume_path_sample=volume_path_sample,
         catalog=CATALOG,
