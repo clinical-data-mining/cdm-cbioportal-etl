@@ -16,6 +16,8 @@ RENAME_SAMPLE = {COL_GLEASON: 'GLEASON_SAMPLE_LEVEL'}
 # Hardcoded table paths from databricks_config_pathology.yaml
 TABLE_GLEASON = 'cdsi_eng_phi.cdm_eng_pathology_report_segmentation.table_timeline_gleason_scores'
 TABLE_MAP = 'cdsi_eng_phi.cdm_eng_pathology_report_segmentation.table_pathology_impact_sample_summary_dop_anno_epic_idb_combined'
+table_name_patient = "table_summary_gleason_patient"
+table_name_sample = "table_summary_gleason_sample"
 
 # Output paths
 CATALOG = 'cdsi_eng_phi'
@@ -38,44 +40,66 @@ def _load_data(obj_db, table_gleason, table_map):
     return df_gleason, df_map
 
 
-def _clean_data_patient(df_gleason, df_map):
-    df_gleason = df_gleason.sort_values(by=['MRN', 'START_DATE'])
-    gleason_highest = df_gleason.groupby(['MRN'])[COL_GLEASON].max().rename('GLEASON_HIGHEST_REPORTED').reset_index()
-    gleason_first = df_gleason.groupby(['MRN']).first().reset_index()
-    gleason_first = gleason_first.rename(columns={COL_GLEASON: 'GLEASON_FIRST_REPORTED'})
-    gleason_first = gleason_first[['MRN', 'GLEASON_FIRST_REPORTED']]
+def _clean_data_patient(df_gleason):
+    """Create patient-level summary with first and highest Gleason scores."""
+    # Sort by MRN and date to get chronological order
+    df_gleason_sorted = df_gleason.sort_values(by=['MRN', 'START_DATE'])
 
-    df_gleason_patient = gleason_first.merge(right=gleason_highest, how='inner', on='MRN')
+    # Get highest Gleason score for each patient
+    gleason_highest = (df_gleason_sorted
+                      .groupby('MRN')[COL_GLEASON]
+                      .max()
+                      .rename('GLEASON_HIGHEST_REPORTED')
+                      .reset_index())
+
+    # Get first Gleason score for each patient (chronologically)
+    gleason_first = (df_gleason_sorted
+                    .groupby('MRN')
+                    .first()
+                    .reset_index()
+                    [['MRN', COL_GLEASON]]
+                    .rename(columns={COL_GLEASON: 'GLEASON_FIRST_REPORTED'}))
+
+    # Merge first and highest scores
+    df_gleason_patient = gleason_first.merge(gleason_highest, on='MRN', how='inner')
 
     return df_gleason_patient
 
 
-def _clean_data_sample(df_gleason, df_map):
-    """Create sample-level summary."""
-    df_gleason_s1 = df_gleason.merge(
-        right=df_map[['SAMPLE_ID', 'SOURCE_ACCESSION_NUMBER_0']],
-        how='inner',
-        left_on='ACCESSION_NUMBER',
-        right_on='SOURCE_ACCESSION_NUMBER_0'
-    )
+def _clean_data_sample(df_gleason):
+    """Create sample-level summary mapping Gleason scores to sample IDs."""
+    # Merge Gleason data with sample mapping using accession numbers
+    df_gleason_samples = df_gleason[df_gleason['SAMPLE_ID'].notnull()].copy()
+    df_gleason_samples = df_gleason_samples.drop_duplicates(subset=['SAMPLE_ID', COL_GLEASON])
 
-    df_gleason_s = df_gleason_s1[['SAMPLE_ID', COL_GLEASON]].rename(columns=RENAME_SAMPLE)
-    df_gleason_s['DMP_ID'] = df_gleason_s['SAMPLE_ID'].apply(lambda x: x[:9])
+    # Select and rename columns for output
+    df_gleason_s = (df_gleason_samples[['SAMPLE_ID', COL_GLEASON]]
+                   .rename(columns=RENAME_SAMPLE)
+                   .copy())
+
+    # Extract DMP_ID (first 9 characters of SAMPLE_ID)
+    df_gleason_s['DMP_ID'] = df_gleason_s['SAMPLE_ID'].str[:9]
 
     return df_gleason_s
 
 
-def create_gleason_summaries(obj_db, table_gleason, table_map,
-                            volume_path_patient, volume_path_sample,
-                            catalog, schema,
-                            table_name_patient, table_name_sample):
+def create_gleason_summaries(
+        obj_db,
+        table_gleason,
+        volume_path_patient,
+        volume_path_sample,
+        catalog,
+        schema,
+        table_name_patient,
+        table_name_sample
+):
     """Create and save Gleason patient and sample summaries."""
     # Load data
-    df_gleason, df_map = _load_data(obj_db, table_gleason, table_map)
+    df_gleason = _load_data(obj_db, table_gleason)
 
     # Create summaries
     df_gleason_p = _clean_data_patient(df_gleason=df_gleason)
-    df_gleason_s = _clean_data_sample(df_gleason=df_gleason, df_map=df_map)
+    df_gleason_s = _clean_data_sample(df_gleason=df_gleason)
 
     # Save patient data
     print(f"Saving {len(df_gleason_p):,} patient records to {volume_path_patient}")
@@ -131,17 +155,13 @@ def main():
     obj_db = DatabricksAPI(fname_databricks_env=args.databricks_env)
 
     # Construct output paths
-    volume_path_patient = f"/Volumes/{CATALOG}/{SCHEMA}/{VOLUME}/{SUBDIRECTORY}/table_summary_gleason_patient.tsv"
-    volume_path_sample = f"/Volumes/{CATALOG}/{SCHEMA}/{VOLUME}/{SUBDIRECTORY}/table_summary_gleason_sample.tsv"
-
-    table_name_patient = "table_summary_gleason_patient"
-    table_name_sample = "table_summary_gleason_sample"
+    volume_path_patient = f"/Volumes/{CATALOG}/{SCHEMA}/{VOLUME}/{SUBDIRECTORY}/{table_name_patient}.tsv"
+    volume_path_sample = f"/Volumes/{CATALOG}/{SCHEMA}/{VOLUME}/{SUBDIRECTORY}/{table_name_sample}.tsv"
 
     print('Creating Gleason Score Summaries')
     create_gleason_summaries(
         obj_db=obj_db,
         table_gleason=TABLE_GLEASON,
-        table_map=TABLE_MAP,
         volume_path_patient=volume_path_patient,
         volume_path_sample=volume_path_sample,
         catalog=CATALOG,
