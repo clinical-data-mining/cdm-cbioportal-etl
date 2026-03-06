@@ -15,7 +15,6 @@ RENAME_SAMPLE = {COL_GLEASON: 'GLEASON_SAMPLE_LEVEL'}
 
 # Hardcoded table paths from databricks_config_pathology.yaml
 TABLE_GLEASON = 'cdsi_eng_phi.cdm_eng_pathology_report_segmentation.table_timeline_gleason_scores'
-TABLE_MAP = 'cdsi_eng_phi.cdm_eng_pathology_report_segmentation.table_pathology_impact_sample_summary_dop_anno_epic_idb_combined'
 table_name_patient = "table_summary_gleason_patient"
 table_name_sample = "table_summary_gleason_sample"
 
@@ -26,18 +25,14 @@ VOLUME = 'cdm_eng_pathology_report_segmentation_volume'
 SUBDIRECTORY = 'cbioportal'
 
 
-def _load_data(obj_db, table_gleason, table_map):
-    """Load Gleason and mapping data."""
+def _load_data(obj_db, table_gleason):
+    """Load Gleason data."""
     print(f'Loading {table_gleason}')
     sql_gleason = f"SELECT * FROM {table_gleason}"
     df_gleason = obj_db.query_from_sql(sql=sql_gleason)
     df_gleason['START_DATE'] = pd.to_datetime(df_gleason['START_DATE'], errors='coerce')
 
-    print(f'Loading {table_map}')
-    sql_map = f"SELECT MRN, SAMPLE_ID, SOURCE_ACCESSION_NUMBER_0 FROM {table_map}"
-    df_map = obj_db.query_from_sql(sql=sql_map)
-
-    return df_gleason, df_map
+    return df_gleason
 
 
 def _clean_data_patient(df_gleason):
