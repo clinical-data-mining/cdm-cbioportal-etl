@@ -10,7 +10,7 @@ import pandas as pd
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from msk_cdm.databricks import DatabricksAPI
 
-COL_GLEASON = 'GLEASON'
+COL_GLEASON = 'GLEASON_SCORE'
 RENAME_SAMPLE = {COL_GLEASON: 'GLEASON_SAMPLE_LEVEL'}
 
 # Hardcoded table paths from databricks_config_pathology.yaml
