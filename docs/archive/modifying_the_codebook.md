@@ -1,5 +1,23 @@
 # Modifying the Codebook
-The [CDM Codebook](https://docs.google.com/spreadsheets/d/1po0GdSwqmmXibz4e-7YvTPUbXpi0WYv3c2ImdHXxyuc/edit?usp=sharing) is used to describe data tables and their columns. 
+
+> **⚠️ DEPRECATED - This documentation is outdated**
+>
+> This document describes the legacy Google Sheets codebook approach which has been replaced by YAML configuration files.
+>
+> **For current documentation, see:**
+> - [Adding New Summary Data](../guides/adding_new_summary_data.md) - YAML-based configuration
+> - [Adding New Timeline Data](../guides/adding_new_timeline_data.md) - YAML-based configuration
+> - [Summary YAML Format](../configuration/summary_yaml_format.md) - Configuration reference
+> - [Migration Guide](MIGRATION_FROM_OLD_SYSTEM.md) - Migrating from codebook to YAML
+>
+> **Last updated:** Pre-2025 refactoring
+> **Archived:** 2026-03-25
+
+---
+
+# Legacy Codebook Workflow
+
+The [CDM Codebook](https://docs.google.com/spreadsheets/d/1po0GdSwqmmXibz4e-7YvTPUbXpi0WYv3c2ImdHXxyuc/edit?usp=sharing) is used to describe data tables and their columns.
 
 For `cdm-cbioportal-etl` purposes, the codebook is used for code to process information to transform and import data into a cBioPortal study properly.
 

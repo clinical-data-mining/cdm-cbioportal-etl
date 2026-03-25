@@ -1,4 +1,21 @@
 # Summary Data Formatting
+
+> **⚠️ DEPRECATED - This documentation is outdated**
+>
+> This document describes the legacy codebook-based, MinIO approach which has been replaced.
+>
+> **For current documentation, see:**
+> - [Modular Summary Pipeline](../pipelines/summary_modular_pipeline.md) - Current 4-script approach
+> - [Adding New Summary Data](../guides/adding_new_summary_data.md) - YAML-based configuration
+> - [Architecture Overview](../architecture.md) - Current system design
+>
+> **Last updated:** Pre-2025 refactoring
+> **Archived:** 2026-03-25
+
+---
+
+# Legacy Summary Data Formatting
+
 This page explains how to generate patient and sample summary files that can be pushed to cBioPortal. 
 
 Either a patient or sample summary files is generated using the `create_cbioportal_summary.py` function. The script formats data using two key classes, `RedcapToCbioportalFormat` and `cbioportalSummaryFileCombiner`, to process patient and sample summary data file into the cBioPortal format.

@@ -1,4 +1,21 @@
 # Transformation of Timeline Data Attributes
+
+> **⚠️ DEPRECATED - This documentation is outdated**
+>
+> This document describes the legacy MinIO-based timeline deidentification which has been replaced.
+>
+> **For current documentation, see:**
+> - [Timeline Deidentification Pipeline](../pipelines/timeline_deidentification.md) - Current YAML-based approach
+> - [Adding New Timeline Data](../guides/adding_new_timeline_data.md) - YAML configuration guide
+> - [Architecture Overview](../architecture.md) - Current system design
+>
+> **Last updated:** Pre-2025 refactoring
+> **Archived:** 2026-03-25
+
+---
+
+# Legacy Timeline Data Transformation
+
 The `cdm-cbioportal-etl.timeline.cbioportal_deid_timeline_files` function is designed to de-identify patient timeline files and save the processed data to object storage using the MinioAPI. It replaces identifiable patient data (dates and MRNs) with de-identified values based on anchor dates and organizes the data for later use in cBioPortal.
 
 The resulting data format adheres to [cBioPortal's formatting for timeline files](https://docs.cbioportal.org/file-formats/#timeline-data)

@@ -1,4 +1,21 @@
 # Summary File Template Generator
+
+> **⚠️ DEPRECATED - This documentation is outdated**
+>
+> This document describes the legacy MinIO-based template generation which has been replaced.
+>
+> **For current documentation, see:**
+> - [Running Full ETL Pipeline](../guides/running_full_etl.md#1-generate-template-files) - Current template generation
+> - [Modular Summary Pipeline](../pipelines/summary_modular_pipeline.md) - How templates are used
+> - [Architecture Overview](../architecture.md) - Current system design
+>
+> **Last updated:** Pre-2025 refactoring
+> **Archived:** 2026-03-25
+
+---
+
+# Legacy Summary File Template Generator
+
 The `cdm-cbioportal-etl.summary.generate_cbioportal_template` function generates patient and sample summary template files. It loads sample and patient headers from object storage (using Minio), combines them with current patient and sample IDs, and then saves the processed data back to object storage. Additionally, the function removes specific samples that lack assays using a helper function `_remove_cases`.
 
 The result creates a template following [cBioPortal's description for summary headers](https://docs.cbioportal.org/file-formats/#example-clinical-header)
