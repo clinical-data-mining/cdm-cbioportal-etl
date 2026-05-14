@@ -85,3 +85,8 @@ columns:
     field_label: Cancer Stage - Aggregated (Granular)
     field_note: Cancer stage based on Cancer Stage AJCC/Clinical/Pathologic/Summary.
     nlp_derived: false
+  DX_LATERALITY:
+    field_name: DX_LATERALITY
+    field_label: Laterality
+    field_note: Laterality of tumor. If not available, will be blank. If not applicable, value will be (Not paired site)
+    nlp_derived: false
