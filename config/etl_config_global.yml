@@ -1,0 +1,31 @@
+codebook:
+  path: "/gpfs/mindphidata/cdm_repos/prod/github/docs/docs/tables/"
+  fname_metadata: "CDM-Codebook - metadata.csv"
+  fname_tables: "CDM-Codebook - tables.csv"
+  fname_project: "CDM-Codebook - project.csv"
+
+inputs_databricks:
+  overwrite: True
+  catalog: "cdsi_eng_phi"
+  schema: "cdm_eng_cbioportal_etl"
+  volume: "cdm_eng_cbioportal_etl_volume"
+  sep: "\t"
+  # Data manifest files (relative paths under volume)
+  volume_path_manifest_patient: "cbioportal/summary_manifests/global/summary_manifest_patient.csv"
+  volume_path_manifest_sample: "cbioportal/summary_manifests/global/summary_manifest_sample.csv"
+  # Intermediate summary file location (relative path under volume)
+  volume_path_intermediate: "cbioportal/intermediate_files/global/"
+  # Folder path for final deid files (relative path under volume)
+  volume_path_final: "cbioportal/global/"
+
+template_files:
+  # Patient ID list in the cbioportal format. Additional patient summary information is appended to this. Derived from `inputs.fname_cbio_sid`
+  fname_p_sum_template_cdsi: "data_clinical_patient_template_cdsi.txt"
+  # Sample ID list in the cbioportal format. Additional patient summary information is appended to this. Derived from `inputs.fname_cbio_sid`
+  fname_s_sum_template_cdsi: "data_clinical_sample_template_cdsi.txt"
+
+# File names
+deid_filenames:
+  summary_patient: "data_clinical_patient.txt"
+  summary_sample: "data_clinical_sample.txt"
+
