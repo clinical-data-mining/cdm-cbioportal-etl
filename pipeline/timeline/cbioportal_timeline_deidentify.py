@@ -53,7 +53,7 @@ import pandas as pd
 
 from msk_cdm.databricks import DatabricksAPI
 from msk_cdm.data_processing import mrn_zero_pad
-from lib.utils import constants
+from lib.utils import constants, detect_header_row_count
 
 COLS_ORDER_GENERAL = constants.COLS_ORDER_GENERAL
 COL_ANCHOR_DATE = constants.COL_ANCHOR_DATE
@@ -360,7 +360,7 @@ def main():
     # 1. Load sample list and get patient/sample IDs
     # =========================================================================
     print(f'\nLoading sample list: {args.fname_sample}')
-    df_samples_used = pd.read_csv(args.fname_sample, sep='\t', header=4)
+    df_samples_used = pd.read_csv(args.fname_sample, sep='\t', header=detect_header_row_count(args.fname_sample))
     list_dmp_ids = list(df_samples_used['PATIENT_ID'].drop_duplicates())
     list_sample_ids = list(df_samples_used['SAMPLE_ID'].drop_duplicates())
     print(f'Number of sample IDs: {len(list_sample_ids)}')
