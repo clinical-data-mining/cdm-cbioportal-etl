@@ -91,7 +91,7 @@ def load_template_from_local(fname_template: str, patient_or_sample: str) -> pd.
     print(f"Loading template from local filesystem: {fname_template}")
 
     # Read from local file
-    df_template = pd.read_csv(fname_template, sep='\t', dtype=str)
+    df_template = pd.read_csv(fname_template, sep='\t', dtype=str, header=4)
 
     # Determine ID columns to extract
     if patient_or_sample == 'patient':
