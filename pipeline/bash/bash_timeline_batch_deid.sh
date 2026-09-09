@@ -50,7 +50,7 @@ source $CONDA_INSTALL_PATH/etc/profile.d/conda.sh
 conda activate "$CONDA_ENV_NAME"
 
 # Change to repo directory
-cd "$ROOT_PATH_REPO"
+cd "$ROOT_PATH_REPO/cdm-cbioportal-etl"
 
 # Build full script path
 SCRIPT_PATH="cdm-cbioportal-etl/pipeline/timeline/cbioportal_timeline_batch_deidentify.py"

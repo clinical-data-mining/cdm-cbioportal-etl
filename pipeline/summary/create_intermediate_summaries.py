@@ -30,6 +30,7 @@ import pandas as pd
 from typing import List, Dict
 
 from lib.summary.summary_config_processor import SummaryConfigProcessor
+from lib.utils import detect_header_row_count
 from msk_cdm.databricks import DatabricksAPI
 from msk_cdm.data_processing import mrn_zero_pad
 
@@ -90,8 +91,8 @@ def load_template_from_local(fname_template: str, patient_or_sample: str) -> pd.
     """
     print(f"Loading template from local filesystem: {fname_template}")
 
-    # Read from local file
-    df_template = pd.read_csv(fname_template, sep='\t', dtype=str)
+    # Read from local file, skipping any leading '#'-prefixed metadata rows
+    df_template = pd.read_csv(fname_template, sep='\t', dtype=str, header=detect_header_row_count(fname_template))
 
     # Determine ID columns to extract
     if patient_or_sample == 'patient':
