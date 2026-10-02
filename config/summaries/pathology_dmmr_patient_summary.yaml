@@ -1,0 +1,28 @@
+summary_id: pathology_dmmr_patient_summary
+patient_or_sample: patient
+source_table_prod: cdsi_eng_phi.cdm_eng_pathology_report_segmentation.mart_summary_mmr_patient
+source_table_dev: cdsi_eng_phi.cdm_eng_pathology_report_segmentation.mart_summary_mmr_patient
+key_column: MRN
+columns:
+- MRN
+- HISTORY_OF_D_MMR
+date_columns: []
+dest_prod:
+  catalog: cdsi_eng_phi
+  schema: cdm_eng_cbioportal_etl
+  volume_name: cdm_eng_cbioportal_etl_volume
+  filename: pathology_dmmr_patient_summary_summary.tsv
+dest_dev:
+  catalog: cdsi_eng_phi
+  schema: cdm_eng_cbioportal_etl
+  volume_name: cdm_eng_cbioportal_etl_volume_dev
+  filename: pathology_dmmr_patient_summary_summary.tsv
+column_metadata:
+  HISTORY_OF_D_MMR:
+    label: MMR deficiency (NLP)
+    datatype: STRING
+    comment: 'MMR deficiency (NLP) ---DESCRIPTION: Indication if patient has a history
+      of MMR deficiency measured from pathology reports ---MISSING DATA: No data
+      available ---SOURCE: NLP generated from pathology reports'
+    fill_value: NA
+    priority: '1'
