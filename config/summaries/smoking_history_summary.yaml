@@ -1,0 +1,55 @@
+summary_id: smoking_history_summary_patient
+patient_or_sample: patient
+source_table_prod: cdsi_eng_phi.cdm_eng_smoking_history.mart_smoking_pack_year_patient
+source_table_dev: cdsi_eng_phi.cdm_eng_smoking_history.mart_smoking_pack_year_patient
+key_column: MRN
+columns:
+- MRN
+- smoking_status
+- packs_per_day
+- years_smoked
+- pack_years
+date_columns: []
+dest_prod:
+  catalog: cdsi_eng_phi
+  schema: cdm_eng_cbioportal_etl
+  volume_name: cdm_eng_cbioportal_etl_volume
+  filename: smoking_history_summary_patient.tsv
+dest_dev:
+  catalog: cdsi_eng_phi
+  schema: cdm_eng_cbioportal_etl
+  volume_name: cdm_eng_cbioportal_etl_volume_dev
+  filename: smoking_history_summary_patient.tsv
+column_metadata:
+  smoking_status:
+    label: Smoking Status (NLP)
+    datatype: STRING
+    comment: 'Smoking Status (NLP) ---DESCRIPTION: Inferred smoking history from clinical
+      notes. Classes: Current, Former, Never, Unknown ---MISSING DATA: The patient might
+      not have had a ''Smoking Status'' section in their Clindoc note or the information
+      could not be extracted from full text. Potential factor for older notes, if the
+      formatting of the section has changed; majority are from 2015-->present. This
+      field addresses the high incidence of ''Unknown'' smoking history in the ''Smoking
+      History (NLP)'' field for post-Epic patients by inferring status from full clinical
+      notes using LLMs ---SOURCE: NLP generated from medical oncology notes'
+    fill_value: Unknown
+  pack_years:
+    label: Pack Years (NLP)
+    datatype: NUMBER
+    comment: 'Pack Years (NLP) ---DESCRIPTION: Average number of pack years the patient
+      smoked. Pack years is defined by the total number of years the patient smoked
+      multiplied by the packs per day. ---SOURCE: NLP generated from medical oncology
+      notes'
+    fill_value: NA
+  years_smoked:
+    label: Smoking Duration (NLP)
+    datatype: NUMBER
+    comment: 'Smoking Duration (NLP) ---DESCRIPTION: Average number of years the patient
+      smoked ---SOURCE: NLP generated from medical oncology notes'
+    fill_value: NA
+  packs_per_day:
+    label: Packs Per Day (NLP)
+    datatype: NUMBER
+    comment: 'Packs Per Day (NLP) ---DESCRIPTION: Average number of packs per day the
+      patient smoked ---SOURCE: NLP generated from medical oncology notes'
+    fill_value: NA
