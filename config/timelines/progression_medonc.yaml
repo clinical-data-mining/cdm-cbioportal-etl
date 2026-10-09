@@ -1,0 +1,72 @@
+timeline_id: progression_clinical_notes
+source_table_prod: cdsi_eng_phi.cdm_eng_medonc_progression.data_timeline_medonc_progression
+source_table_dev: cdsi_eng_phi.cdm_eng_medonc_progression.data_timeline_medonc_progression
+output_filename: data_timeline_progression_clinical_notes
+patient_or_sample: patient
+output_table:
+  catalog: cdsi_eng_phi
+  schema: cdm_eng_cbioportal_etl
+table_metadata:
+  form_name: Cancer Progression from Clinical Notes
+  table_description: Inference results of cancer progression mentioned in CT, PET,
+    and MRI radiology report impressions
+  cbio_timeline_reason_for_missing_data: No relevant clinical note available from
+    patient database.
+  cbio_timeline_data_source: NLP generated from clinical notes <describe note types>
+  for_docs_site_timeline: true
+columns:
+  PATIENT_ID:
+    field_name: PATIENT_ID
+    field_label: PATIENT_ID
+    field_note: Medical Record Number
+    nlp_derived: false
+  START_DATE:
+    field_name: START_DATE
+    field_label: Progression Date
+    field_note: Date when progression was inferred
+    nlp_derived: false
+  STOP_DATE:
+    field_name: STOP_DATE
+    field_label: Progression Stop Date for cBioPortal (DNU)
+    field_note: Required file for cBioPortal. DNU.
+    nlp_derived: false
+  EVENT_TYPE:
+    field_name: EVENT_TYPE
+    field_label: Event Type (Progression)
+    field_note: All should be Progression (portal track)
+    nlp_derived: false
+  SUBTYPE:
+    field_name: SUBTYPE
+    field_label: Subtype (Progression)
+    field_note: All should be clinical notes (portal sub track)
+    nlp_derived: false
+  SOURCE:
+    field_name: SOURCE
+    field_label: Source (Progression)
+    field_note: General source of data -- clinical notes
+    nlp_derived: false
+  SOURCE_SPECIFIC:
+    field_name: SOURCE_SPECIFIC
+    field_label: Source Specific (Progression)
+    field_note: <Include note types>
+    nlp_derived: false
+  PROGRESSION:
+    field_name: PROGRESSION
+    field_label: Cancer Progression
+    field_note: 'Binary indication if progression is present in clinical note (''Progressing
+      or Mixed'' or ''Improving or Stable''). Note: patients are predicted to have
+      progression if the ''prog_probability'' is greater than 0.5, however patients
+      with a higher progression probability (closer to 1) are more likely to have
+      progression.'
+    nlp_derived: true
+  PROGRESSION_PROBABILITY:
+    field_name: PROGRESSION_PROBABILITY
+    field_label: Progression Score
+    field_note: Probability that progression is present in clinical note
+    nlp_derived: true
+  STYLE_COLOR:
+    field_name: STYLE_COLOR
+    field_label: Style Color (Progression)
+    field_note: Hex color for progression. Green indicates 'Improving or Stable' and
+      red indicates 'Progressing or Mixed'
+    nlp_derived: false
