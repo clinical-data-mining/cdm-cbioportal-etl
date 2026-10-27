@@ -405,7 +405,7 @@ Patient-level examples:
 
 - `config/summaries/demographics.yaml`
 - `config/summaries/cbioportal_overall_survival.yaml`
-- `config/summaries/comorbidity_index_score.yaml`
+- `config/summaries/smoking_history_summary.yaml`
 
 Sample-level examples:
 
