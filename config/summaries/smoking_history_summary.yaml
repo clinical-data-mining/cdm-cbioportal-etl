@@ -31,17 +31,16 @@ column_metadata:
   pack_years:
     label: Pack Years (NLP)
     datatype: NUMBER
-    comment: 'Pack years smoked (packs per day x years smoked, or the total stated in the note); 
-    0 for never smokers. --SOURCE: NLP generated from medical oncology notes.'
+    comment: 'Number of pack years the patient smoked documented in early clinical note. Pack years is defined by the total number of years the patient smoked multiplied by the packs per day. (Note: the upper bound of any documented range was taken for pack years or packs per day where relevant) --SOURCE: NLP generated from medical oncology notes.'
     fill_value: NA
   years_smoked:
     label: Smoking Duration (NLP)
     datatype: NUMBER
-    comment: 'Average number of years the patient smoked, --SOURCE:NLP generated from medical oncology notes.'
+    comment: 'Number of years the patient smoked mentioned in early clinical note. (Note: the upper bound of any documented range was taken for pack years or packs per day where relevant) --SOURCE:NLP generated from medical oncology notes.'
     fill_value: NA
   packs_per_day:
     label: Packs Per Day (NLP)
     datatype: NUMBER
-    comment: 'Max number of packs per day the patient smoked mentioned in note. 
+    comment: 'Number of packs per day the patient smoked mentioned in early clinical note. (Note: the upper bound of any documented range was taken for pack years or packs per day where relevant). 
     --SOURCE:NLP generated from medical oncology notes.'
     fill_value: NA
