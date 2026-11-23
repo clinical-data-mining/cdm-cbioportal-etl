@@ -32,6 +32,7 @@ def load_timeline_configs(config_dir, production_or_test):
         - output_filename
         - columns (list)
         - patient_or_sample
+        - truncate_by_os_date (bool, default False)
     """
     config_path = Path(config_dir)
     if not config_path.exists():
@@ -65,6 +66,7 @@ def load_timeline_configs(config_dir, production_or_test):
                 'output_filename': config['output_filename'],
                 'columns': list(config['columns'].keys()),  # Extract column names
                 'patient_or_sample': config['patient_or_sample'],
+                'truncate_by_os_date': bool(config.get('truncate_by_os_date', False)),
                 'catalog': catalog,
                 'schema': schema
             }
@@ -135,6 +137,7 @@ def run_timeline_deidentification(config_dir, production_or_test, fname_dbx, anc
         output_filename = config['output_filename']
         columns = config['columns']  # This is a list
         patient_or_sample = config['patient_or_sample']
+        truncate_by_os_date = config['truncate_by_os_date']
         catalog = config['catalog']
         schema = config['schema']
 
@@ -167,12 +170,15 @@ def run_timeline_deidentification(config_dir, production_or_test, fname_dbx, anc
             f"--schema={schema}",
             f"--table_name={table_name}"
         ]
+        if truncate_by_os_date:
+            cmd.append("--truncate_by_os_date")
 
         print(f"Source table: {source_table}")
         print(f"Output volume (PHI): {fname_output_volume}")
         print(f"Output table (PHI): {catalog}.{schema}.{table_name}")
         print(f"Output GPFS (DEID): {fname_output_gpfs}")
         print(f"Merge level: {patient_or_sample}")
+        print(f"Truncate by OS_DATE: {truncate_by_os_date}")
         print()
 
         try:

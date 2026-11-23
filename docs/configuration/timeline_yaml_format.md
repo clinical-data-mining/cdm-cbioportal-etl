@@ -49,6 +49,7 @@ The batch script uses these fields directly:
 - `source_table_dev`
 - `output_filename`
 - `patient_or_sample`
+- `truncate_by_os_date` (optional)
 - `output_table.catalog`
 - `output_table.schema`
 - the ordered keys of `columns`
@@ -178,6 +179,14 @@ Typical usage:
 
 - most timeline files are `patient`
 - use `sample` only when the timeline rows are fundamentally sample-specific
+
+### `truncate_by_os_date`
+
+- Optional, defaults to `false`
+- When `true`, the batch script passes `--truncate_by_os_date` to the deidentification script
+- Any `START_DATE` or `STOP_DATE` after the patient's `OS_DATE` (date of death, otherwise last contact date) is clipped to `OS_DATE`
+
+Currently enabled for `treatment`, `radiation`, and `surgery`. Without it, events can appear after a patient's date of death.
 
 ### `output_table`
 
